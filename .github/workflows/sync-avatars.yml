@@ -1,0 +1,85 @@
+name: Sync Arknights avatars
+
+on:
+  # Every Monday at 09:00 Bangkok time (UTC+7) = 02:00 UTC.
+  # cron is ALWAYS in UTC. Change the "2" if you move timezones.
+  schedule:
+    - cron: "0 2 * * 1"
+  # Lets you run it on demand from the repo's Actions tab.
+  workflow_dispatch:
+
+permissions:
+  contents: write        # needed so the job can push commits back
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v4
+
+      - name: Download missing avatars
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          OWNER="PuppiizSunniiz"     # source repo owner (note: ...nniiz)
+          REPO="Arknight-Images"     # source repo
+          SRCPATH="avatars"          # subfolder inside the source repo
+          DEST="operator/avatars"    # where they land inside THIS repo
+
+          mkdir -p "$DEST"
+
+          # 1) Find the source repo's default branch (main vs master)
+          BRANCH=$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO" | jq -r '.default_branch')
+          echo "Source branch: $BRANCH"
+
+          # 2) List the source tree once, keep only avatars/*.png.
+          #    For each, also produce a URL-encoded path (handles '#', spaces, etc.)
+          curl -fsSL -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/git/trees/$BRANCH?recursive=1" \
+            | jq -r --arg p "$SRCPATH/" '
+                .tree[]
+                | select(.type=="blob")
+                | select(.path | startswith($p))
+                | select(.path | endswith(".png"))
+                | [.path, (.path | split("/") | map(@uri) | join("/"))]
+                | @tsv
+              ' > remote.tsv
+
+          echo "Source has $(wc -l < remote.tsv) avatar file(s)."
+
+          # 3) Download only the ones not already in the repo
+          new=0; fail=0
+          while IFS=$'\t' read -r path encpath; do
+            fname=$(basename "$path")
+            dest="$DEST/$fname"
+            [ -f "$dest" ] && continue
+            url="https://raw.githubusercontent.com/$OWNER/$REPO/$BRANCH/$encpath"
+            if curl -fsSL "$url" -o "$dest"; then
+              new=$((new+1))
+            else
+              echo "::warning::skipped $fname"
+              rm -f "$dest"
+              fail=$((fail+1))
+            fi
+          done < remote.tsv
+          rm -f remote.tsv
+
+          echo "Downloaded $new new avatar(s). Failed: $fail."
+          echo "NEW_COUNT=$new" >> "$GITHUB_ENV"
+
+      - name: Commit and push if anything changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add operator/avatars
+          if git diff --cached --quiet; then
+            echo "No new avatars - nothing to commit."
+          else
+            git commit -m "Sync Arknights avatars ($(date +%F)) - ${NEW_COUNT} new"
+            git push
+            echo "Committed and pushed."
+          fi
