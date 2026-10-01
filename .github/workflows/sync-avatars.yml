@@ -1,4 +1,4 @@
-name: Sync Arknights avatars
+name: Sync Arknights assets
 
 on:
   # Every Monday at 09:00 Bangkok time (UTC+7) = 02:00 UTC.
@@ -18,68 +18,84 @@ jobs:
       - name: Check out this repo
         uses: actions/checkout@v4
 
-      - name: Download missing avatars
+      - name: Download missing assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
 
-          OWNER="PuppiizSunniiz"     # source repo owner (note: ...nniiz)
-          REPO="Arknight-Images"     # source repo
-          SRCPATH="avatars"          # subfolder inside the source repo
-          DEST="operator/avatars"    # where they land inside THIS repo
+          OWNER="PuppiizSunniiz"      # source repo owner (note: ...nniiz)
+          REPO="Arknight-Images"      # source repo
 
-          mkdir -p "$DEST"
+          # Folders to sync, as  SOURCE_FOLDER:DEST_FOLDER
+          # (DEST is relative to THIS repo). Add more lines anytime.
+          PAIRS=(
+            "avatars:operator/avatars"
+            "skills:operator/skills"
+          )
 
-          # 1) Find the source repo's default branch (main vs master)
+          # 1) Source repo's default branch (main vs master)
           BRANCH=$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" \
             "https://api.github.com/repos/$OWNER/$REPO" | jq -r '.default_branch')
           echo "Source branch: $BRANCH"
 
-          # 2) List the source tree once, keep only avatars/*.png.
-          #    For each, also produce a URL-encoded path (handles '#', spaces, etc.)
+          # 2) Pull the whole file tree once, reuse it for every folder
           curl -fsSL -H "Authorization: Bearer $GH_TOKEN" \
-            "https://api.github.com/repos/$OWNER/$REPO/git/trees/$BRANCH?recursive=1" \
-            | jq -r --arg p "$SRCPATH/" '
-                .tree[]
-                | select(.type=="blob")
-                | select(.path | startswith($p))
-                | select(.path | endswith(".png"))
-                | [.path, (.path | split("/") | map(@uri) | join("/"))]
-                | @tsv
-              ' > remote.tsv
+            "https://api.github.com/repos/$OWNER/$REPO/git/trees/$BRANCH?recursive=1" > tree.json
 
-          echo "Source has $(wc -l < remote.tsv) avatar file(s)."
+          total_new=0; total_fail=0
 
-          # 3) Download only the ones not already in the repo
-          new=0; fail=0
-          while IFS=$'\t' read -r path encpath; do
-            fname=$(basename "$path")
-            dest="$DEST/$fname"
-            [ -f "$dest" ] && continue
-            url="https://raw.githubusercontent.com/$OWNER/$REPO/$BRANCH/$encpath"
-            if curl -fsSL "$url" -o "$dest"; then
-              new=$((new+1))
-            else
-              echo "::warning::skipped $fname"
-              rm -f "$dest"
-              fail=$((fail+1))
-            fi
-          done < remote.tsv
-          rm -f remote.tsv
+          for pair in "${PAIRS[@]}"; do
+            SRC="${pair%%:*}"
+            DEST="${pair##*:}"
+            mkdir -p "$DEST"
 
-          echo "Downloaded $new new avatar(s). Failed: $fail."
-          echo "NEW_COUNT=$new" >> "$GITHUB_ENV"
+            # keep only  SRC/*.png , plus a URL-encoded path (handles '#', spaces)
+            jq -r --arg p "$SRC/" '
+              .tree[]
+              | select(.type=="blob")
+              | select(.path | startswith($p))
+              | select(.path | endswith(".png"))
+              | [.path, (.path | split("/") | map(@uri) | join("/"))]
+              | @tsv
+            ' tree.json > remote.tsv
+
+            echo "[$SRC] source has $(wc -l < remote.tsv) file(s)  ->  $DEST"
+
+            new=0; fail=0
+            while IFS=$'\t' read -r path encpath; do
+              fname=$(basename "$path")
+              dst="$DEST/$fname"
+              [ -f "$dst" ] && continue
+              url="https://raw.githubusercontent.com/$OWNER/$REPO/$BRANCH/$encpath"
+              if curl -fsSL "$url" -o "$dst"; then
+                new=$((new+1))
+              else
+                echo "::warning::skipped $SRC/$fname"
+                rm -f "$dst"
+                fail=$((fail+1))
+              fi
+            done < remote.tsv
+            rm -f remote.tsv
+
+            echo "[$SRC] downloaded $new, failed $fail"
+            total_new=$((total_new+new))
+            total_fail=$((total_fail+fail))
+          done
+
+          rm -f tree.json
+          echo "TOTAL downloaded $total_new new file(s). Failed: $total_fail."
+          echo "NEW_COUNT=$total_new" >> "$GITHUB_ENV"
 
       - name: Commit and push if anything changed
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add operator/avatars
+          git add operator
           if git diff --cached --quiet; then
-            echo "No new avatars - nothing to commit."
+            echo "Nothing new - nothing to commit."
           else
-            git commit -m "Sync Arknights avatars ($(date +%F)) - ${NEW_COUNT} new"
+            git commit -m "Sync Arknights assets ($(date +%F)) - ${NEW_COUNT} new"
             git push
             echo "Committed and pushed."
           fi
