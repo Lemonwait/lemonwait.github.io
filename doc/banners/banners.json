@@ -1,0 +1,119 @@
+{
+  "special": {
+    "type": "Special",
+    "banner": "Rage of the Many",
+    "global_start": "2026-09-16",
+    "wiki_file": "EN Rage of the Many banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Rage_of_the_Many_banner.png?86db7d",
+    "width": 1200,
+    "height": 655
+  },
+  "duo": {
+    "type": "Duo",
+    "banner": "Standard Pool 177",
+    "global_start": "2026-10-09",
+    "wiki_file": "EN Standard Pool 177 banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Standard_Pool_177_banner.png?486d2d",
+    "width": 1200,
+    "height": 655
+  },
+  "orienteering": {
+    "type": "Orienteering",
+    "banner": "Orienteering 6",
+    "global_start": "2026-07-30",
+    "wiki_file": "EN Orienteering 6 banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Orienteering_6_banner.png?c88b6b",
+    "width": 1200,
+    "height": 655
+  },
+  "joint-operation": {
+    "type": "Joint Operation",
+    "banner": "Joint Operation 21",
+    "global_start": "2026-08-20",
+    "wiki_file": "EN Joint Operation 21 banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Joint_Operation_21_banner.png?1e1930",
+    "width": 1200,
+    "height": 655
+  },
+  "summer": {
+    "type": "Summer",
+    "banner": "Hanabi Exiled",
+    "global_start": "2026-01-16",
+    "wiki_file": "EN Hanabi Exiled banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Hanabi_Exiled_banner.png?ece16d",
+    "width": 1200,
+    "height": 655
+  },
+  "celebration-half-year": {
+    "type": "Celebration",
+    "banner": "A Shared Oath of Guardianship",
+    "global_start": "2026-04-14",
+    "wiki_file": "EN A Shared Oath of Guardianship banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_A_Shared_Oath_of_Guardianship_banner.png?88be7e",
+    "width": 1200,
+    "height": 655
+  },
+  "sui": {
+    "type": "Sui",
+    "banner": "Ashes to Ashes, Ages on Ages",
+    "global_start": "2026-07-16",
+    "wiki_file": "EN Ashes to Ashes, Ages on Ages banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Ashes_to_Ashes%2C_Ages_on_Ages_banner.png?c444da",
+    "width": 1200,
+    "height": 655
+  },
+  "celebration": {
+    "type": "Celebration",
+    "banner": "Freedom of Preach",
+    "global_start": "2025-10-14",
+    "wiki_file": "EN Freedom of Preach banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Freedom_of_Preach_banner.png?d835dd",
+    "width": 1200,
+    "height": 655
+  },
+  "collab": {
+    "type": "Collab",
+    "banner": "Cantilena Puppae",
+    "global_start": "2026-02-10",
+    "wiki_file": "EN Cantilena Puppae banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Cantilena_Puppae_banner.png?e1b0f9",
+    "width": 1200,
+    "height": 655
+  },
+  "kernel": {
+    "type": "Kernel",
+    "banner": "Kernel 63",
+    "global_start": "2026-10-06",
+    "wiki_file": "EN Kernel 63 banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Kernel_63_banner.png?e9c416",
+    "width": 1200,
+    "height": 655
+  },
+  "kernel-locating": {
+    "type": "Kernel Locating",
+    "banner": "Kernel Locating 12",
+    "global_start": "2026-07-28",
+    "wiki_file": "EN Kernel Locating 12 banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Kernel_Locating_12_banner.png?df0621",
+    "width": 1560,
+    "height": 500
+  },
+  "standard-recollection": {
+    "type": "Standard Recollection",
+    "banner": "Celebration & Hope",
+    "global_start": "2026-07-03",
+    "wiki_file": "EN Celebration & Hope banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Celebration_%26_Hope_banner.png?9844f9",
+    "width": 1200,
+    "height": 655
+  },
+  "kernel-recollection": {
+    "type": "Kernel Recollection",
+    "banner": "Celebration - Kernel",
+    "global_start": "2026-06-30",
+    "wiki_file": "EN Celebration - Kernel 3 banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Celebration_-_Kernel_3_banner.png?74aa4b",
+    "width": 1200,
+    "height": 655
+  }
+}
