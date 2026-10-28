@@ -1,0 +1,45 @@
+name: Sync banner pictures
+
+on:
+  # Every Monday and Thursday at 09:00 Bangkok time (UTC+7) = 02:00 UTC.
+  # Banners run 1-2 weeks, so a day or two late is fine (author, 2026-10-28: "2-3 days").
+  # cron is ALWAYS in UTC. Change the "2" if you move timezones.
+  schedule:
+    - cron: "0 2 * * 1,4"
+  # Lets you run it on demand from the repo's Actions tab.
+  workflow_dispatch:
+
+permissions:
+  contents: write        # needed so the job can push commits back
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The script is a copy of banners/sync_banner_images.py from the (private) handbook repo.
+      # It writes a type's webp only when its banner changed, so an unchanged day writes nothing.
+      - name: Fetch the newest EN banner of each type
+        run: |
+          pip install --quiet pillow
+          python .github/scripts/sync_banner_images.py --out doc/banners
+
+      - name: Commit and push if a banner changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add doc/banners
+          if git diff --cached --quiet; then
+            echo "No new banner - nothing to commit."
+          else
+            git commit -m "Sync banner pictures ($(date +%F))"
+            git push
+            echo "Committed and pushed."
+          fi
