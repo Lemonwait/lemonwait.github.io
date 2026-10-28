@@ -10,19 +10,19 @@
   },
   "duo": {
     "type": "Duo",
-    "banner": "Standard Pool 177",
-    "global_start": "2026-10-09",
-    "wiki_file": "EN Standard Pool 177 banner.png",
-    "source": "https://arknights.wiki.gg/images/EN_Standard_Pool_177_banner.png?486d2d",
+    "banner": "Standard Pool 178",
+    "global_start": "2026-10-23",
+    "wiki_file": "EN Standard Pool 178 banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Standard_Pool_178_banner.png?e84fd0",
     "width": 1200,
     "height": 655
   },
   "orienteering": {
     "type": "Orienteering",
-    "banner": "Orienteering 6",
-    "global_start": "2026-07-30",
-    "wiki_file": "EN Orienteering 6 banner.png",
-    "source": "https://arknights.wiki.gg/images/EN_Orienteering_6_banner.png?c88b6b",
+    "banner": "Orienteering 7",
+    "global_start": "2026-10-28",
+    "wiki_file": "EN Orienteering 7 banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Orienteering_7_banner.png?739543",
     "width": 1200,
     "height": 655
   },
@@ -64,10 +64,10 @@
   },
   "celebration": {
     "type": "Celebration",
-    "banner": "Freedom of Preach",
-    "global_start": "2025-10-14",
-    "wiki_file": "EN Freedom of Preach banner.png",
-    "source": "https://arknights.wiki.gg/images/EN_Freedom_of_Preach_banner.png?d835dd",
+    "banner": "Sealed With Time",
+    "global_start": "2026-10-14",
+    "wiki_file": "EN Sealed With Time banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Sealed_With_Time_banner.png?28c367",
     "width": 1200,
     "height": 655
   },
@@ -91,10 +91,10 @@
   },
   "kernel-locating": {
     "type": "Kernel Locating",
-    "banner": "Kernel Locating 12",
-    "global_start": "2026-07-28",
-    "wiki_file": "EN Kernel Locating 12 banner.png",
-    "source": "https://arknights.wiki.gg/images/EN_Kernel_Locating_12_banner.png?df0621",
+    "banner": "Kernel Locating 13",
+    "global_start": "2026-10-20",
+    "wiki_file": "EN Kernel Locating 13 banner.png",
+    "source": "https://arknights.wiki.gg/images/EN_Kernel_Locating_13_banner.png?d60fe0",
     "width": 1560,
     "height": 500
   },
