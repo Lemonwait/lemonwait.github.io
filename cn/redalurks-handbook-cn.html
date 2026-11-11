@@ -150,7 +150,10 @@ a{color:var(--gold)}
 /* lightbox */
 .lb{position:fixed;inset:0;background:rgba(18,18,18,.92);display:none;align-items:center;justify-content:center;z-index:10;cursor:zoom-out;padding:24px}
 .lb.open{display:flex}
-.lb img{max-width:100%;max-height:100%;background:#fff}
+.lb img{max-width:100%;max-height:100%;background:#fff;cursor:zoom-in}
+.lb.zoom{overflow:auto;padding:0;align-items:flex-start;justify-content:flex-start}
+.lb.zoom img{max-width:none;max-height:none;display:block;margin:auto;cursor:grab}
+.lb .x{position:fixed;top:10px;right:10px;width:40px;height:40px;border:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font:400 22px/40px sans-serif;cursor:pointer;z-index:1}
 
 .foot{font:700 11px/1 var(--head);letter-spacing:.2em;color:var(--dim);text-align:center;padding:40px 0}
 
@@ -446,16 +449,41 @@ a{color:var(--gold)}
 
 <div class="foot">RHODES ISLAND :// REDALURK'S HANDBOOK // CN</div>
 
-<div class="lb" id="lb" role="dialog" aria-label="Screenshot"><img alt=""></div>
+<div class="lb" id="lb" role="dialog" aria-label="Screenshot"><button class="x" type="button" aria-label="Close">&#x2715;</button><img alt=""></div>
 
 <script>
 // lightbox
 const lb = document.getElementById('lb'), lbImg = lb.querySelector('img');
+// tap the picture: real size, drag to look around; tap it again: fit. Tap outside it or the X: close.
+const lbClose = () => lb.classList.remove('open', 'zoom');
 document.querySelectorAll('.shot').forEach(b => b.addEventListener('click', () => {
-  lbImg.src = b.querySelector('img').src; lb.classList.add('open');
+  lbImg.src = b.querySelector('img').src; lb.classList.remove('zoom'); lb.classList.add('open');
 }));
-lb.addEventListener('click', () => lb.classList.remove('open'));
-addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
+let drag = null, dragged = false;
+lb.addEventListener('click', e => {
+  if (e.target !== lbImg) { lbClose(); return; }
+  if (dragged) { dragged = false; return; }
+  if (lb.classList.contains('zoom')) { lb.classList.remove('zoom'); return; }
+  const r = lbImg.getBoundingClientRect();
+  if (lbImg.naturalWidth <= r.width + 1) return;            // already at real size
+  const fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+  lb.classList.add('zoom');
+  lb.scrollLeft = fx * lbImg.offsetWidth - e.clientX;       // keep the tapped spot under the finger
+  lb.scrollTop = fy * lbImg.offsetHeight - e.clientY;
+});
+// mouse: drag to pan (touch pans by itself)
+lbImg.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'mouse' || !lb.classList.contains('zoom')) return;
+  drag = { x: e.clientX, y: e.clientY, l: lb.scrollLeft, t: lb.scrollTop }; dragged = false; e.preventDefault();
+});
+addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (Math.abs(dx) + Math.abs(dy) > 4) dragged = true;
+  lb.scrollLeft = drag.l - dx; lb.scrollTop = drag.t - dy;
+});
+addEventListener('pointerup', () => { drag = null; });
+addEventListener('keydown', e => { if (e.key === 'Escape') lbClose(); });
 
 // copy buttons on the support message (C88)
 document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', async () => {
