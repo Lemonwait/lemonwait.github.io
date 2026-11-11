@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CN Server Guide</title>
+<!-- CN page, redesign (author 2026-10-10, cn/docs/PLAN.md C5). Words, order, run colours and links are the
+     sheet's (design/grid/CN.json); each block names its sheet cells. English labels are placeholders (C6). -->
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<style>
+:root{
+  --page:#121212;        /* sheet background */
+  --panel:#313236;       /* darker panel, for cards */
+  --line:rgba(255,255,255,.12);
+  --text:#ffffff;
+  --dim:#b7b7b7;
+  --teal:#368e98;        /* sheet step bars */
+  --teal-soft:#609fa6;   /* sheet bands */
+  --gold:#f4d479;        /* sheet highlight runs */
+  --red:#cc0000;         /* sheet row-1 bar */
+  --head:'Google Sans',sans-serif;
+  --body:'Sarabun','Google Sans',sans-serif;
+  --display:'Bebas Neue','Oswald',sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--teal) transparent}
+body{margin:0;background:var(--page);color:var(--text);font:400 18px/1.6 var(--body);
+  background-image:radial-gradient(rgba(255,255,255,.035) 1px,transparent 1px);background-size:14px 14px}
+a{color:var(--gold)}
+.hl{color:var(--gold)}
+
+/* row-1 bar of the sheet: red and dark blocks */
+.topbar{display:grid;grid-template-columns:99fr 98fr 98fr 98fr 98fr 98fr 98fr 119fr;height:8px}
+.topbar i:nth-child(odd){background:var(--red)}
+.topbar i:nth-child(even){background:#202124}
+
+/* hero */
+.hero{position:relative;max-width:1100px;margin:0 auto;padding:56px 24px 40px;display:grid;
+  grid-template-columns:auto minmax(160px,300px);gap:24px;align-items:end;border-bottom:1px solid var(--line)}
+.hero .deco{font:700 12px/1 var(--head);letter-spacing:.18em;color:var(--dim);text-transform:uppercase}
+.hero .deco b{color:var(--teal-soft)}
+.hero h1{font:400 clamp(64px,11vw,128px)/.85 var(--display);letter-spacing:-.02em;margin:14px 0 22px}
+.hero h1 span{color:var(--teal-soft)}
+.hero .intro p{margin:0 0 14px;font-size:20px;line-height:1.5}
+.hero .intro .note{color:var(--gold)}
+.hero .intro .ln{display:block;white-space:nowrap}
+.hero .art{align-self:stretch;display:flex;align-items:flex-end;justify-content:center;
+  -webkit-mask-image:linear-gradient(#000 75%,transparent);mask-image:linear-gradient(#000 75%,transparent)}
+.hero .art img{width:100%;max-width:300px;height:auto;display:block}
+.ghost{position:absolute;right:0;bottom:-14px;font:400 160px/1 var(--display);color:rgba(255,255,255,.03);
+  pointer-events:none;white-space:nowrap;overflow:hidden;max-width:100%}
+
+/* layout: rail + content */
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px 120px;display:grid;grid-template-columns:220px 1fr;gap:40px}
+.rail{position:sticky;top:0;align-self:start;padding-top:40px;max-height:100vh}
+.rail .lbl{font:700 11px/1 var(--head);letter-spacing:.2em;color:var(--dim);margin-bottom:18px}
+.rail ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--line)}
+.rail li a{display:block;padding:10px 0 10px 16px;margin-left:-2px;border-left:2px solid transparent;
+  text-decoration:none;color:var(--dim)}
+.rail li a .n{font:400 28px/1 var(--display);display:block}
+.rail li a .t{font:700 12px/1.3 var(--head);letter-spacing:.12em;text-transform:uppercase}
+.rail li a .s{display:block;font:400 12px/1.4 var(--head);margin-top:4px;opacity:.7}
+.rail li a.on{border-left-color:var(--gold);color:var(--text)}
+.rail li a.on .n{color:var(--gold)}
+.rail .steps{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.rail .steps i{width:18px;height:4px;background:rgba(255,255,255,.18)}
+.rail .steps i.done{background:var(--teal-soft)}
+
+/* stage */
+.stage{padding-top:40px}
+.stage-head{display:grid;grid-template-columns:auto 1fr;column-gap:16px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:28px}
+.stage-head .idx{font:400 72px/.8 var(--display);color:var(--teal-soft)}
+.stage-head .meta{font:700 12px/1 var(--head);letter-spacing:.2em;color:var(--dim)}
+.stage-head h2{font:400 44px/1 var(--display);margin:6px 0 0;letter-spacing:.01em}
+.stage-head .meta{grid-column:2;grid-row:1}
+.stage-head .idx{grid-column:1;grid-row:2}
+.stage-head h2{grid-column:2;grid-row:2}
+.stage-head .bar{grid-column:2;grid-row:3;display:block;width:40px;height:3px;background:var(--gold);margin-top:10px}
+
+/* step card */
+.step{position:relative;display:grid;grid-template-columns:72px 1fr;gap:0 18px;margin-bottom:36px;scroll-margin-top:16px}
+.step .num{font:400 64px/.9 var(--display);color:var(--teal-soft);text-align:right}
+.step .num small{display:block;font:700 10px/1 var(--head);letter-spacing:.2em;color:var(--dim);margin-top:6px}
+.step .body{border-left:1px solid var(--line);padding-left:18px}
+.step h3{margin:0 0 14px;padding:10px 14px;background:var(--teal);font:700 21px/1.45 var(--body);
+  border-left:4px solid var(--gold)}
+.step h3.empty{background:transparent;border-left-color:var(--teal);padding:4px 14px;font:700 12px/1.6 var(--head);
+  letter-spacing:.2em;color:var(--dim)}
+.step h3 a{color:var(--gold);word-break:break-all}
+.shot{display:inline-block;max-width:100%;padding:0;border:1px solid var(--line);background:#fff;cursor:zoom-in;
+  position:relative;line-height:0}
+.shot img{width:auto;height:auto;max-width:100%;max-height:640px;display:block}  /* never larger than the file */
+.shot::after{content:"+";position:absolute;right:0;bottom:0;width:22px;height:22px;background:var(--panel);
+  color:var(--gold);font:700 16px/22px var(--head);text-align:center}
+.cap{margin:10px 0 0;color:var(--text);font:400 18.67px/1.5 var(--head)}
+
+.step p{margin:0 0 12px}
+.step .shot{margin:0 0 16px}
+.cy{color:#58e3ed}        /* C114's run colour */
+.step .num.l{font-size:48px}
+
+/* step 9: the form as a field guide */
+.fields{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.field{display:grid;grid-template-columns:34px 1fr;gap:0 10px;padding:14px 0;border-bottom:1px solid var(--line)}
+.field .fn{font:400 26px/1 var(--display);color:var(--gold);padding-top:2px}
+.field .fl{margin:0 0 6px;font-weight:700;font-size:18.67px}
+.field .fl .tag{display:inline-block;padding:0 8px;margin-right:6px;border:1px solid var(--teal-soft);
+  background:rgba(54,142,152,.25);font-weight:700}
+.field p{margin:0 0 8px;font-size:18.67px}
+.field ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.field ul li{border:1px solid var(--line);padding:2px 10px;background:var(--panel)}
+.sub{margin:10px 0 0;padding:4px 0 0 16px;border-left:2px solid var(--teal)}
+
+/* step 10: the message to support */
+.msg{border:1px solid var(--teal-soft);background:var(--panel);margin:4px 0 8px}
+.msg-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);
+  font:700 11px/1 var(--head);letter-spacing:.2em;color:var(--dim)}
+.msg-head span{flex:1}
+.msg-head button{font:700 11px/1 var(--head);letter-spacing:.12em;color:var(--page);background:var(--gold);
+  border:0;padding:7px 10px;cursor:pointer}
+.msg-head button.ok{background:var(--teal-soft);color:var(--text)}
+.msg p{margin:0;padding:14px 12px;font-size:18.67px}
+.small{font-size:20px;font-weight:700}
+
+/* ---- Arknights details (Phase 3.1, as BASIC's B7; decoration only, pointer-events: none) ---- */
+/* corner brackets on every screenshot */
+.shot::before{content:"";position:absolute;inset:-5px;pointer-events:none;--k:12px;--t:2px;--c:var(--teal-soft);
+  background:
+    linear-gradient(var(--c) 0 0) left top / var(--k) var(--t), linear-gradient(var(--c) 0 0) left top / var(--t) var(--k),
+    linear-gradient(var(--c) 0 0) right top / var(--k) var(--t), linear-gradient(var(--c) 0 0) right top / var(--t) var(--k),
+    linear-gradient(var(--c) 0 0) left bottom / var(--k) var(--t), linear-gradient(var(--c) 0 0) left bottom / var(--t) var(--k),
+    linear-gradient(var(--c) 0 0) right bottom / var(--k) var(--t), linear-gradient(var(--c) 0 0) right bottom / var(--t) var(--k);
+  background-repeat:no-repeat}
+
+/* ghost word: the stage name, oversized and faint, cropped by the header */
+.stage-head{position:relative;overflow:hidden}
+.stage-head::after{content:attr(data-ghost);position:absolute;right:-6px;bottom:-22px;font:400 120px/1 var(--display);
+  color:rgba(255,255,255,.035);white-space:nowrap;pointer-events:none}
+/* margin text down the right edge of each stage */
+.stage{position:relative}
+.stage::after{content:attr(data-margin);position:absolute;right:-20px;top:48px;writing-mode:vertical-rl;
+  font:700 10px/1 var(--head);letter-spacing:.3em;color:var(--dim);opacity:.5;white-space:nowrap;pointer-events:none}
+
+/* stage III: the A112 band, and two phone pictures side by side */
+.band{height:24px;background:var(--teal-soft);margin:8px 0 36px 90px}
+.pair{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+.pair .shot img{max-height:520px}
+
+/* lightbox */
+.lb{position:fixed;inset:0;background:rgba(18,18,18,.92);display:none;align-items:center;justify-content:center;z-index:10;cursor:zoom-out;padding:24px}
+.lb.open{display:flex}
+.lb img{max-width:100%;max-height:100%;background:#fff}
+
+.foot{font:700 11px/1 var(--head);letter-spacing:.2em;color:var(--dim);text-align:center;padding:40px 0}
+
+/* small screens: rail becomes a sticky strip on top */
+@media (max-width:760px){
+  body{font-size:17px}
+  .hero{grid-template-columns:1fr;padding:32px 16px 24px}
+  .hero .art{position:absolute;right:0;top:24px;width:42%;opacity:.35;z-index:0}
+  .hero .intro,.hero h1,.hero .deco{position:relative;z-index:1}
+  .hero .intro p{font-size:17px}
+  .hero .intro .ln{white-space:normal}
+  .ghost{display:none}
+  .wrap{grid-template-columns:1fr;padding:0 16px 80px;gap:0}
+  .rail{position:sticky;top:0;z-index:5;background:var(--page);padding:8px 0;max-height:none;border-bottom:1px solid var(--line)}
+  .rail .lbl,.rail li a .s,.rail .steps{display:none}
+  .rail ol{display:flex;border-left:0}
+  .rail li{flex:1}
+  .rail li a{border-left:0;border-bottom:2px solid transparent;padding:4px 6px;margin:0}
+  .rail li a.on{border-bottom-color:var(--gold)}
+  .rail li a .n{font-size:20px;display:inline}
+  .rail li a .t{font-size:9px;letter-spacing:.08em;display:block}
+  .stage-head .idx{font-size:52px}
+  .stage-head h2{font-size:32px}
+  .step{grid-template-columns:40px 1fr;gap:0 10px}
+  .step .num{font-size:38px}
+  .step .num small{display:none}
+  .step .body{padding-left:10px}
+  .step h3{font-size:17px;padding:8px 10px}
+  .step .num.l{font-size:30px}
+  .field{grid-template-columns:24px 1fr;gap:0 6px}
+  .field .fl,.field p,.msg p{font-size:17px}
+  .band{margin-left:50px}
+  .stage::after{display:none}
+  .stage-head::after{font-size:72px;bottom:-12px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<header class="hero">
+  <div>
+    <div class="deco">Redalurk's Handbook <b>//</b> CN server <b>//</b> 2026 // 10 / 10</div>
+    <h1>CN <span>//</span><br>BILIBILI</h1>
+    <div class="intro">
+      <!-- C4-C13, line breaks as in the sheet -->
+      <p><span class="ln">CN มี 2 เซิร์ฟ: Official (Taptap) และ BiliBili</span><span class="ln">Android และ PC เล่นเซิร์ฟ CN ได้ผ่าน BiliBili</span><span class="ln">โดยยืนยันชื่อบน Biligame ด้วยบัตรประชาชนไทย/พาสปอร์ต</span></p>
+      <p><span class="ln">การยืนยันชื่อจริงบน Biligame จะถือเป็น</span><span class="ln">คนละส่วนจากการยืนยันชื่อจริงบน BiliBili</span></p>
+      <p><span class="ln">หากต้องการแค่เล่น Arknights CN เพียงยืนยันชื่อผ่าน</span><span class="ln">Biligame และมีบัญชี BiliBili ก็จะเล่นได้</span><span class="ln"><span class="note">แต่เห็นว่า IOS อาจทำไม่ได้นะคะ ด็อกเตอร์</span></span></p>
+    </div>
+  </div>
+  <div class="art"><img src="img/float-1.png" alt="" width="300" height="425"></div>
+  <div class="ghost" aria-hidden="true">BILIGAME</div>
+</header>
+
+<div class="wrap">
+  <nav class="rail" aria-label="Stages">
+    <div class="lbl">PROGRESS // 03</div>
+    <ol>
+      <li><a href="#stage-1" data-stage="1" class="on"><span class="n">01</span><span class="t">Contact support</span>
+        <span class="s">steps 1-8</span><span class="steps"></span></a></li>
+      <li><a href="#stage-2" data-stage="2"><span class="n">02</span><span class="t">Real-name form</span>
+        <span class="s">steps 9-11</span><span class="steps"></span></a></li>
+      <li><a href="#stage-3" data-stage="3"><span class="n">03</span><span class="t">Install &amp; login</span>
+        <span class="s">app, APK, login</span><span class="steps"></span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <section class="stage" id="stage-1" data-margin="RHODES ISLAND :// CN // STAGE 01">
+      <div class="stage-head" data-ghost="CONTACT SUPPORT">
+        <div class="meta">STAGE 01 // 03 · BILIGAME SUPPORT</div>
+        <div class="idx">01</div><h2>CONTACT SUPPORT</h2>
+        <span class="bar"></span>
+      </div>
+      <article class="step" id="s1">
+        <div class="num">01<small>/ 08</small></div>
+        <div class="body">
+          <h3>ไปยัง <a href="https://game.bilibili.com/sdk/cs-pc/" target="_blank" rel="noopener">https://game.bilibili.com/sdk/cs-pc/</a> แนะนำให้ทำในคอมนะคะ</h3>
+          <!-- C15 / C17 / C18 -->
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/1.webp" width="1242" height="605" alt="" loading="lazy"></button>
+          <p class="cap">จิ้มค่ะ ด็อกเตอร์</p>
+        </div>
+      </article>
+      <article class="step" id="s2">
+        <div class="num">02<small>/ 08</small></div>
+        <div class="body">
+          <h3>ตอบบอทไปว่า <span class="hl">联系我们</span> ค่ะ</h3>
+          <!-- C19 / C21 -->
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/2.webp" width="674" height="297" alt="" loading="lazy"></button>
+        </div>
+      </article>
+      <article class="step" id="s3">
+        <div class="num">03<small>/ 08</small></div>
+        <div class="body">
+          <h3><span class="hl">明日方舟</span> ค่ะ  (ส่วน 明日方舟: 终末地 คือภาค Endfield)</h3>
+          <!-- C23 / C25 -->
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/4.webp" width="630" height="177" alt="" loading="lazy"></button>
+        </div>
+      </article>
+      <article class="step" id="s4">
+        <div class="num">04<small>/ 08</small></div>
+        <div class="body">
+          <h3 class="empty">STEP 04</h3>
+          <!-- C27 / C29: no text in the sheet -->
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/5.webp" width="594" height="313" alt="" loading="lazy"></button>
+        </div>
+      </article>
+      <article class="step" id="s5">
+        <div class="num">05<small>/ 08</small></div>
+        <div class="body">
+          <h3 class="empty">STEP 05</h3>
+          <!-- C31 / C33 -->
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/7.webp" width="611" height="318" alt="" loading="lazy"></button>
+        </div>
+      </article>
+      <article class="step" id="s6">
+        <div class="num">06<small>/ 08</small></div>
+        <div class="body">
+          <h3 class="empty">STEP 06</h3>
+          <!-- C35 / C37 -->
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/8.webp" width="542" height="325" alt="" loading="lazy"></button>
+        </div>
+      </article>
+      <article class="step" id="s8">
+        <div class="num">08<small>/ 08</small></div>
+        <div class="body">
+          <h3 class="empty">STEP 08</h3>
+          <!-- C39 / C41: the sheet numbers this step 8 (author 2026-10-10: keep) -->
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/9.webp" width="624" height="246" alt="" loading="lazy"></button>
+        </div>
+      </article>
+    </section>
+    <section class="stage" id="stage-2" data-margin="RHODES ISLAND :// CN // STAGE 02">
+      <div class="stage-head" data-ghost="REAL-NAME FORM">
+        <div class="meta">STAGE 02 // 03 · STEP 9-11</div>
+        <div class="idx">02</div><h2>REAL-NAME FORM</h2>
+        <span class="bar"></span>
+      </div>
+      <article class="step" id="s9">
+        <div class="num">09<small>/ 11</small></div>
+        <div class="body">
+          <h3>แบบฟอร์ม</h3>
+          <!-- C43-C83: one row per field -->
+          <ol class="fields">
+            <li class="field"><span class="fn">1.</span><div>
+              <p class="fl"><span class="tag">您想要游玩的游戏*</span>เกมที่คุณอยากเล่น</p>
+              <p>แน่นอนว่าด็อกเตอร์ต้องใส่ 明日方舟 ใช่ไหมคะ?</p>
+            </div></li>
+            <li class="field"><span class="fn">2.</span><div>
+              <p class="fl"><span class="tag">证件类型*</span>ประเภทของเอกสารที่จะใช้ยืนยันชื่อจริงของท่าน</p>
+              <ul><li>- 身份证 บัตรประชาชน</li><li>- 护照 พาสปอร์ต</li><li>- 其他 อื่น ๆ</li></ul>
+            </div></li>
+            <li class="field"><span class="fn">3.</span><div>
+              <p class="fl"><span class="tag">ID card Number*</span>เลขบัตรประชาชน(ไทย)</p>
+            </div></li>
+            <li class="field"><span class="fn">4.</span><div>
+              <p class="fl"><span class="tag">Real Name*</span>ชื่อจริง เขียนตามตัวอักษรที่ระบุไว้บนบัตรประชาชน/พาสปอร์ตที่เราจะแนบไป</p>
+            </div></li>
+            <li class="field"><span class="fn">5.</span><div>
+              <p class="fl"><span class="tag">Bilibili UID*</span>เลข UID ของบัญชี Bilibili</p>
+              <div class="sub">
+              <!-- C58-C69 -->
+              <p><a href="https://www.bilibili.com/" target="_blank" rel="noopener">หากยังไม่ได้สมัคร BiliBili จิ้มค่ะ</a></p>
+              <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/10.webp" width="887" height="674" alt="" loading="lazy"></button>
+              <p>สมัครบัญชี BiliBili โดยใช้เบอร์ที่สะดวกค่ะ ด็อกเตอร์ กรณีนี้คือเบอร์ไทย</p>
+              <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/11.webp" width="849" height="642" alt="" loading="lazy"></button>
+              <p>ใช้เบอร์จริงแล้วกดรับ SMS เพื่อรับรหัส OTP ค่ะด็อกเตอร์</p>
+              <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/12.webp" width="480" height="231" alt="" loading="lazy"></button>
+              <p>บัญชี BiliBili สามารถใช้ดูคลิปในนั้นได้แบบไม่มี pop-up เด้งมากวนใจค่ะ ความละเอียด HD</p>
+              <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/13.webp" width="921" height="613" alt="" loading="lazy"></button>
+              <p>คลิกที่โปรไฟล์จะเข้าหน้า space.bili ของคุณ เลข Bilibili UID จะอยู่ทางแถบขวาล่างค่ะ</p>
+              <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/14.webp" width="897" height="429" alt="" loading="lazy"></button>
+              </div>
+            </div></li>
+            <li class="field"><span class="fn">6.</span><div>
+              <p class="fl"><span class="tag">Bilibili Account Name*</span>ชื่อผู้ใช้งานของบัญชี BiliBili</p>
+              <p>เข้าไปที่ <a href="https://account.bilibili.com/account/setting" target="_blank" rel="noopener">个人中心 ตั้งค่าบัญชี BiliBili</a></p>
+              <p>ภายใต้หัวข้อ 我的信息 (ข้อมูลส่วนตัว) ทางขวาของ 用户名 ค่ะ</p>
+              <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/15.webp" width="699" height="439" alt="" loading="lazy"></button>
+            </div></li>
+            <li class="field"><span class="fn">7.</span><div>
+              <p class="fl"><span class="tag">Phone Number*</span>หมายเลขโทรศัพท์ที่ผูกกับบัญชี BiliBili ในข้อ 5. (หากไม่มีให้ใส่ว่า None)</p>
+              <p>หากผูกเบอร์ไทยไว้ให้ใส่ +66 ตามด้วยเบอร์โทรแบบไม่มี 0 ขึ้นต้นค่ะ</p>
+            </div></li>
+            <li class="field"><span class="fn">8.</span><div>
+              <p class="fl"><span class="tag">Email Address*</span>เมลที่ผูกกับบัญชี BiliBili ในข้อ 5. (หากไม่มีให้ใส่ว่า None)</p>
+            </div></li>
+            <li class="field"><span class="fn">9.</span><div>
+              <p class="fl"><span class="tag">ภาพถ่ายด้านหน้าของบัตรประชาชนหรือพาสปอร์ต*</span></p>
+              <p>หากอัพโหลดภาพไม่ขึ้น ให้ปรับขนาดไฟล์ภาพให้มีความจุน้อยลงค่ะ ไม่เกิน 5 Mb</p>
+            </div></li>
+            <li class="field"><span class="fn">10.</span><div>
+              <p class="fl"><span class="tag">Contact Information*</span>ช่องทางติดต่อ ใส่เมลค่ะ</p>
+            </div></li>
+          </ol>
+        </div>
+      </article>
+      <article class="step" id="s10">
+        <div class="num">10<small>/ 11</small></div>
+        <div class="body">
+          <h3>เมื่อกรอกเสร็จแล้วระบบจะนำด็อกเตอร์มาคุยกับเจ้าหน้าที่จริง ๆ</h3>
+          <!-- C85-C88 -->
+          <p><a href="https://www.reddit.com/media?url=https%3A%2F%2Fpreview.redd.it%2Fhow-to-verify-your-id-on-bilibili-to-participate-in-v0-3pjgbzvfq3sf1.png%3Fwidth%3D1341%26format%3Dpng%26auto%3Dwebp%26s%3D8842e2a78c691ec8e90a62357ae2dbe7b8201887" target="_blank" rel="noopener">เจ้าหน้าที่จะแจ้งว่าทีมกำลังเร่งดำเนินเรื่องให้และจะสอบถามรายละเอียดของปัญหา</a></p>
+          <p>จะทวนแค่เรื่องยืนยันชื่อจริงของเราก็ได้ค่ะ <a href="https://www.reddit.com/r/CodenameCedar/comments/1nr8o5i/how_to_verify_your_id_on_bilibili_to_participate/" target="_blank" rel="noopener">(ขอบคุณภาพแชทจากกระทู้นี้)</a></p>
+          <div class="msg"><div class="msg-head"><span>MESSAGE // SUPPORT CHAT</span><button type="button" data-copy="en">COPY EN</button><button type="button" data-copy="zh">COPY 中文</button></div>
+            <p><span data-part="en">Hello. I would like to complete real-name authentication, but I do not possess a People's Republic of China Resident Identity Card. May I use the document provided above to verify my name and age?</span> (MTL: <span data-part="zh">你好。我想进行实名认证，但我没有中华人民共和国居民身份证。请问我可以使用上方提供的证件来核实我的姓名和年龄吗?</span>)</p></div>
+        </div>
+      </article>
+      <article class="step" id="s11">
+        <div class="num">11<small>/ 11</small></div>
+        <div class="body">
+          <h3>เมลแจ้งว่าสำเร็จขั้นตอนอาจใช้เวลาหลายชั่วโมง <span class="small">และอาจอยู่ในเมลขยะ (spam)</span></h3>
+          <!-- C90 -->
+        </div>
+      </article>
+    </section>
+    <section class="stage" id="stage-3" data-margin="RHODES ISLAND :// CN // STAGE 03">
+      <div class="stage-head" data-ghost="INSTALL &amp; LOGIN">
+        <div class="meta">STAGE 03 // 03 · BILIBILI APP</div>
+        <div class="idx">03</div><h2>INSTALL &amp; LOGIN</h2>
+        <span class="bar"></span>
+      </div>
+      <article class="step" id="a">
+        <div class="num l">A<small>/ 05</small></div>
+        <div class="body">
+          <h3 class="empty">APP &amp; EMULATOR</h3>
+          <!-- C92-C96 -->
+          <p>เมื่อยืนยันชื่อจริงผ่านทาง Biligame สำเร็จแล้ว</p>
+          <p>ด็อกเตอร์สามารถโหลดแอพชมพู BiliBIli ล็อคอินในแอพนั้นแล้วติดตั้ง APK Arknights ได้เลยค่ะ</p>
+          <p>หากเล่นบน PC Emulator ให้ติดตั้ง <a href="http://bilibili.com/" target="_blank" rel="noopener">BiliBIli</a> ในอีมูไปเลย จะได้เข้าเกมง่าย ๆ</p>
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/21.webp" width="687" height="293" alt="" loading="lazy"></button>
+        </div>
+      </article>
+      <article class="step" id="b">
+        <div class="num l">B<small>/ 05</small></div>
+        <div class="body">
+          <h3 class="empty">APK</h3>
+          <!-- C98 / C99 -->
+          <p><a href="https://app.biligame.com/page/detail_share2.html?id=101772&amp;sourceFrom=23006&amp;_1774600534218" target="_blank" rel="noopener">APK Arknights</a></p>
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/22.webp" width="411" height="437" alt="" loading="lazy"></button>
+        </div>
+      </article>
+      <article class="step" id="c">
+        <div class="num l">C<small>/ 05</small></div>
+        <div class="body">
+          <h3 class="empty">UPDATES</h3>
+          <!-- C101-C106 -->
+          <p>ในแอพ BiliBili: หากกด Follow <a href="https://b23.tv/h56jnhV" target="_blank" rel="noopener">บัญชีทางการ</a> ไว้จะอัพเดทแพทช์ได้ผ่านหน้า Following (กังหัน)</p>
+          <div class="pair">
+            <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/26.webp" width="742" height="1080" alt="" loading="lazy"></button>
+            <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/25.webp" width="800" height="1601" alt="" loading="lazy"></button>
+          </div>
+          <p>จะพามาหน้านี้ มุมล่างขวา จิ้มปุ่มชมพู ๆ ที่บอกขนาดไฟล์เกมก็จะโหลด APK ได้ค่ะด็อกเตอร์</p>
+          <p>ติดตั้ง APK ก็จะอัพแพทช์ได้ เซิร์ฟ Bilibili จะอัพแพทช์ใหญ่ ๆ ด้วยวิธีนี้ค่ะ</p>
+        </div>
+      </article>
+      <article class="step" id="d">
+        <div class="num l">D<small>/ 05</small></div>
+        <div class="body">
+          <h3 class="empty">FIRST LOGIN</h3>
+          <!-- C108-C110 -->
+          <p>ถ้าเข้าบัญชีในแอพ BiliBili ไว้ ระบบจะตรวจจับบัญชีเราโดยอัตโนมัติเลยค่ะ</p>
+          <p>เราแค่กดยอมรับเงื่อนไขการให้บริการและปุ่มสีฟ้าปุ่มใหญ่ ๆ เป็นอันเสร็จ</p>
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/17.webp" width="1371" height="678" alt="" loading="lazy"></button>
+        </div>
+      </article>
+      <div class="band" aria-hidden="true"></div><!-- A112 -->
+      <article class="step" id="e">
+        <div class="num l">E<small>/ 05</small></div>
+        <div class="body">
+          <h3 class="empty">LOGIN WITHOUT THE APP</h3>
+          <!-- C114-C124; C115 = C110 and C122 = C116 are the same pictures -->
+          <p>แต่หากไม่ได้โหลดแอพ BiliBili ไว้ต้องเข้าผ่าน <span class="cy">其他方式登录</span> (ล็อคอินวิธีอื่น) ค่ะ</p>
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/17.webp" width="1371" height="678" alt="" loading="lazy"></button>
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/19.webp" width="732" height="487" alt="" loading="lazy"></button>
+          <p>ซึ่งจะเป็นปุ่มชมพู ๆ เพราะไม่มีเบอร์ไทยให้เลือก ซึ่งต้อง:</p>
+          <p>1. ต้องตั้งรหัสผ่าน<a href="https://account.bilibili.com/account/home" target="_blank" rel="noopener">บัญชี BiliBili</a> ก่อน</p>
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/27.webp" width="765" height="471" alt="" loading="lazy"></button>
+          <p>2. ต้องยืนยันชื่อใน Biligame สำเร็จแล้ว (ที่เราทำกันตั้งแต่ต้นเนื้อหา)</p>
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/19.webp" width="732" height="487" alt="" loading="lazy"></button>
+          <p>กรอก Username/เบอร์โทร/เมล และรหัสผ่านของบัญชี BiliBili เรา เป็นอันเสร็จค่ะด็อกเตอร์</p>
+          <button class="shot" type="button"><img src="https://lemonwait.github.io/doc/cn/20.webp" width="975" height="546" alt="" loading="lazy"></button>
+        </div>
+      </article>
+    </section>
+  </main>
+</div>
+
+<div class="foot">RHODES ISLAND :// REDALURK'S HANDBOOK // CN</div>
+
+<div class="lb" id="lb" role="dialog" aria-label="Screenshot"><img alt=""></div>
+
+<script>
+// lightbox
+const lb = document.getElementById('lb'), lbImg = lb.querySelector('img');
+document.querySelectorAll('.shot').forEach(b => b.addEventListener('click', () => {
+  lbImg.src = b.querySelector('img').src; lb.classList.add('open');
+}));
+lb.addEventListener('click', () => lb.classList.remove('open'));
+addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
+
+// copy buttons on the support message (C88)
+document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', async () => {
+  const text = b.closest('.msg').querySelector('[data-part="' + b.dataset.copy + '"]').textContent;
+  try { await navigator.clipboard.writeText(text); } catch (e) { return; }
+  const was = b.textContent; b.textContent = 'COPIED'; b.classList.add('ok');
+  setTimeout(() => { b.textContent = was; b.classList.remove('ok'); }, 1500);
+}));
+
+// progress: active stage in the rail, one tick per step
+const stages = [...document.querySelectorAll('.stage')];
+const links = [...document.querySelectorAll('.rail a')];
+const steps = stages.map((s, i) => {
+  const st = [...s.querySelectorAll('.step')];
+  st.forEach(() => links[i].querySelector('.steps').appendChild(document.createElement('i')));
+  return st;
+});
+function update() {
+  const y = innerHeight * 0.35;
+  let cur = 1;
+  stages.forEach((s, i) => { if (s.getBoundingClientRect().top < y) cur = i + 1; });
+  links.forEach(a => a.classList.toggle('on', +a.dataset.stage === cur));
+  steps.forEach((st, i) => st.forEach((s, j) =>
+    links[i].querySelector('.steps').children[j].classList.toggle('done', s.getBoundingClientRect().top < y)));
+}
+addEventListener('scroll', update, { passive: true }); update();
+</script>
+</body>
+</html>
