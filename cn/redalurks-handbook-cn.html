@@ -162,6 +162,8 @@ a{color:var(--gold)}
   .hero .intro,.hero h1,.hero .deco{position:relative;z-index:1}
   .hero .intro p{font-size:17px}
   .hero .intro .ln{white-space:normal}
+  .hero .intro p.ios{font-size:min(16px,calc((100vw - 32px) / 26))}
+  .hero .intro p.ios .ln{white-space:nowrap}
   .ghost{display:none}
   .wrap{grid-template-columns:1fr;padding:0 16px 80px;gap:0}
   .rail{position:sticky;top:0;z-index:5;background:var(--page);padding:8px 0;max-height:none;border-bottom:1px solid var(--line)}
