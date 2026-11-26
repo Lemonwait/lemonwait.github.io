@@ -1,0 +1,1893 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FUTURE redesign (mock)</title>
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<script src="redesign-data.js"></script>
+<style>
+/* MOCK for the FUTURE redesign (future/docs/PLAN.md, "Redesign"). The sheet is the content, the look is ours
+   (docs/THEME.md; tokens shared with info/docs/DESIGN.md so the handbook reads as one site). Every text, name and
+   picture comes from design/grid/FUTURE.json at load time; nothing is retyped. Three directions for the same
+   two sections, switched in the top bar. Serve from the repo root (preview "future", port 8761):
+   http://localhost:8761/future/proto/redesign.html
+   The roadmap is a machine (function machine() below): ?now=YYYY-MM shows it on another month, ?skeleton its empty slots. */
+:root {
+  --bg: #121212; --panel: #202124; --panel-head: #121212; --line: rgba(255,255,255,.08); --line-2: rgba(255,255,255,.18);
+  --ink: #e6e8f0; --muted: #b7b7b7; --faint: #6a6d74; --ghost: #1b1c21; --accent: #ffe100; --accent-ink: #ffe100;
+  --f-display: 'Oswald', sans-serif; --f-label: 'Bai Jamjuree', 'Sarabun', sans-serif;
+  --f-thai: 'Sarabun', sans-serif; --f-name: 'Google Sans', 'Sarabun', sans-serif; --f-num: 'Bebas Neue', sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--f-thai); }
+img { display: block; }
+#bar { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center;
+  padding: 8px 16px; background: #121212; border-bottom: 1px solid var(--line-2); font: 13px/1.3 'Google Sans', sans-serif; }
+#bar b { color: var(--accent); }
+#bar label { cursor: pointer; white-space: nowrap; }
+#bar .note { color: var(--faint); font-size: 12px; }
+main { max-width: 1440px; margin: 0 auto; padding: 0 16px 120px; }
+
+/* ---------- section header (THEME: index + tag + big title + Thai line + ghost word) ---------- */
+.sh { position: relative; padding: 64px 0 22px; margin-bottom: 28px; border-bottom: 1px solid var(--line); overflow: hidden; }
+.sh .idx { font: 600 13px/1 var(--f-label); letter-spacing: .14em; color: var(--accent-ink); }
+.sh .idx span { color: var(--ink); }
+.sh h2 { margin: 10px 0 0; font: 600 clamp(40px, 5vw, 68px)/.95 var(--f-display); letter-spacing: -.02em; text-transform: uppercase; }
+.sh .th { margin-top: 8px; color: var(--muted); font-size: clamp(15px, 1.4vw, 18px); max-width: 1000px; }
+.sh .bar { width: 56px; height: 3px; background: var(--accent); margin-top: 14px; }
+.sh .ghost { position: absolute; right: -8px; bottom: -28px; font: 600 160px/1 var(--f-display); color: var(--ghost);
+  text-transform: uppercase; letter-spacing: -.04em; z-index: -1; white-space: nowrap; pointer-events: none; }
+.sh { isolation: isolate; }
+.ph { }   /* placeholder title (wording still the author's call); the pink dashed marker is off for the public page (author, 2026-10-12) */
+
+/* ---------- shared pieces ---------- */
+.yr { font: 600 13px/1 var(--f-label); letter-spacing: .2em; color: var(--muted); }
+.pic { background: #202124; aspect-ratio: 1; width: 100%; object-fit: cover; }
+.pic.missing { display: grid; place-items: center; color: var(--faint); font: 11px/1.2 var(--f-label); text-align: center; padding: 6px; }
+.name { font: 500 13px/1.25 var(--f-name); margin-top: 6px; overflow-wrap: anywhere; }
+.notes p { margin: 0; }
+.verdict { display: inline-block; font: 700 14px/1 var(--f-thai); padding: 6px 10px; background: var(--tag, var(--acc)); color: var(--on); }
+.tba { font: 600 40px/1 var(--f-display); color: var(--faint); letter-spacing: .02em; }
+.lede { font-size: 14px; color: var(--muted); }
+
+/* ================= A · CALENDAR RAIL ================= */
+body.a .tl { display: grid; grid-template-columns: var(--cols); gap: 0 2px; position: relative; }
+body.a .yrblock + .yrblock { margin-top: 18px; }
+body.a .yrblock > .yr { border-top: 1px solid var(--line-2); padding: 6px 4px 8px; }
+body.a .yrblock:first-of-type > .yr { border-color: var(--accent); color: var(--accent-ink); }
+body.a .tl-years { display: grid; grid-template-columns: var(--cols); gap: 0 2px; margin-bottom: 6px; }
+body.a .tl-years div { border-top: 1px solid var(--line-2); padding-top: 6px; }
+body.a .tl-years div.y26 { border-color: var(--accent); }
+body.a .mo { margin: 0 4px; border-top: 2px solid var(--line-2); padding-top: 8px; font: 700 28px/1 var(--f-num); color: var(--faint); letter-spacing: .04em; }
+body.a .mo.has { color: var(--ink); border-color: var(--acc); }
+body.a .mo small { font: 600 10px/1 var(--f-label); letter-spacing: .16em; color: var(--faint); margin-left: 6px; }
+body.a .unit { grid-row: 2; margin: 14px 4px 0; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--acc); display: flex; flex-direction: column; }
+body.a .unit .when { display: none; }
+body.a .unit .ops { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; padding: 10px 10px 0; }
+body.a .unit .ttl { padding: 8px 10px 0; font: 600 12px/1.3 var(--f-label); letter-spacing: .06em; color: var(--acc-ink); text-transform: uppercase; }
+body.a .unit .notes { padding: 8px 10px; font-size: 13px; color: var(--ink); flex: 1; }
+body.a .unit .notes p + p { margin-top: 2px; }
+body.a .unit .foot { padding: 0 10px 10px; }
+body.a .unit.empty { background: transparent; border: 1px dashed var(--line-2); border-top: 3px solid var(--acc); align-items: center; justify-content: center; min-height: 160px; }
+body.a .unit.empty .ttl { text-align: center; }
+
+/* (A) */
+/* ================= A · ONE SCREEN (author, 2026-10-10) =================
+   The roadmap fits one screen: the section is exactly the window height under the bar. Notes are hidden and
+   unfold on hover (or keyboard focus, or a tap on touch screens); no click needed. Cards keep their own height
+   and the notes open under the card, into the free space the section keeps below the cards. */
+body.fit section.road { min-height: calc(100svh - var(--bar-h, 37px));   /* grows rather than overlapping the next section when the window is too short */
+  display: flex; flex-direction: column; }
+body.fit section.road .sh { padding: 16px 0 10px; margin-bottom: 10px; }
+body.fit section.road .sh h2 { font-size: clamp(28px, 3vw, 44px); display: inline-block; margin-right: 18px; }
+body.fit section.road .sh .bar { margin-top: 8px; }
+body.fit section.road .sh .ghost { font-size: 110px; bottom: -22px; }
+body.fit section.road .tl { grid-template-rows: auto auto; }
+body.fit .yrblock.later .unit .notes { top: auto; bottom: calc(100% - 3px); border-top: 1px solid var(--line-2); border-bottom: 3px solid var(--acc); transform: translateY(-6px); }
+body.fit .unit { position: relative; min-height: 0; outline: none; align-self: start; }
+body.fit .unit .ops { flex: 1; min-height: 0; align-content: start; }
+body.fit .unit .ops .pic { max-height: 17svh; }
+body.fit .unit .notes { position: absolute; left: -1px; top: calc(100% - 3px); z-index: 5; width: max(calc(100% + 2px), 300px);
+  padding: 12px 14px; background: var(--panel-head); border: 1px solid var(--line-2); border-top: 3px solid var(--acc);
+  font-size: 14px; line-height: 1.5; opacity: 0; visibility: hidden; transform: translateY(6px);
+  transition: opacity .15s, transform .15s, visibility 0s .15s; pointer-events: none; }
+body.fit .unit.edge-r .notes { left: auto; right: -1px; }
+body.fit .unit .notes::before { content: attr(data-head); display: block; font: 600 11px/1.3 var(--f-label); letter-spacing: .12em;
+  color: var(--acc-ink); text-transform: uppercase; margin-bottom: 6px; }
+body.fit .unit:hover .notes {   /* hover only: a click opens the row's PRTS page instead (author, 2026-10-12) */
+  opacity: 1; visibility: visible; transform: none; transition: opacity .15s, transform .15s; }
+body.fit .unit { z-index: 0; transition: z-index 0s .16s; }   /* stay above the other rows until the notes have faded out (a number, so the delay applies) */
+body.fit .unit:hover { border-color: var(--line-2); z-index: 4; transition: none; }
+body.fit .unit[data-prts] { cursor: pointer; }
+body.fit .unit.has-notes::after { content: ""; position: absolute; right: 6px; top: 6px; width: 6px; height: 6px;
+  background: var(--acc); transform: rotate(45deg); opacity: .8; }   /* diamond = there is more on hover */
+body.fit .unit .foot { padding-top: 8px; }
+body.fit .unit { container-type: inline-size; }
+body.fit .unit .ops { flex: 0 0 auto; }
+body.fit .unit .name { font-size: clamp(10px, 15cqi, 13px); overflow-wrap: normal; word-break: keep-all; }
+body.fit .unit .verdict { font-size: clamp(11px, 15cqi, 14px); padding: 4px 6px; line-height: 1.25; }
+body.fit .unit.empty { justify-content: flex-start; padding-top: 18px; }
+
+/* ================= D · HORIZONTAL BANNERS (author, 2026-10-10) =================
+   Same calendar, one screen, 2026 above 2027; each banner is a landscape tile like the in-game banner: the
+   operators' art across the tile, names over a dark fade, the verdict in the corner, notes on hover.
+   Wide art: the author's 1600x381 crops in operator/banners where they exist; otherwise the square portrait,
+   cropped to the tile. */
+body.d .unit { padding: 0; border: 0; background: #121212; min-height: 0; }
+body.d .unit::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--acc); z-index: 2; }
+body.d .unit .ops { position: relative; aspect-ratio: calc(var(--n, 1) * 3) / 2; display: grid; grid-auto-flow: column;
+  grid-auto-columns: 1fr; grid-template-rows: 100%; gap: 0; padding: 0; overflow: hidden; }
+body.d .unit .op { position: relative; min-width: 0; height: 100%; overflow: hidden; }
+body.d .unit .op + .op { border-left: 1px solid rgba(0,0,0,.6); }
+body.d .unit .ops .pic { width: 100%; height: 100%; max-height: none; aspect-ratio: auto; object-fit: cover; object-position: 50% 22%; }
+body.d .unit .ops .pic.wide { object-position: 50% 50%; }
+body.d .unit .op::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, rgba(0,0,0,.92)); }
+body.d .unit .op .name { position: absolute; left: 10px; right: 6px; bottom: 6px; z-index: 1; margin: 0;
+  font: 600 clamp(11px, 8cqi, 18px)/1 var(--f-display); letter-spacing: .02em; text-transform: uppercase; text-shadow: 0 1px 4px #000; }
+body.d .unit .foot { padding: 6px 6px 6px 10px; background: var(--panel); }
+body.d .unit .foot:empty { display: none; }
+body.d .unit .verdict { font-size: clamp(11px, 9cqi, 13px); padding: 3px 6px; }
+body.d .unit.has-notes::after { top: 8px; right: 8px; z-index: 3; }
+body.d .unit.empty { background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(255,255,255,.035) 10px 11px), #121212;
+  border: 1px dashed var(--line-2); padding-top: 0; justify-content: flex-start; align-items: stretch; min-height: 0; }
+body.d .unit.empty .ops { display: grid; place-items: center; grid-auto-flow: row; }
+body.d .unit.empty .tba { font-size: clamp(20px, 14cqi, 34px); }
+body.d .unit.empty .ttl { position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; padding: 0 6px; font-size: 10px; }
+body.d .unit .when { display: none; }
+
+/* ================= D · HORIZONTAL BANNERS, the author's sketch (2026-10-10) =================
+   One full-width banner per row, stacked under its year, 2026 above 2027. TBA months share one row. Each row:
+   month numeral | names + verdict | the operators' 6:1 strips (the X index banner, shorter), fading in from the
+   left. Row height (--sh) is set by the script so every row fits one screen; notes still open on hover. */
+.info { display: none; }
+body.e .yrblock > .tl { display: flex; flex-wrap: wrap; gap: 6px; }
+body.e .mo { display: none; }
+body.e .unit { grid-column: auto !important; grid-row: auto !important; flex: 1 1 100%; margin: 0; height: var(--sh, 64px);
+  display: grid; grid-template-columns: calc(var(--sh, 64px) * 1.3) minmax(0, 1fr) auto; align-items: center;
+  padding: 0; border: 0; background: #121212; container-type: normal; }
+body.e .unit::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--acc); z-index: 2; }
+body.e .unit .when { display: block; grid-column: 1; grid-row: 1; padding-left: 14px; font: 700 calc(var(--sh, 64px) * .62)/1 var(--f-num); color: var(--ink); }
+body.e .unit .when small { display: none; }
+body.e .unit .info { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; grid-column: 2; grid-row: 1; gap: calc(var(--sh, 64px) * .07); min-width: 0; padding-right: 12px; z-index: 1; }   /* verdict under the name (author) */
+body.e .unit .info .nm { font: 600 clamp(15px, calc(var(--sh, 64px) * .34), 32px)/1 var(--f-display); text-transform: uppercase; letter-spacing: .01em; white-space: nowrap; }
+body.e .unit .info .nm { text-shadow: 0 0 2px #000, 0 0 4px #000, 0 0 10px rgba(0,0,0,.95), 0 0 22px rgba(0,0,0,.75); }   /* darker halo so names hold over light art (author, 2026-10-12) */
+body.e .unit .info .nm .plus { font-weight: inherit; margin: 0 6px; }
+body.e .unit .info .nm .ltag { display: inline-grid; place-items: center; margin: 0 0 0 6px; vertical-align: top;
+  width: 1.05em; height: 1.05em; font: 800 .62em/1 'Google Sans', sans-serif; color: #15161a; text-shadow: none;
+  background: linear-gradient(135deg, #e7a3b0, #e6c79a, #d3da9f, #a6d4b1, #9cc4dc, #b2a9e0, #d3a3d5);
+  box-shadow: 0 0 0 1.5px #000000, 0 1px 4px rgba(0,0,0,.6); }   /* scales with the name; dark edge holds on any art */
+body.e .unit .info .vt { display: flex; gap: 6px; }   /* no Thai line box around the chip: the name gets room from the strip's top edge (author, 2026-10-12) */
+body.e .unit .info .verdict { font-size: clamp(11px, calc(var(--sh, 64px) * .2), 14px); padding: 2px 7px; line-height: 1.3; text-shadow: none; }   /* solid chip, no shadow (author) */
+body.e .unit .foot { display: none; }
+body.e .unit:not(.empty) .ttl { display: none; }
+/* art from the row's left edge, under the text (author, 2026-10-10: "chars start right from the absolute left
+   of the banner, while we keep minimal shadow behind texts"); it fades out at its right end into the row */
+body.e .unit .ops { position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 0; display: flex; height: 100%; padding: 0; gap: 0; overflow: hidden;
+}
+/* the art fades out at its own right end, wherever that falls in the row (short rows end before the row does) */
+body.e .unit .op:last-child { -webkit-mask-image: linear-gradient(to left, transparent, #000 calc(var(--sh, 64px) * 1.6));
+  mask-image: linear-gradient(to left, transparent, #000 calc(var(--sh, 64px) * 1.6)); }
+body.e .unit .op + .op:last-child { -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--sh, 64px), #000 calc(100% - var(--sh, 64px) * 1.6), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 var(--sh, 64px), #000 calc(100% - var(--sh, 64px) * 1.6), transparent); }
+body.e .unit:not(.empty) { grid-template-columns: calc(var(--sh, 64px) * 1.06) minmax(0, 1fr); }
+/* the month stands against the name, so one digit or two leave the same gap (author, 2026-10-12: "the problem with
+   uneven width is the lone month number"); the names stay in one line */
+body.e .unit:not(.empty):not(.evrow):not(.filler) .when { text-align: right; padding-left: 0; padding-right: calc(var(--sh, 64px) * .245); }   /* gap after the month 50% less (author, 2026-10-12): 0.49 -> 0.245 row-heights after "10" */
+body.e .unit:not(.empty) .when, body.e .unit:not(.empty) .info { position: relative; z-index: 1;
+  text-shadow: 0 0 3px #000, 0 0 10px rgba(0,0,0,.85), 0 0 22px rgba(0,0,0,.55); }
+/* width cap per operator, then the row is shared evenly (author, 2026-10-10): a pair's two get half the row
+   each (plus the cross-fade overlap) but never more than their 11:1 crop; a solo gets the row, at most 21:1.
+   When the box is narrower than the crop, it keeps the face point (0.68 across a pair crop, 1/3 across a solo). */
+body.e .unit .op { flex: 0 0 auto; width: min(calc(var(--sh, 64px) * 11), calc(50% + var(--sh, 64px) / 2)); height: 100%; position: relative; }
+body.e .unit .op .pic { object-position: 68% 50%; }
+body.e .unit.solo .op { width: min(calc(var(--sh, 64px) * 21), 100%); }
+body.e .unit.solo .op .pic { object-position: 33.3% 50%; }
+/* pairs cross-fade over one strip-height (author, 2026-10-10: "fading joint"); a solo row is as wide as a pair,
+   the character on the left (its 11:1 crop puts the face where the first of a pair sits) */
+body.e .unit .op + .op { margin-left: calc(var(--sh, 64px) * -1); }
+body.e .unit .op.gapl:not(:last-child) { -webkit-mask-image: linear-gradient(to right, transparent, #000 calc(var(--sh, 64px) * 1.2));
+  mask-image: linear-gradient(to right, transparent, #000 calc(var(--sh, 64px) * 1.2)); }
+body.e .unit .op.gapl:last-child { -webkit-mask-image: linear-gradient(to right, transparent, #000 calc(var(--sh, 64px) * 1.2), #000 calc(100% - var(--sh, 64px) * 1.6), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 calc(var(--sh, 64px) * 1.2), #000 calc(100% - var(--sh, 64px) * 1.6), transparent); }
+body.e .unit .op .pic { width: 100%; height: 100%; max-height: none; aspect-ratio: auto; object-fit: cover; }
+/* a row whose art starts right of its edge (Angelina2) fills the gap with a blurred copy of the same art
+   (author, 2026-10-11: option C); the sharp art still fades in over it */
+body.e .unit .ops .gapfill { position: absolute; left: 0; top: 0; bottom: 0; z-index: -1; pointer-events: none;
+  background: var(--fill) left center / auto 160% no-repeat; filter: blur(14px) brightness(.55) saturate(1.1); transform: scale(1.15); transform-origin: left center;
+  -webkit-mask-image: linear-gradient(to right, #000 60%, transparent); mask-image: linear-gradient(to right, #000 60%, transparent); }
+body.e .unit .op .name { display: none; }
+body.e .unit .skinops { position: absolute; right: 22px; top: 0; bottom: 0; z-index: 1; display: flex; align-items: center; gap: 4px; }
+body.e .unit .skinops img { height: calc(var(--sh, 64px) * .78); aspect-ratio: 1; filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 6px rgba(0,0,0,.85)); }
+/* ?skeleton: the slots with nothing in them (author, 2026-10-30: "i want to see our skeletons"): every art box's real size and the face column */
+body.skel .unit img, body.skel .gapfill { opacity: 0 !important; }
+body.skel .unit .op { background: rgba(255,255,255,.1); outline: 1px dashed rgba(255,255,255,.45); outline-offset: -1px; -webkit-mask-image: none !important; mask-image: none !important; }
+body.skel .unit .op::after { content: attr(data-w); position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font: 11px/1 var(--f-label); color: #b7b7b7; }
+body.skel .unit.evrow { background: rgba(255,255,255,.1); outline: 1px dashed rgba(255,255,255,.45); outline-offset: -1px; }
+body.skel .unit:not(.empty):not(.evrow) .ops::after { content: ""; position: absolute; top: 0; bottom: 0; left: var(--face-x); width: 1px; background: #18d1ff; z-index: 2; }
+body.e .unit.has-notes::after { top: 8px; right: 8px; z-index: 3; }
+body.e .unit .notes { left: calc(var(--sh, 64px) * 1.3); width: min(520px, 60%); }
+body.e .unit.edge-r .notes { left: calc(var(--sh, 64px) * 1.3); right: auto; }
+body.e .unit.evrow .notes { left: -1px; width: calc(100% + 2px); }   /* at least the event row's width (author, 2026-10-12) */
+.notes .welf { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+.notes .welf img { width: 48px; height: 48px; flex: none; background: #313236; border: 1px solid var(--line-2); }
+.notes .welf b { display: block; font-weight: 700; color: #fff; }
+body.e .unit.up .notes { top: auto; bottom: calc(100% - 3px); border-top: 1px solid var(--line-2); border-bottom: 3px solid var(--acc); }
+body.e .unit:not(.up) .notes { top: calc(100% - 3px); bottom: auto; border-top: 3px solid var(--acc); border-bottom: 1px solid var(--line-2); }
+body.e .unit.empty { flex: 1 1 0; min-width: 0; min-height: 0; grid-template-columns: auto auto minmax(0, 1fr); gap: 8px; border: 1px dashed var(--line-2);
+  background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(255,255,255,.035) 10px 11px), #121212; }
+body.e .unit.empty .when { font-size: calc(var(--sh, 64px) * .45); padding-left: 12px; }
+body.e .unit.empty { grid-template-rows: minmax(0, 1fr); }   /* one full-height row: a 3-line title no longer pushes the month down (author, 2026-10-12) */
+body.e .unit.empty .ops { position: static; grid-column: 2; grid-row: 1; -webkit-mask-image: none; mask-image: none; align-items: center; }
+body.e .unit.empty .tba { font-size: calc(var(--sh, 64px) * .32); }
+body.e .unit.empty .ttl { grid-column: 3; grid-row: 1; align-self: center; padding: 0 6px 0 0; font-size: 10px; text-align: left; line-height: 1.2; }
+body.e .yrblock + .yrblock { margin-top: 12px; }
+body.e section.road .sh { padding: 10px 0 8px; margin-bottom: 6px; }
+
+/* ================= B · OPERATION LOG ================= */
+body.b .unit, body.c .unit { grid-column: auto !important; grid-row: auto !important; }
+body.b .tl-years { display: none; }
+body.b .tl { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--line-2); }
+body.b .mo { display: none; }
+body.b .unit { display: grid; grid-template-columns: 120px 260px minmax(0, 1fr) 180px; gap: 24px; align-items: center;
+  padding: 18px 0; border-bottom: 1px solid var(--line); position: relative; }
+body.b .unit::before { content: ""; position: absolute; left: 0; top: 18px; bottom: 18px; width: 3px; background: var(--acc); }
+body.b .unit .when { padding-left: 18px; font: 700 64px/.9 var(--f-num); color: var(--ink); }
+body.b .unit .when small { display: block; font: 600 11px/1 var(--f-label); letter-spacing: .2em; color: var(--muted); margin-top: 6px; }
+body.b .unit .ops { display: grid; grid-auto-flow: column; grid-auto-columns: 120px; gap: 10px; }
+body.b .unit .ttl { display: none; }
+body.b .unit .notes { font-size: 15px; }
+body.b .unit .notes p::before { content: "▪ "; color: var(--acc-ink); }
+body.b .unit .foot { text-align: right; }
+body.b .unit.empty .ops { color: var(--faint); }
+body.b .unit.empty { opacity: .7; }
+
+/* ================= C · TALL CARDS ================= */
+body.c .tl-years { display: none; }
+body.c .mo { display: none; }
+body.c .tl { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+body.c .unit { position: relative; min-height: 460px; background: var(--panel-head); border-left: 3px solid var(--acc); overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
+body.c .unit .ops { position: absolute; inset: 0 0 auto 0; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
+body.c .unit .ops .op { position: relative; }
+body.c .unit .ops .pic { aspect-ratio: auto; height: 300px; }
+body.c .unit .ops .name { position: absolute; left: 8px; top: 10px; writing-mode: vertical-rl; font: 600 15px/1 var(--f-display);
+  letter-spacing: .12em; text-transform: uppercase; text-shadow: 0 1px 3px #000; margin: 0; }
+body.c .unit::after { content: ""; position: absolute; inset: 120px 0 0 0; background: linear-gradient(transparent, var(--panel-head) 180px); pointer-events: none; }
+body.c .unit > :not(.ops) { position: relative; z-index: 1; }
+body.c .unit .when { position: absolute; right: 10px; top: 8px; z-index: 2 !important; font: 700 54px/1 var(--f-num); color: #fff; text-shadow: 0 2px 8px #000; }
+body.c .unit .when small { display: block; text-align: right; font: 600 10px/1 var(--f-label); letter-spacing: .2em; }
+body.c .unit .ttl { padding: 0 14px; font: 600 11px/1.3 var(--f-label); letter-spacing: .14em; color: var(--acc-ink); text-transform: uppercase; }
+body.c .unit .notes { padding: 6px 14px; font-size: 13px; }
+body.c .unit .foot { padding: 0 14px 14px; }
+body.c .unit.empty { justify-content: center; align-items: center; min-height: 460px; background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(255,255,255,.03) 10px 11px), var(--panel-head); }
+
+
+
+
+/* ---------- limited rates (2026-10-11, second look: one readout panel, probability bar, tiers side by side,
+   hairline rows with lit numbers; author: the first look felt "backwater") ---------- */
+/* rates accent (author, 2026-10-11: "i really hate this yellow on this section", "its too bright"): muted tones,
+   chosen in the top bar while deciding: silver (default), dusty red, slate blue */
+.rtsec { --rt-1: #c9ccd4; --rt-2: #8a8d96; --rt-3: #8a8d96; --rt-x5bg: #202124; --rt-on: #1b1c21; }
+body.rt-red .rtsec { --rt-1: #c97a80; --rt-2: #a5636a; --rt-3: #85565b; --rt-x5bg: #2a1e20; --rt-on: #170f10; }
+body.rt-blue .rtsec { --rt-1: #8fa8c4; --rt-2: #7189a5; --rt-3: #5d6a7d; --rt-x5bg: #1c222b; --rt-on: #00060e; }
+.rtsec .sh { margin-top: 40px; }
+.rtsec .sh .bar { background: var(--rt-2); } .rtsec .sh .idx { color: var(--rt-2); }
+.rt-panel { background: linear-gradient(180deg, #202124, #121212); border: 1px solid var(--line); position: relative; }
+.rt-panel::before { content: ""; position: absolute; left: 0; top: 0; width: 120px; height: 3px; background: var(--rt-1); }
+.rt-bar { display: flex; height: 34px; margin: 18px 18px 0; gap: 2px; }
+.rt-bar .seg { position: relative; min-width: 4px; overflow: hidden; }
+.rt-bar .seg span { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); white-space: nowrap;
+  font: 600 12px/1 var(--f-label); letter-spacing: .04em; }
+.rt-bar .s1 { background: var(--rt-1); color: var(--rt-on); }
+.rt-bar .s2 { background: var(--rt-2); color: var(--rt-on); }
+.rt-bar .s3 { background: repeating-linear-gradient(135deg, #313236 0 6px, #202124 6px 12px); color: var(--muted); }
+.rt-cols { display: grid; grid-template-columns: auto auto minmax(0, 1fr); }
+.rt-cols .tier { padding: 16px 20px 18px; position: relative; }
+.rt-cols .tier + .tier { border-left: 1px solid var(--line); }
+.rt-cols .idx { font: 600 11px/1 var(--f-label); letter-spacing: .16em; color: var(--faint); margin-bottom: 10px; }
+.rt-cols .rate { margin-bottom: 14px; }
+.rt-cols .rate b { display: block; font: 700 64px/.9 var(--f-num); color: var(--rt-1); letter-spacing: .01em; }
+.rt-cols .t1 .rate b { background: linear-gradient(90deg, #e7a3b0, #e6c79a, #a6d4b1, #9cc4dc, #b2a9e0 52%, #fbbc04 60%, #fbbc04);
+  -webkit-background-clip: text; background-clip: text; color: transparent; display: inline-block; }   /* rate-up: limited rainbow + standard yellow (author) */
+.rt-cols .t2 .rate b { color: var(--rt-2); }
+.rt-cols .t3 .rate b { color: var(--rt-3); }
+.rt-cols .rate .pre, .rt-cols .rate .post { display: block; font-size: 13px; line-height: 1.4; color: var(--muted); max-width: 30ch; }
+.rt-cols .rate .pre { margin-bottom: 6px; }
+.rt-cols .rate .post { margin-top: 6px; }
+.rt-cols .ops { display: grid; grid-template-columns: repeat(var(--n, 2), 68px); gap: 10px 8px; }
+.rt-cols .t3 .ops { grid-template-columns: repeat(auto-fill, minmax(62px, 68px)); }
+.rt-cols .op .pic { border-bottom: 2px solid var(--line-2); }
+.rt-cols .t1 .op .pic { border-bottom-color: var(--rt-1); }
+.rt-cols .op .name { font-size: 12px; text-align: center; margin-top: 5px; white-space: nowrap; }
+.rt-cols .op .tag { font: 700 10px/1.25 var(--f-thai); text-align: center; color: var(--rt-on); background: var(--rt-1); margin-top: 4px; padding: 1px 2px; }
+.rt-cols .op .tag.t2 { background: none; color: var(--muted); border: 1px solid var(--line-2); }
+.rt-cols .note { margin-top: 12px; font-size: 13px; color: var(--muted); max-width: 34ch; padding-left: 10px; border-left: 2px solid var(--rt-2); }
+.rt-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 12px; margin-top: 12px; align-items: start; }
+/* lighter frame behind the text (author, 2026-10-11: "a bit hard to read, lighter black for text framed background") */
+.rt-two .col { background: #202124; border: 1px solid rgba(255,255,255,.1); padding: 16px 20px 18px; position: relative; }
+.rt-two .col::before { content: ""; position: absolute; left: 0; top: 0; width: 56px; height: 3px; background: var(--rt-1); }
+.rt-two .idx { font: 600 11px/1 var(--f-label); letter-spacing: .16em; color: var(--faint); }
+.rt-two h3 { margin: 8px 0 12px; font: 700 19px/1.35 var(--f-thai); }
+.rt-two .lead { margin: 0 0 12px; font-size: 15px; color: #b7b7b7; }
+.rt-two .lines { list-style: none; margin: 0; padding: 0; }
+.rt-two .lines li { font-size: 15px; line-height: 1.5; padding: 7px 0; border-top: 1px solid rgba(255,255,255,.07); color: #e6e8f0; }
+.rt-two .lines li:first-child { border-top: 0; }
+/* amounts: same font as the sentence, bold and white (author, 2026-10-11: the display-font numbers were hard to read) */
+.rt-two em.n { font-style: normal; font-weight: 700; color: #fff; }   /* no underline (author, 2026-10-11) */
+.rt-two .close { margin: 12px 0 0; font-size: 13px; color: #b7b7b7; }
+.rt-tl { display: grid; grid-template-columns: 64px 1fr 1fr; gap: 3px; margin: 14px 0 12px; }
+.rt-tl .cap, .rt-tl .mh { font: 600 11px/1.3 var(--f-thai); color: var(--muted); padding: 2px 6px 4px; align-self: end; }
+.rt-tl .mh { text-align: center; }
+.rt-tl .yr { font: 700 22px/1 var(--f-num); color: var(--ink); display: grid; place-items: center; background: #313236; border-left: 3px solid #515461; }
+.rt-tl .td { background: #313236; min-height: 64px; display: grid; place-items: center; text-align: center; padding: 6px; font-size: 13px; color: var(--muted); }
+.rt-tl .td.x5 { background: var(--rt-x5bg); box-shadow: inset 0 0 0 1px var(--rt-2); }
+.rt-tl .td.x5 .pic { width: 54px; }
+.rt-two .end { margin-top: 6px; font: 700 22px/1.35 var(--f-thai); color: var(--rt-1); }
+.rt-spend { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; margin-bottom: 10px; }
+.rt-spend .bn { background: var(--c); display: flex; justify-content: space-between; align-items: center; padding: 8px 10px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
+.rt-spend .rn { font: 700 24px/1 var(--f-num); color: #fff; }
+.rt-spend .amt { font: 700 20px/1 var(--f-num); color: #fff; opacity: .9; margin-right: 8px; }
+@media (max-width: 900px) { .rt-cols { grid-template-columns: 1fr; } .rt-cols .tier + .tier { border-left: 0; border-top: 1px solid var(--line); } }
+
+
+/* SA2 spook table: numbers computed in the page from the sheet's rates; working on hover (2026-10-11) */
+.rt-odds { display: grid; grid-template-columns: minmax(0, 1fr) 96px 96px; gap: 2px; margin: 4px 0 14px; font-size: 13px; }
+.rt-odds .h { font: 600 11px/1.3 var(--f-label); letter-spacing: .04em; color: #b7b7b7; padding: 4px 6px; align-self: end; text-align: center; }
+.rt-odds .h:first-child { text-align: left; font-size: 12px; color: var(--ink); }
+.rt-odds .lab { background: #313236; padding: 8px 10px; color: #e6e8f0; }
+.rt-odds .v { background: #313236; position: relative; display: grid; place-items: center; cursor: help; outline: none; }
+.rt-odds .v b { font-weight: 700; color: #fff; font-size: 15px; }
+.rt-odds .v:hover, .rt-odds .v:focus-visible { background: #363d48; }
+.rt-odds .math { position: absolute; right: 0; bottom: calc(100% + 6px); z-index: 6; width: 300px; white-space: pre-line;
+  background: #121212; border: 1px solid var(--line-2); border-top: 2px solid var(--rt-1); padding: 10px 12px;
+  font: 12px/1.5 'Google Sans', ui-monospace, monospace; color: #e6e8f0; text-align: left;
+  opacity: 0; visibility: hidden; transform: translateY(4px); transition: opacity .15s, transform .15s, visibility 0s .15s; pointer-events: none; }
+.rt-odds .v:hover .math, .rt-odds .v:focus-visible .math { opacity: 1; visibility: visible; transform: none; transition: opacity .15s, transform .15s; }
+.rt-odds .foot { grid-column: 1 / -1; font-size: 11px; color: #b7b7b7; padding-top: 4px; }
+
+/* rainbow for the limited rate-up (author, 2026-10-11): soft, not bright */
+.rtsec { --rainbow: linear-gradient(90deg, #d99aa6, #d9b98f, #c9cf96, #9cc9a6, #8fb6c9, #aa9dd2, #d3a3d5); }
+.rt-bar .s1.lim { background: var(--rainbow); color: #202124; }
+.rt-bar .s1:not(.lim) { background: var(--std); color: #1a1408; }
+.rt-cols .t1 .op:not(.lim) .pic { border-bottom-color: var(--std); }
+.rt-cols .t1 .op:not(.lim) .tag:not(.t2) { background: var(--std); color: #1a1408; }
+.rt-cols .op.lim .pic { border-bottom: 3px solid; border-image: var(--rainbow) 1; }
+.rt-cols .op.lim .tag:not(.t2) { background: var(--rainbow); color: #202124; }
+/* SA2 designs: one shows at a time (switch "SA2" in the top bar) */
+/* SA2: the track is the design (author, 2026-10-11: "sa2 section track approved"); table and chart kept off */
+.sa2-table, .sa2-chart { display: none; }
+.sa2-track { display: block; }
+.sa2-track .cap, .sa2-chart .cap { font: 600 12px/1.3 'Google Sans', sans-serif; color: #e6e8f0; margin: 14px 0 6px; display: inline-block; }
+.sa2-track .cumhead { position: relative; height: 70px; }
+.sa2-track svg.cum { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.sa2-track svg.cum polyline { fill: none; vector-effect: non-scaling-stroke; }
+.sa2-track svg.cum .l200 { stroke: #c9ccd4; stroke-width: 2; }
+.sa2-track svg.cum .l300 { stroke: #8a8d96; stroke-width: 2; stroke-dasharray: 5 4; }
+.sa2-track .cumlab { position: absolute; left: 0; right: 0; bottom: -2px; display: grid; grid-template-columns: repeat(6, 1fr);
+  font: 600 11px/1 'Google Sans', sans-serif; color: #b7b7b7; text-align: center; }
+.sa2-track .slots { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 8px; }
+.sa2-track .slot { background: #313236; padding: 8px 6px 10px; text-align: center; position: relative; outline: none; }
+.sa2-track .slot .when { font: 600 11px/1.3 'Google Sans', sans-serif; color: #b7b7b7; }
+.sa2-track .face { width: 46px; height: 46px; margin: 6px auto; border-radius: 50%; background: #202124; overflow: hidden; }
+.sa2-track .face img { width: 100%; height: 100%; object-fit: cover; }
+.sa2-track .face { position: relative; }
+.sa2-track .slot.x5 .face::after, .sa2-track .slot.debut .face::after { content: ""; position: absolute; inset: 0; border-radius: 50%;
+  padding: 3px; background: var(--rainbow); pointer-events: none;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }   /* ring inside the portrait (author) */
+.sa2-track .slot.x5 { background: linear-gradient(#313236, #313236) padding-box, var(--rainbow) border-box; border-top: 3px solid transparent; }
+.sa2-track .slot.debut { background: linear-gradient(#313236, #313236) padding-box, var(--rainbow) border-box; border-top: 3px solid transparent; }
+.sa2-track .slot.norm .face img { filter: grayscale(.6) brightness(.8); }
+.sa2-track .slot.none .face { border: 1px dashed rgba(255,255,255,.25); background: none; }
+.sa2-track .slot .p { font-weight: 700; font-size: 13px; color: #fff; }
+.sa2-track .slot .txt { font-size: 11px; color: #b7b7b7; margin-top: 4px; line-height: 1.35; }
+.sa2-track .slot .math, .sa2-chart .b .math { position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); z-index: 6;
+  width: 250px; white-space: pre-line; background: #121212; border: 1px solid var(--line-2); border-top: 2px solid var(--rt-1);
+  padding: 9px 11px; font: 12px/1.5 'Google Sans', sans-serif; color: #e6e8f0; text-align: left;
+  opacity: 0; visibility: hidden; transition: opacity .15s, visibility 0s .15s; pointer-events: none; }
+.sa2-track .slot:hover .math, .sa2-track .slot:focus-visible .math, .sa2-chart .b:hover .math, .sa2-chart .b:focus-visible .math {
+  opacity: 1; visibility: visible; transition: opacity .15s; }
+.sa2-chart .art { position: relative; height: 84px; overflow: hidden; margin-top: 12px; background: #121212; }
+.sa2-chart .art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 41% 50%;   /* his face (meta.json fx 0.41) */
+  -webkit-mask-image: linear-gradient(to left, transparent, #000 140px); mask-image: linear-gradient(to left, transparent, #000 140px); }
+.sa2-chart .art .nm { position: absolute; left: 14px; bottom: 10px; font: 600 26px/1 var(--f-display); text-shadow: 0 0 3px #000, 0 0 12px rgba(0,0,0,.8); }
+.sa2-chart .bars { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; align-items: end; height: 190px; padding-top: 6px; }
+.sa2-chart .b { height: 100%; display: grid; grid-template-rows: auto 1fr auto; text-align: center; position: relative; outline: none; }
+.sa2-chart .b .v { font-weight: 700; font-size: 13px; color: #fff; padding-bottom: 4px; }
+.sa2-chart .col { position: relative; background: #313236; }
+.sa2-chart .h300, .sa2-chart .h200 { position: absolute; left: 0; right: 0; bottom: 0; }
+.sa2-chart .h300 { background: rgba(201,204,212,.25); }
+.sa2-chart .h200 { background: #9da1ab; }
+.sa2-chart .b.x5 .h200 { background: var(--rainbow); }
+.sa2-chart .b .when { font: 600 11px/1.3 'Google Sans', sans-serif; color: #b7b7b7; white-space: pre-line; padding-top: 5px; }
+
+/* ---------- gacha simulator link + collab (2026-10-11) ---------- */
+.cosec { margin-top: 40px; }
+.co-sim { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; text-decoration: none;
+  color: #fff; background: linear-gradient(90deg, var(--band) 0, color-mix(in srgb, var(--band) 70%, #000) 100%); border-left: 4px solid #fff; }
+.co-sim .tx { font: 700 20px/1.3 var(--f-thai); }
+.co-sim .go { font: 600 24px/1 var(--f-display); opacity: .8; transition: transform .15s; }
+.co-sim:hover .go { transform: translate(3px, -3px); }
+.cosec .sh .bar { background: #f25aa5; } .cosec .sh .idx { color: #ffaad4; }
+.co-key { display: flex; align-items: center; gap: 8px; margin: -12px 0 14px; font-size: 14px; color: var(--muted); }
+.co-key i { width: 22px; height: 12px; background: var(--free); }
+.co-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 12px; }
+.co-card { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid #f25aa5; }
+.co-card .banner { position: relative; aspect-ratio: 800 / 256; background: #121212; overflow: hidden; }
+.co-card .banner .bn { width: 100%; height: 100%; object-fit: cover; aspect-ratio: auto; background: none; }
+.co-card .banner::after { content: ""; position: absolute; inset: 50% 0 0; background: linear-gradient(transparent, rgba(0,0,0,.85)); }
+.co-card .banner .nm { position: absolute; left: 12px; bottom: 8px; z-index: 1; font: 600 20px/1 var(--f-display); text-transform: uppercase;
+  text-shadow: 0 0 3px #000, 0 0 10px rgba(0,0,0,.8); }
+.co-card .ops { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; padding: 12px; }
+.co-card .op .pic { border-bottom: 2px solid var(--line-2); }
+.co-card .op.free .pic { border-bottom: 3px solid #9af2ae; }
+.co-card .op .name { font-size: calc(12px * var(--k, 1)); text-align: center; margin-top: 5px; line-height: 1.2; text-wrap: balance; overflow-wrap: normal; }   /* long names wrap at a space, never cut */
+.co-card .op.free .name { color: #9af2ae; }
+/* suggested view of the rates text (preview only) */
+.rt-two .lines.sug { display: none; }
+body.rt-sug .rt-two .lines:not(.sug) { display: none; }
+body.rt-sug .rt-two .lines.sug { display: block; }
+.rt-two .lines.sug li.strike { color: #8a8a8a; text-decoration: line-through; text-decoration-color: rgba(255,255,255,.35); }
+.rt-two .lines.sug li.strike em.n { color: #8a8a8a; }
+.rt-two .lines.sug .why { display: inline-block; margin-left: 8px; font: 600 11px/1.3 'Google Sans', sans-serif; letter-spacing: .02em;
+  color: var(--rt-1); border: 1px solid var(--rt-3); padding: 1px 6px; text-decoration: none; vertical-align: 1px; }
+/* ---------- banner notes, links, CN panel (sheet rows 14-34, 2026-10-11) ---------- */
+.nt { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+.nt-pity { padding: 14px 18px; background: #202124; border-left: 4px solid var(--line-2); font-size: 16px; line-height: 1.6; }
+.nt-more { margin-top: 12px; background: var(--panel); border: 1px solid var(--line); }
+.nt-more .lead { padding: 12px 18px 8px; font-size: 15px; color: var(--muted); }
+.nt-links { list-style: none; margin: 0; padding: 0 0 4px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.nt-links a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 18px; border-top: 1px solid var(--line);
+  color: #fff; text-decoration: none; transition: background .15s; }
+.nt-links a:hover { background: rgba(255,255,255,.04); }
+.nt-links .t { font: 700 15px/1.35 var(--f-thai); }
+.nt-links .u { grid-column: 1; font: 12px/1.3 'Google Sans', sans-serif; color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nt-links .go { grid-column: 2; grid-row: 1 / span 2; align-self: center; font: 600 18px/1 var(--f-display); color: var(--muted); transition: transform .15s; }
+.nt-links a:hover .go { transform: translate(3px, -3px); color: #fff; }
+.nt-foot { list-style: none; margin: 0; padding: 10px 18px 12px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+.nt-foot li + li { margin-top: 2px; }
+.nt-pity { border-left-color: transparent; border-image: linear-gradient(#e7a3b0, #e6c79a, #c9cf96, #a9d5b3, #9cc4dc, #b2a9e0, #d3a3d5) 1; }
+.nt-pity .rb { font-weight: 700; background: linear-gradient(90deg, #e7a3b0, #e6c79a, #d3da9f, #a6d4b1, #9cc4dc, #b2a9e0, #d3a3d5);
+  -webkit-background-clip: text; background-clip: text; color: transparent; filter: saturate(1.5); }
+.nt-links a.has-ic { grid-template-columns: 24px minmax(0, 1fr) auto; box-shadow: inset 3px 0 0 var(--site); }
+.nt-links a.has-ic .ic { grid-row: 1 / span 2; align-self: center; width: 24px; height: 24px; object-fit: contain; }
+/* no tile behind the icons (author, 2026-10-12): imivi's black bat turns white to show on the dark panel */
+.nt-links .ic[src*="imivi"] { filter: invert(1); }
+.nt-links a.has-ic .t { color: var(--site); }
+.nt-links a.has-ic .u, .nt-links a.has-ic .t { grid-column: 2; }
+.nt-links a.has-ic .go { grid-column: 3; }
+.nt-links a.has-ic:hover { background: color-mix(in srgb, var(--site) 8%, transparent); }
+.nt-more .lead, .nt-foot li { color: #fff; }   /* white (author, 2026-10-12) */
+.nt-foot li.col { color: #ff84c1; }
+/* event rows on the roadmap (author, 2026-10-11: "each entry one event"): same strip as a banner row, neutral
+   accent, the sheet's own picture(s) from the face column, fading in; the date tag in the verdict's place */
+body.e .unit.evrow { background: #121212; }
+body.e .unit.evrow .evart { position: absolute; left: var(--ev-x, 50%); top: 0; bottom: 0; right: 0; display: flex; gap: 0;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 calc(var(--sh, 64px) * 1.5), #000 70%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 calc(var(--sh, 64px) * 1.5), #000 70%, transparent); }
+body.e .unit.evrow .evart .pic { height: 100%; width: auto; aspect-ratio: 800 / 256; max-height: none; object-fit: cover; background: none; }
+body.e .unit.evrow .evart.strip .pic { aspect-ratio: 1920 / 300; margin-left: calc(var(--sh, 64px) * .4); }
+body.e .unit.evrow .evart.strip { -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--sh, 64px), #000 80%, transparent); mask-image: linear-gradient(to right, transparent, #000 var(--sh, 64px), #000 80%, transparent); }
+body.e .unit.evrow .info .nm .go { margin-left: 8px; font-size: .8em; color: var(--muted); text-decoration: none; }
+body.e .unit.evrow .info .nm .go:hover { color: #fff; }
+body.e .unit.evrow .evbg, body.e .unit.evrow .evwide { display: none; }
+body.e.ev-blur .unit.evrow .evbg { display: block; position: absolute; inset: 0; background: var(--bgimg) center var(--fy, 40%) / cover no-repeat;
+  filter: blur(12px) brightness(.55) saturate(1.15); transform: scale(1.12); }
+body.e.ev-wide .unit.evrow .evart { display: none; }
+body.e.ev-wide .unit.evrow .evwide { display: block; position: absolute; left: 0; top: 0; width: 100%; height: 100%; max-height: none; aspect-ratio: auto;
+  object-fit: cover; background: none; -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,.35), #000 40%, #000 85%, transparent);
+  mask-image: linear-gradient(to right, rgba(0,0,0,.35), #000 40%, #000 85%, transparent); }
+body.e .unit.evrow .info { text-shadow: 0 0 3px #000, 0 0 8px rgba(0,0,0,.8); }
+/* C (author, 2026-10-11: "what if we make the fillers rerun alike like this?" - the TBA cells): no art; a cell as
+   wide as a TBA month, dashed and hatched, month numeral + the name in small caps + the date; fillers next to each
+   other share one line */
+body.e.ev-cell .unit.evrow { flex: 0 0 calc((100% - 30px) / 3 + 6px);   /* two TBA months wide (author, 2026-10-11: "make it fill this wide") */ min-width: 0; grid-template-columns: auto minmax(0, 1fr); gap: 8px;
+  border: 1px dashed var(--line-2); background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(255,255,255,.035) 10px 11px), #121212; }
+/* the event's own picture fills the cell (author, 2026-10-11: "since we got pic can't we just fit it"): cover, a
+   little above centre (faces sit high in key visuals), dark fade under the text */
+body.e.ev-cell .unit.evrow .ops { display: block; position: absolute; inset: 0; z-index: 0; -webkit-mask-image: none; mask-image: none; }
+body.e.ev-cell .unit.evrow .evart, body.e.ev-cell .unit.evrow .evbg { display: none; }
+body.e.ev-cell .unit.evrow .evwide { display: block; position: absolute; inset: 0; width: 100%; height: 100%; max-height: none; aspect-ratio: auto;
+  object-fit: cover; object-position: 50% var(--cy, 50%) !important; background: none; }   /* height focus per picture, from the skin-colour count (trial) */
+body.e.ev-cell .unit.evrow .ops::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(18,18,18,.7) 0, transparent 30%); }   /* only behind the month numeral */
+body.e.ev-cell .unit.evrow .info { display: none; }   /* picture only (author, 2026-10-11: "hide text"); the name is in the hover note */
+body.e.ev-cell .unit.evrow .when, body.e.ev-cell .unit.evrow .info { position: relative; z-index: 1; text-shadow: 0 1px 3px #000; }
+body.e.ev-cell .unit.evrow .info .nm { color: #fff; }
+body.e.ev-cell .unit.evrow .when { font-size: calc(var(--sh, 64px) * .45); padding-left: 12px; }
+body.e.ev-cell .unit.evrow .info { grid-column: 2; gap: 3px; padding-right: 8px; text-shadow: none; }
+body.e.ev-cell .unit.evrow .info .nm { font: 600 10px/1.2 var(--f-label); letter-spacing: .06em; color: var(--acc-ink); white-space: normal; }
+body.e.ev-cell .unit.evrow .evtag { font-size: 9px; padding: 1px 5px; }
+body.e .unit.evrow .evtag { background: #363d48; color: #e6e8f0; font-family: 'Google Sans', sans-serif; letter-spacing: .04em; }
+@media (max-width: 900px) { .nt { grid-template-columns: 1fr; } }
+/* ---------- selector pledge (2026-10-11) ---------- */
+.plsec .sh { margin-top: 40px; }
+.pledge { display: grid; grid-template-columns: 150px minmax(0, 1fr); background: var(--panel); border: 1px solid var(--line); }
+.pledge .side { background: var(--band); display: grid; place-items: center; padding: 18px; position: relative; overflow: hidden; }
+.pledge .side::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, transparent 0 12px, rgba(0,0,0,.12) 12px 13px); }
+.pledge .permit { width: 110px; height: auto; aspect-ratio: auto; background: none; position: relative; z-index: 1;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.45)); transition: transform .25s; }
+.pledge.all .permit { transform: rotate(-6deg) scale(1.06); }
+.pledge .items { list-style: none; margin: 0; padding: 6px 0; counter-reset: p; }
+.pledge .item + .item { border-top: 1px solid var(--line); }
+.pledge label { display: grid; grid-template-columns: 34px 26px minmax(0, 1fr); gap: 12px; align-items: start; padding: 14px 18px; cursor: pointer; }
+.pledge label::before { counter-increment: p; content: "0" counter(p); font: 600 13px/26px var(--f-label); letter-spacing: .12em; color: var(--faint); }
+.pledge input { position: absolute; opacity: 0; pointer-events: none; }
+.pledge .box { width: 22px; height: 22px; margin-top: 2px; border: 2px solid #fbbc04; position: relative; transition: background .15s; }
+.pledge .item.on .box { background: #fbbc04; }
+.pledge .item.on .box::after { content: ""; position: absolute; left: 5px; top: 1px; width: 6px; height: 12px;
+  border: solid #121212; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+.pledge input:focus-visible + .box { outline: 2px solid var(--ink); outline-offset: 2px; }
+.pledge .tx { display: grid; gap: 4px; }
+.pledge .th { font-size: 17px; color: var(--ink); text-decoration: none; }
+.pledge .en { font-size: 14px; color: var(--muted); text-decoration: none; font-style: italic; }
+.pledge a.th:hover, .pledge a.en:hover { text-decoration: underline; }
+.pledge .item.on .th { color: #fff; }
+@media (max-width: 700px) { .pledge { grid-template-columns: 1fr; } .pledge .side { padding: 12px; } .pledge .permit { width: 72px; } }
+/* the standard colour (author, 2026-10-11): the pledge checkbox's yellow, the sheet's #fbbc04 (K85-K94);
+   limited = rainbow */
+:root { --std: #fbbc04; --std-ink: #fbbc04; }
+/* ---------- standard pool (2026-10-10) ---------- */
+.stdsec .sh { margin-top: 40px; }
+.std-pool { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 12px 8px; }
+.std-pool .op { position: relative; }
+.std-pool .op .pic, .std-move .op .pic { border-bottom: 2px solid var(--line-2); }
+.std-pool .op .name, .std-move .op .name { font-size: calc(clamp(10px, 0.85vw, 12px) * var(--k, 1)); text-align: center; margin-top: 5px; white-space: nowrap; overflow-wrap: normal; }
+.stdsec .sh .bar { background: var(--std); } .stdsec .sh .idx { color: var(--std-ink); }
+.std-pool .op.soon .pic { border-bottom-color: var(--std); }
+.std-pool .op .when { position: absolute; top: 3px; right: 3px; font: 700 11px/1 var(--f-label); padding: 3px 5px;
+  background: var(--std); color: #1a1408; letter-spacing: .04em; }
+.std-call { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; margin-top: 22px;
+  padding: 12px 16px; background: var(--panel-head); border-left: 4px solid var(--band, #b73052); font-size: 16px; }
+.std-call .permit { width: 52px; height: auto; aspect-ratio: auto; background: none; }
+.std-call .tx div + div { color: var(--muted); font-size: 14px; margin-top: 2px; }
+.std-move { display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: start; margin-top: 16px;
+  padding: 14px 16px; background: var(--panel); border: 1px solid var(--line); }
+.std-move .who { width: 96px; border-bottom: 2px solid var(--line-2); }
+.std-move .body > a, .std-move .body > span { display: block; font-size: 16px; margin-bottom: 10px; color: var(--ink); text-decoration: none; }
+.std-move .body > a:hover { text-decoration: underline; }
+.std-move .ops { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 72px)); gap: 10px 8px; }
+/* ---------- limited banners (redesign, 2026-10-10): one card per banner, dark panels, accent = the banner's
+   sheet colour, hero face, off-rate pool (green = spark 200), then each selector / one-time-buy group ---------- */
+.limsec .sh { margin-top: 40px; }
+.lim-intro { display: grid; grid-template-columns: auto 1fr; column-gap: 16px; row-gap: 4px; align-items: center;
+  padding: 14px 18px; background: var(--panel-head); border-left: 3px solid var(--accent); margin-bottom: 22px; font-size: 15px; }
+.lim-intro > div { grid-column: 2; }
+.lim-intro .emblem { grid-row: 1 / span 3; width: 64px; height: auto; aspect-ratio: auto; background: none; }
+.lim-intro .hl { display: inline-block; background: #a6d4b1; color: #121212; padding: 0 8px; font-weight: 700; margin-right: 10px; }
+.lims { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; align-items: start; }
+.lim { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--acc); position: relative; }
+.lim .hd { position: relative; padding: 12px 14px 10px; background: var(--panel-head); min-height: 72px; overflow: hidden; }
+.lim .hd .t1 { font: 600 22px/1.05 var(--f-display); text-transform: uppercase; letter-spacing: -.01em; }
+.lim .hd .t2 { font: 600 11px/1.3 var(--f-label); letter-spacing: .06em; color: var(--acc-ink); margin-top: 5px; }
+.lim .hd .rn { position: absolute; right: 10px; top: -4px; font: 600 64px/1 var(--f-display); color: color-mix(in srgb, var(--acc), #fff 25%); opacity: .85; }   /* brighter (author, 2026-10-12: too dark) */
+.lim .hero { position: relative; aspect-ratio: 3 / 2; background: #121212; overflow: hidden; display: grid; place-items: center; }
+.lim .hero img { width: 100%; height: 100%; object-fit: cover; aspect-ratio: auto; }
+.lim .hero::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, var(--panel)); }
+.lim .hero.tbd { background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(255,255,255,.035) 10px 11px), #121212; }
+.lim .hero .q { font: 600 120px/1 var(--f-display); color: color-mix(in srgb, var(--acc), #fff 25%); opacity: .95; }
+.lim .hero .nm { position: absolute; left: 14px; bottom: 8px; z-index: 1; font: 600 26px/1 var(--f-display); text-transform: uppercase;
+  text-shadow: 0 0 3px #000, 0 0 10px rgba(0,0,0,.8); }
+.lim .grp { padding: 10px 14px 12px; border-top: 1px solid var(--line); }
+.lim .grp.pool-grp { border-top: 0; }
+.lim .gh { margin: 0 0 10px; font: 700 14px/1.35 var(--f-thai); padding-left: 9px; border-left: 3px solid #cc0000; }
+.lim .gh.std { border-left-color: var(--std); }
+.lim .pool { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 8px; }
+.lim .op .pic { border-bottom: 2px solid var(--line-2); }
+.lim .op .name { font-size: clamp(10px, 0.9vw, 12px); text-align: center; margin-top: 5px; overflow-wrap: normal; word-break: keep-all; white-space: nowrap; }
+.lim .op.g200 .pic { border-bottom-color: #a9d5b3; }
+.lim .op.g200 .name { color: #a9d5b3; }
+.lim .buy { display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; gap: 10px; align-items: center; }
+.lim .buy .permit { width: 64px; height: auto; aspect-ratio: auto; background: none; object-fit: contain; border: 0; }
+.lim .buy .mid { display: grid; gap: 5px; justify-items: start; }
+.lim .buy .op.target { width: 64px; }
+.lim .price { font: 600 13px/1.3 var(--f-label); border: 1px solid var(--line-2); padding: 3px 8px; }
+.lim .upto { font: 700 13px/1.3 var(--f-thai); color: #ff8a8a; }
+.lim .upto::after { content: "  →"; color: var(--muted); }
+.lim .gnote { font-size: 13px; color: var(--muted); line-height: 1.4; }
+.lim .cnotes { padding: 10px 14px 12px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+/* fillers: indented under the main rows, foldable (author, 2026-10-12) */
+body.e .yrblock > .tl > .fillers { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: 6px; margin-left: 34px; position: relative; }
+body.e .yrblock > .tl > .fillers::before { content: ""; position: absolute; left: -20px; top: 0; bottom: 0; width: 2px; background: var(--line-2); }
+body.e .fillers > .unit:not(.evrow) { flex: 1 1 100%; }
+body.e .fillers > .unit:not(.evrow) .when { font-size: calc(var(--sh, 64px) * .45); padding-left: 13px; }   /* reruns: the event rows' month size (author, 2026-10-12) */
+body.e.ev-cell .fillers > .unit.evrow { flex: 0 0 calc(var(--sh, 64px) * 5.5); }   /* event cells: smaller, one fixed width (author, 2026-10-12) */
+body.fold-fillers .yrblock > .tl > .fillers { display: none; }
+.shbtns { display: flex; flex-wrap: wrap; gap: 8px; }
+/* the switches sit under the yellow line, above 2026 (author, 2026-10-12; they covered the title on phones) */
+body.a .yrblock:first-of-type > .shbtns { border-top: 1px solid var(--accent); padding: 8px 4px 0; }
+body.a .yrblock:first-of-type > .shbtns + .yr { border-top: 0; }
+.foldbtn { position: relative; font: 600 12px/1 'Google Sans', sans-serif; letter-spacing: .04em;
+  padding: 7px 12px; color: var(--ink); background: #202124; border: 1px solid var(--line-2); cursor: pointer; }
+.foldbtn:hover { background: #313236; }
+.foldbtn { display: inline-grid; }
+.foldbtn .lbl { grid-area: 1 / 1; text-align: center; }
+.foldbtn[aria-pressed="true"] { color: #15161a; background: #c9ccd4; }
+/* free operators on the rows themselves, behind a switch (author, 2026-10-12: "in notes, but have a button to show
+   themselves in row"): small portraits at the row's right end, before the diamond */
+.unit .welf-row { display: none; position: absolute; right: 22px; top: 50%; transform: translateY(-50%); z-index: 3; gap: 4px; pointer-events: none; }
+body.show-welf .unit .welf-row { display: flex; }
+.unit .welf-row img { width: calc(var(--sh, 64px) * .78); height: calc(var(--sh, 64px) * .78); background: #313236;
+  border: 1px solid rgba(255,255,255,.35); box-shadow: 0 0 6px rgba(0,0,0,.8); }
+/* the comparison bar is retired (author, 2026-10-12: "do we need pic1"): its choices are settled (D horizontal
+   banners, C event cells, sheet rates text by default); kept in the markup, hidden, so the script still reads it */
+#bar { display: none; }
+/* outward-link arrow icon (replaces the thin ↗ character) */
+.go svg { width: 1em; height: 1em; display: block; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.nt-links .go { font-size: 20px; color: #b7b7b7; }
+.co-sim .go { font-size: 26px; opacity: 1; }
+body.e .unit.evrow .info .nm .go { display: inline-block; vertical-align: -2px; font-size: .9em; color: #b7b7b7; }
+/* desktop size (author, 2026-10-12): the page scales up on wide screens as a 115-125% zoom would; the roadmap stops
+   about where its art and event cells end, leaving the right side free to rest the mouse without opening notes */
+@media (min-width: 1700px) { main#page { zoom: 1.15; } }
+@media (min-width: 1900px) { main#page { zoom: 1.25; } }
+body.e section.road .yrblock { max-width: var(--road-w, 1010px); }
+section.road { position: relative; }
+.road-notes { margin-top: 18px; }
+.road-notes.side { position: absolute; margin: 0; left: calc(var(--road-w, 1010px) + 40px); right: 0; }
+.road .sh .bar { background: none; }   /* no yellow bar before the key (author, 2026-10-13); it stays as the key's height anchor */
+.road .sh .rkey { position: absolute; left: 0; bottom: 5px; display: flex; flex-wrap: wrap; gap: 6px 20px;
+  font: 600 11px/1 var(--f-label); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+@media (max-width: 700px) { .road .sh .rkey { position: static; margin-top: 10px; } }   /* phones: the key under the bar, not across the line */
+.rkey .k { display: inline-flex; align-items: center; gap: var(--kg, 3px); }
+.rkey .k i { width: var(--kw, 4px); height: 14px; }
+.rkey .k span { margin-left: 5px; }
+.rkey .lim span { background: linear-gradient(90deg, #e7a3b0, #e6c79a, #d3da9f, #a6d4b1, #9cc4dc, #b2a9e0, #d3a3d5); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: saturate(1.5); }   /* rainbow 50% more saturated (author, 2026-10-12) */
+.rkey .col span { color: #ff84c1; } .rkey .std span { color: var(--std); } .rkey .ev span { color: #b7b7b7; }
+</style>
+</head>
+<body class="a fit e sa2-trk ev-cell">
+<div id="bar">
+  <b>Direction</b>
+  <label><input type="radio" name="d" value="a fit e" checked> D · horizontal banners</label>
+  <label><input type="radio" name="d" value="a fit d"> D (earlier) · tiles</label>
+  <label><input type="radio" name="d" value="a fit"> A · one screen, notes on hover</label>
+  <label><input type="radio" name="d" value="a"> A · notes open</label>
+  <label><input type="radio" name="d" value="b"> B · operation log</label>
+  <label><input type="radio" name="d" value="c"> C · tall cards</label>
+  <span class="grp" style="display:flex;gap:10px"><b>Rates text</b>
+    <label><input type="radio" name="rtt" value="" checked> sheet</label>
+    <label><input type="radio" name="rtt" value="rt-sug"> suggested</label></span>
+  <span class="grp" style="display:flex;gap:10px"><b>Event rows</b>
+    <label><input type="radio" name="evf" value="ev-cell" checked> C · like TBA</label>
+    <label><input type="radio" name="evf" value="ev-blur"> A · blur fill</label>
+    <label><input type="radio" name="evf" value="ev-wide"> B · wide band</label>
+    <label><input type="radio" name="evf" value=""> as before</label></span>
+  <span class="note" id="fitinfo"></span>
+  <span class="note">All content is read from the sheet grid. Pink dashed outline = a title the sheet does not have (placeholder, your wording).</span>
+</div>
+<main id="page"></main>
+<script>
+// Titles the sheet does not have. Placeholders for the author to word (or drop).
+const PLACEHOLDER = {
+  timeline: { title: 'Upcoming Banners', ghost: 'FUTURE' },
+  notes: { title: 'Banner Notes', ghost: 'NOTES' },
+  limited: { title: 'Limited Banners', ghost: 'LIMITED' },
+  pledge: { title: 'Selector Pledge', ghost: 'PLEDGE' },
+  rates: { title: 'Limited Rates', ghost: 'RATES' },
+};
+// Section accent per sheet fill (the sheet's own colours). acc-ink: a lighter tone of the same hue for text on --bg.
+const ACC = {
+  '#317cbf': ['#317cbf', '#7fb3e6', '#fff'], '#cc0000': ['#cc0000', '#ff6b6b', '#fff'], '#d76300': ['#d76300', '#ffa055', '#121212'],
+  '#ffd4e9': ['#f25aa5', '#ff9fcf', '#121212', '#ff84c1'],   // tag fill 30% lighter than the pink (author, 2026-10-11)
+  '#f5f5f5': ['#fbbc04', '#fbbc04', '#121212'],   // the sheet's grey (#f5f5f5, never merged: the sheet still has it) = standard banner: the standard yellow (author, 2026-10-11, 2026-10-30)
+  '#ffffff': ['#fbbc04', '#fbbc04', '#121212'],
+};
+const HERO = { "Angelina2": 'https://lemonwait.github.io/operator/banners/char_1015_aglna2_2.webp',
+  "Kal'tsit2": 'https://lemonwait.github.io/operator/banners/char_1052_kalts2_2.webp',
+  "Thumpy": 'https://lemonwait.github.io/operator/banners/char_4235_thumpy_2.webp',
+  "Makoto": 'https://lemonwait.github.io/operator/banners/char_4217_makoto_p3r_1.webp' };
+// D's tiles: E2 art cropped by future/tools/build_tiles.py (X index face rule, 3:2 per operator).
+// Art files from future/tools/build_tiles.py: tiles (3:2) and strips (6:1, the X index window cut shorter).
+const ART = { 'Angelina2': 'char_1015_aglna2_2', 'Thumpy': 'char_4235_thumpy_2', "Kal'tsit2": 'char_1052_kalts2_2',
+  'Makoto': 'char_4217_makoto_2', 'Clementia': 'char_4231_clemnt_2', 'Closure': 'char_4228_closur_2',
+  'Orchid2': 'char_1048_orchd2_2', 'Yato2': 'char_1029_yato2_2', 'Aphrissa': 'char_4229_aphris_2' };
+const GAPFILL = ['Angelina2'];   // rows whose left gap gets the blurred fill (author, 2026-10-11: option C)
+let SCHED = { events: [] };   // future/data/schedule.json (check_schedule.py: estimated EN month per CN event)
+let META = {};   // strips/meta.json: per crop, face position (fx) and width:height after trimming its empty ends
+let G, IM, cellAt = {}, byRow = {};
+// an outward-link arrow drawn as an icon: the ↗ character was too thin to read (author, 2026-10-12)
+const goArrow = (tag = 'span') => { const g = el(tag, 'go'); g.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>'; return g; };
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const st = c => G.styles[c.s] || {};
+const lines = t => (t || '').split('\n').map(s => s.trim()).filter(Boolean);
+function setAcc(node, bg) {
+  const a = ACC[(bg || '').toLowerCase()] || ['#ffe100', '#ffe100', '#121212'];
+  node.style.setProperty('--acc', a[0]); node.style.setProperty('--acc-ink', a[1]); node.style.setProperty('--on', a[2]);
+  node.style.setProperty('--tag', a[3] || a[0]);
+}
+function pic(c, label) {
+  const e = IM[c.ref] || {};
+  if (e.site) { const i = el('img', 'pic'); i.src = e.site; i.alt = label || e.label || ''; i.loading = 'lazy'; return i; }
+  return el('div', 'pic missing', `${c.ref}\nno file yet`);
+}
+function header(n, total, key, thai) {
+  const p = typeof key === 'string' ? PLACEHOLDER[key] : key, h = el('header', 'sh');
+  const idx = el('div', 'idx'); idx.innerHTML = `<span>${String(n).padStart(2, '0')}</span> // ${String(total).padStart(2, '0')} &nbsp;#FUTURE`;
+  const t = el('h2', p.sheet ? '' : 'ph', p.title);
+  h.append(idx, t);
+  if (thai) h.append(el('div', 'th', thai));
+  h.append(el('div', 'bar'), el('div', 'ghost', p.ghost));
+  return h;
+}
+
+// ---------- TIMELINE (sheet rows 2-12) ----------
+function timeline() {
+  const sec = el('section', 'road'), h = header(1, 6, 'timeline'); sec.append(h);
+  // what the strips' colours mean (author, 2026-10-12), beside the yellow bar; limited banners keep the sheet's own colour each
+  const key = el('div', 'rkey');
+  // each label in its own colour (author, 2026-10-12): limited in the soft rainbow, collab in the tags' pink
+  [[['#cc0000', '#317cbf', '#d76300'], 'Limited', 'lim'], [['#f25aa5'], 'Collab', 'col'], [['#fbbc04'], 'Standard', 'std'], [['#8a8d96'], 'Seasonal gamemode', 'ev']].forEach(([cs, t, c]) => {
+    const k = el('span', 'k ' + c); cs.forEach(c => { const b = el('i'); b.style.background = c; k.append(b); }); k.append(el('span', '', t)); key.append(k);
+  });
+  h.append(key);
+  const months = byRow[3].filter(c => c.ci >= 2);
+  const years = byRow[2];
+  const monthOf = ci => months.findIndex(m => ci >= m.ci && ci < m.ci + m.cs);
+  // units: row-5 runs of the same fill (one banner can hold two operators), plus row-4 TBA cells with nothing in row 5
+  const units = [];
+  for (const c of byRow[4]) {
+    const n5 = byRow[5].find(x => c.ci >= x.ci && c.ci < x.ci + x.cs);
+    const bg = st(n5 || c).bg, mo = monthOf(c.ci), last = units.at(-1);
+    const shared = last && [6,7,8,9,10,11,12].some(r => (byRow[r] || []).some(x => x.ci === last.start && x.ci + x.cs > c.ci));
+    if (last && last.mo === mo && last.bg === bg && c.ci === last.end && shared) { last.cells.push(c); if (n5 && !last.n5s.includes(n5)) last.n5s.push(n5); last.end = c.ci + c.cs; continue; }
+    units.push({ cells: [c], n5s: n5 ? [n5] : [], bg, mo, start: c.ci, end: c.ci + c.cs });
+  }
+  // one row per year, earliest on top (author, 2026-10-10: "2026 on top of 2027"). Both rows use the same
+  // column scale (the widest year), so a month is as wide in either row as in the sheet.
+  const W = Math.max(...years.map(y => y.cs));
+  const rows = [...years].sort((p, q) => +p.text - +q.text).map((y, i) => {
+    const blk = el('div', 'yrblock' + (i ? ' later' : '')), tl = el('div', 'tl');
+    tl.style.setProperty('--cols', `repeat(${W}, minmax(0, 1fr))`);
+    months.filter(m => m.ci >= y.ci && m.ci < y.ci + y.cs).forEach(m => {
+      const d = el('div', 'mo', m.text); d.style.gridColumn = `${m.ci - y.ci + 1} / span ${m.cs}`; d.style.gridRow = 1; d.dataset.mi = months.indexOf(m); tl.append(d);
+    });
+    blk.append(el('div', 'yr', y.text), tl); sec.append(blk);
+    return { y, tl };
+  });
+  for (const u of units) {
+    const span = [u.start, Math.max(u.end, ...u.n5s.map(x => x.ci + x.cs))];
+    const { y: yr, tl } = rows.find(r => span[0] >= r.y.ci && span[0] < r.y.ci + r.y.cs);
+    const C0 = yr.ci, CN = yr.ci + W, colOf = ci => ci - C0 + 1;
+    const node = el('article', 'unit'); setAcc(node, u.bg);
+    const m0 = monthOf(span[0]), m1 = monthOf(span[1] - 1);
+    node.style.gridColumn = `${colOf(span[0])} / ${colOf(span[1])}`;
+    tl.querySelectorAll('.mo').forEach(mo => { const i = +mo.dataset.mi; if (i >= m0 && i <= m1) { mo.classList.add('has'); setAcc(mo, u.bg); } });
+    const year = years.find(y => span[0] >= y.ci && span[0] < y.ci + y.cs);
+    const when = el('div', 'when', months[m0].text + (m1 > m0 ? '–' + months[m1].text : '')); when.append(el('small', '', year ? year.text : ''));
+    node.append(when);
+    node.dataset.ym = [m0, m1].map(i => `${year ? year.text : ''}-${String(months[i].text).padStart(2, '0')}`).join(' ');
+    const ops = el('div', 'ops');
+    const isTba = u.cells.every(c => c.text === 'TBA');
+    if (isTba) {
+      node.classList.add('empty');
+      ops.append(el('div', 'tba', 'TBA'));
+    } else {
+      for (const c of u.cells) {
+        const n5 = byRow[5].find(x => x.ci === c.ci && x.cs <= 5);
+        const im = pic(c, n5 && n5.text);
+        if (n5 && ART[n5.text] && im.tagName === 'IMG') { im.dataset.sq = im.src; im.dataset.tile = `../img/tiles/${ART[n5.text]}.webp`; { const f = `${ART[n5.text]}_${u.cells.length === 1 ? 'solo' : 'pair'}.webp`, m = META[f];
+          im.dataset.strip = `../img/strips/${f}` + (m ? `?v=${m.ratio}-${m.fx}` : ''); } }
+        const op = el('div', 'op'); op.append(im, el('div', 'name', n5 ? n5.text : '')); ops.append(op);
+      }
+    }
+    if (u.cells.length === 1 && !isTba) node.classList.add('solo');
+    node.append(ops); node.style.setProperty('--n', (span[1] - span[0]) / 5);  // one 3:2 share per 5 sheet columns (one month)
+    // a row-5 cell wider than the pictures is a banner title (W5 "CN's 2027 Half Anniversary")
+    const ttl = u.n5s.find(x => x.cs > 5);
+    // "CN's 2027 Half Anniversary" reads "CN 2027 X.5" (author, 2026-10-12): Global's April gets CN's X.5 from the
+    // November before, X = the year - 2020 (CN opened May 2019; 6.5 came to Global in April 2026)
+    if (ttl) node.append(el('div', 'ttl', ttl.text.replace(/^CN's (\d{4}) Half Anniversary$/i, (_, y) => `CN ${y} ${y - 2020}.5`)));
+    const notes = el('div', 'notes');
+    const hasVerdict = (byRow[12] || []).some(c => c.text && c.ci >= span[0] && c.ci < span[1]);
+    let liftedVerdict = '';
+    for (let r = 6; r <= 11; r++) for (const c of (byRow[r] || [])) if (c.ci >= span[0] && c.ci < span[1]) lines(c.text).forEach(l => {
+      // all collab banners show their guarantee as a tag (author, 2026-10-11: Makoto's sits in his notes)
+      if (!hasVerdict && !liftedVerdict && /^การันตีใน\s*\d+/.test(l)) { liftedVerdict = l; return; }
+      notes.append(el('p', '', l));
+    });
+    if (isTba && notes.childElementCount) { node.append(el('div', 'ttl', notes.textContent)); }
+    else if (notes.childElementCount) {
+      notes.dataset.head = u.cells.map(c => (byRow[5].find(x => x.ci === c.ci && x.cs <= 5) || {}).text).filter(Boolean).join(' + ');
+      node.append(notes); node.classList.add('has-notes');
+      if (span[0] - C0 > (CN - C0) * 0.6) node.classList.add('edge-r');
+    }
+    const foot = el('div', 'foot');
+    for (const c of (byRow[12] || [])) if (c.text && c.ci >= span[0] && c.ci < span[1]) foot.append(el('span', 'verdict', lines(c.text).join(' · ')));
+    if (liftedVerdict) foot.append(el('span', 'verdict', liftedVerdict));
+    node.append(foot);
+    const info = el('div', 'info');
+    if (!isTba) {
+      // a mini rainbow tag after a limited operator's name (author, 2026-10-11): limited = a limited banner's hero
+      // in the sheet (row 45 under the LIMITED cards: Angelina2, Kal'tsit2 ...)
+      const limitedNames = new Set((byRow[45] || []).map(c => c.text).filter(Boolean));
+      const nm = el('div', 'nm');
+      u.cells.map(c => (byRow[5].find(x => x.ci === c.ci && x.cs <= 5) || {}).text).filter(Boolean).forEach((n, i) => {
+        if (i) nm.append(el('b', 'plus', '&'));   // even room either side; & instead of + (author, 2026-10-12)
+        nm.append(el('span', '', n));
+        if (limitedNames.has(n)) nm.append(el('span', 'ltag', 'L'));   // author, 2026-10-11: "just L tag is fine"
+      });
+      info.append(nm);
+    }
+    const vt = el('div', 'vt'); foot.querySelectorAll('.verdict').forEach(v => vt.append(v.cloneNode(true)));
+    if (vt.childElementCount) info.append(vt);
+    node.append(info);
+    tl.append(node);
+  }
+  events(sec);
+  return sec;
+}
+
+// ---------- EVENTS ON THE ROADMAP (author, 2026-10-11: the sheet's side panel BU14-BZ33 moved here) ----------
+// "Each entry one event": every side-panel item gets its own row, placed by date among the banner rows (a banner
+// row counts from the 1st of its first month; TBA stays last). The date comes from future/data/schedule.json
+// (check_schedule.py): CN start from PRTS + 5 months, or the real Global date once announced; a past or CN-only
+// event has no row. The row's art is the sheet's own picture(s); the hover note says where the date comes from.
+const SIDE = [
+  { title: 'BU14', art: 'BU16', prts: '危机合约/涤墨作战', fy: '50%', cy: '63%' },
+  { title: 'BU21', strip: '../img/strips/event_mlp.webp', full: '../img/src/kv_mlp.webp', prts: '魔法与友谊', fy: '21%', cy: '28%', skin: true },   // the event splash, main faces (author, 2026-10-11; build_event_art.py)
+];
+const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+function events(sec) {
+  const at = ref => G.cells.find(c => c.ref === ref);
+  for (const s of SIDE) {
+    const ev = SCHED.events.find(e => e.prts === s.prts);
+    if (!ev) { console.warn(`schedule.json has no "${s.prts}": run future/tools/check_schedule.py`); continue; }
+    if (ev.status === 'past' || ev.status === 'cn-only') continue;
+    const [y, m, d] = ev.en.split('-');
+    const blk = [...sec.querySelectorAll('.yrblock')].find(b => b.querySelector('.yr').textContent.trim() === y);
+    if (!blk) { console.warn(`no ${y} row block for ${s.prts}`); continue; }
+    const tl = blk.querySelector('.tl'), t = at(s.title);
+    const node = el('article', 'unit evrow has-notes filler' + (s.skin ? ' skin' : '')); node.dataset.ym = `${y}-${m} ${y}-${m}`;
+    if (s.skin) setAcc(node, '#ffd4e9');   // skin collabs: the collab pink (author, 2026-10-12)
+    else { node.style.setProperty('--acc', '#8a8d96'); node.style.setProperty('--acc-ink', '#c9ccd4'); }
+    const when = el('div', 'when', String(+m)); node.append(when);
+    const ops = el('div', 'ops'), art = el('div', 'evart' + (s.strip ? ' strip' : ''));
+    if (s.art) { const i = pic(at(s.art), t.text); i.loading = 'eager'; art.append(i); }
+    if (s.strip) { const i = el('img', 'pic'); i.src = s.strip + '?v=' + Date.now(); i.alt = t.text; art.append(i); }   // mock: never a stale crop
+    // fill switches (author, 2026-10-11: "ccb#5 and mlp dont fill"): A = the whole picture blurred behind the sharp
+    // face band, B = the sharp picture across the row at the eyes' height (a face lower than the others drops out)
+    const full = s.full || (art.querySelector('img') || {}).src;
+    if (full) {
+      const bg = el('div', 'evbg'); bg.style.setProperty('--bgimg', `url("${full}")`); bg.style.setProperty('--fy', s.fy); ops.prepend(bg);
+      const w = el('img', 'pic evwide'); w.src = full; w.alt = ''; w.style.objectPosition = `50% ${s.fy}`; w.style.setProperty('--cy', s.cy || '50%'); ops.append(w);   // cy: the cell's height focus from the skin-colour count (trial)
+    }
+    ops.append(art); node.append(ops);
+    const info = el('div', 'info'), nm = el('div', 'nm');
+    nm.append(el('span', '', t.text));
+    if (t.href) { const a = goArrow('a'); a.href = direct(t.href); a.target = '_blank'; a.rel = 'noopener'; a.title = 'video'; nm.append(a); }
+    const est = ev.status === 'estimated';
+    const vt = el('div', 'vt'); vt.append(el('span', 'verdict evtag', `${(ev.type || '').includes('crossover') ? 'COLLAB' : 'EVENT'} · ${est ? '~' : ''}${+d} ${MON[+m - 1]}`));
+    info.append(nm, vt); node.append(info);
+    const notes = el('div', 'notes'); notes.dataset.head = ev.cn_name;
+    notes.append(el('p', '', `CN ${ev.cnstart}${ev.cnend ? ' – ' + ev.cnend : ''}`),
+      el('p', '', est ? `Global ~${ev.en}: CN + 5 months (estimate)` : `Global ${ev.en}${ev.globalend ? ' – ' + ev.globalend : ''}${ev.status === 'ongoing' ? ' · now on' : ''}`));
+    const kr = KAY.rows.find(x => x.kind === 'event' && x.cn_title.includes(s.prts.split('/').pop()));
+    if (kr && kr.prts) node.dataset.prts = kr.prts;
+    if (kr && kr.facts && kr.facts.skins) notes.append(el('p', '', `skins: ${kr.facts.skins.join(', ')} (Kay-chan read the notice)`));
+    else if (kr && (kr.flags || []).some(f => f.startsWith('skins:'))) notes.append(el('p', '', 'skins: waiting for the announcement'));
+    node.append(notes);
+    // by date: before the first row that starts later (banner rows from the 1st of their month); TBA stays last
+    const next = [...tl.querySelectorAll(':scope > .unit')].find(u => u.classList.contains('empty') || u.dataset.ym.split(' ')[0] + (u.classList.contains('evrow') ? '-' + u.dataset.d : '-01') > ev.en);
+    node.dataset.d = d; node.dataset.cn = ev.cnstart;
+    tl.insertBefore(node, next || null);
+  }
+  machine(sec);
+  rerunEvents(sec);
+  kayPatch(sec);
+  rotate(sec);
+  cnOrder(sec);
+  groupFillers(sec);
+  linkPrts(sec);
+  welfareNotes(sec);
+}
+
+// A click on a roadmap row opens its PRTS page in a new tab (author, 2026-10-12: "make click on cn content in the
+// roadmap directed to its announcement page on prts"): an event's official announcement page, a banner's PRTS
+// banner page. Rows from the sheet take the page from Kay-chan's row with the same operators.
+function linkPrts(sec) {
+  const byOps = new Map(KAY.rows.filter(r => r.ops && r.ops.length && r.prts).map(r => [r.ops.map(o => o.name.toLowerCase().replace(/\?$/, '')).sort().join('+'), r.prts]));
+  sec.querySelectorAll('.unit:not(.empty)').forEach(u => {
+    if (!u.dataset.prts) {
+      const names = [...u.querySelectorAll('.nm > span:not(.ltag)')].map(s => s.textContent.trim().toLowerCase());
+      const key = names.join('  +  ').split(/\s+[+&]\s+/).map(x => x.trim()).filter(Boolean).sort().join('+');
+      const hit = byOps.get(key) || [...byOps].find(([k]) => names.some(n => k.split('+').includes(n)))?.[1];
+      if (hit) u.dataset.prts = hit;
+    }
+    if (!u.dataset.prts) return;
+    u.title = 'Open on PRTS';
+    u.addEventListener('click', e => {
+      if (e.target.closest('a')) return;   // its own links (the MLP video) keep working
+      window.open('https://prts.wiki/w/' + encodeURIComponent(u.dataset.prts).replace(/%2F/g, '/'), '_blank', 'noopener');
+    });
+  });
+}
+
+// Fillers indented under the main rows (author, 2026-10-12: "indent fillers except new banners and op collabs;
+// skin collabs gain the same pink but indent too; a button that fold fillers"). Main rows = new-operator banners and
+// operator collabs; fillers = reruns, game modes, CC, skin collabs. Consecutive fillers share one indented block.
+// a switch keeps one width whichever label it shows (author, 2026-10-13: "boxes shouldn't resize when its text
+// change"): both labels sit in one grid cell, the unused one invisible
+function twoState(btn, off, on, isOn) {
+  if (!btn.querySelector('.lbl')) btn.append(el('span', 'lbl off', off), el('span', 'lbl on', on));
+  btn.querySelector('.lbl.off').style.visibility = isOn ? 'hidden' : 'visible';
+  btn.querySelector('.lbl.on').style.visibility = isOn ? 'visible' : 'hidden';
+}
+function groupFillers(sec) {
+  sec.querySelectorAll('.yrblock > .tl').forEach(tl => {
+    let grp = null;
+    for (const u of [...tl.children]) {
+      if (u.classList.contains('filler')) {
+        if (!grp) { grp = el('div', 'fillers'); tl.insertBefore(grp, u); }
+        grp.append(u);
+      } else grp = null;
+    }
+  });
+  const btn = el('button', 'foldbtn');
+  const set = folded => {
+    document.body.classList.toggle('fold-fillers', folded);
+    twoState(btn, 'Fold events & reruns', 'Show events & reruns', folded);
+    btn.setAttribute('aria-pressed', String(folded));
+    try { localStorage.setItem('future-fold-fillers', folded ? '1' : '0'); } catch (e) {}
+    if (window.roadFit) requestAnimationFrame(window.roadFit);
+  };
+  let start = false;
+  try { start = localStorage.getItem('future-fold-fillers') === '1'; } catch (e) {}
+  btn.onclick = () => set(!document.body.classList.contains('fold-fillers'));
+  const box = el('div', 'shbtns'); box.append(btn); const y0 = sec.querySelector('.yrblock'); y0.insertBefore(box, y0.firstChild);
+  set(start);
+}
+
+// ---------- THE MACHINE (author, 2026-10-30: "juice machine where old banners gets auto rotate out and new ones auto
+// in", "Build the mock") ----------
+// Twelve months from today, generated at load. A banner comes from Kay-chan's rows; the sheet's row with the same
+// operator lays its art, verdict and notes over it, wherever it lands. The sheet's month wins over her estimate (the
+// difference shows on hover); a confirmed Global date wins over the sheet. A month past the last row is TBA.
+const NOW = (() => { const q = new URLSearchParams(location.search).get('now'); const d = q ? new Date(q + '-15') : new Date(); return d.getFullYear() * 12 + d.getMonth(); })();
+const monthIndex = ym => { const [y, m] = ym.split('-'); return +y * 12 + +m - 1; };
+const monthName = i => { const n = MON[i % 12]; return `${n[0]}${n.slice(1).toLowerCase()} ${Math.floor(i / 12)}`; };
+const dayName = s => { const [y, m, d] = s.split('-'); return `${+d} ${monthName(monthIndex(y + '-' + m))}`; };
+const cleanName = n => n.toLowerCase().replace(/\?$/, '');
+const unitNames = u => [...u.querySelectorAll('.nm > span:not(.ltag)')].map(s => cleanName(s.textContent.trim()));
+const TONE = { celebration: '#cc0000', summer: '#317cbf', sui: '#d76300', collab: '#ffd4e9', standard: '#f5f5f5' };
+function yearLine(sec, y) {
+  const blocks = [...sec.querySelectorAll('.yrblock')];
+  let blk = blocks.find(b => b.querySelector('.yr').textContent.trim() === y);
+  if (!blk) {
+    blk = el('div', 'yrblock later'); const tl = el('div', 'tl');
+    tl.style.setProperty('--cols', blocks[0].querySelector('.tl').style.getPropertyValue('--cols'));
+    blk.append(el('div', 'yr', y), tl);
+    sec.insertBefore(blk, blocks.find(b => b.querySelector('.yr').textContent.trim() > y) || null);
+  }
+  return blk.querySelector('.tl');
+}
+function placeRow(sec, node, en) {
+  const tl = yearLine(sec, en.slice(0, 4));
+  const next = [...tl.querySelectorAll(':scope > .unit')].find(u => u.classList.contains('empty') || u.dataset.ym.split(' ')[0] + (u.classList.contains('evrow') ? '-' + u.dataset.d : '-01') > en);
+  tl.insertBefore(node, next || null);
+}
+function noteOn(u, text) {
+  let notes = u.querySelector(':scope > .notes');
+  if (!notes) { notes = el('div', 'notes'); notes.dataset.head = unitNames(u).join(' + '); u.insertBefore(notes, u.querySelector(':scope > .foot')); u.classList.add('has-notes'); }
+  notes.append(el('p', '', text));
+}
+function newBanner(r) {
+  const [y, m, d] = r.en.split('-'), bare = r.pic_file && !r.ops.some(o => o.art);
+  const node = el('article', 'unit has-notes kay' + (r.ops.length === 1 || bare ? ' solo' : '') + (bare ? ' bare' : '')); setAcc(node, TONE[r.tone] || '#f5f5f5');
+  const when = el('div', 'when', String(+m)); when.append(el('small', '', y)); node.append(when);
+  const ops = el('div', 'ops');
+  if (bare) {   // no operator art yet: the banner's (or its event's) picture, one wide tile
+    const op = el('div', 'op'), i = el('img', 'pic wide'); i.src = `../img/auto/${r.pic_file}`; i.alt = r.ops.map(o => o.name).join(' & '); if (r.pic_fy) i.style.objectPosition = `50% ${r.pic_fy}`; op.append(i); ops.append(op);
+  } else for (const o of r.ops) {
+    const op = el('div', 'op');
+    if (o.art) { const i = el('img', 'pic wide'); const mm = META[o.art]; i.src = `../img/auto/${o.art}` + (mm ? `?v=${mm.ratio}-${mm.fx}` : ''); i.alt = o.name; op.append(i); }
+    op.append(el('div', 'name', o.name)); ops.append(op);
+  }
+  node.append(ops); node.style.setProperty('--n', r.ops.length);
+  const info = el('div', 'info'), nm = el('div', 'nm');
+  r.ops.forEach((o, i) => { if (i) nm.append(el('b', 'plus', '&')); nm.append(el('span', '', o.name)); if (o.limited_tag) nm.append(el('span', 'ltag', 'L')); });
+  info.append(nm);
+  if (r.tags.length) { const vt = el('div', 'vt'); r.tags.forEach(t => vt.append(el('span', 'verdict', t))); info.append(vt); }
+  node.append(info);
+  const notes = el('div', 'notes'); notes.dataset.head = r.ops.map(o => o.name).join(' + ') + ' · added by Kay-chan';
+  notes.append(el('p', '', `CN ${dayName(r.cn_start)} ${r.cn_title} → Global ${r.how === 'confirmed' ? '' : '~'}${dayName(r.en)}`));
+  if (r.facts && r.facts.days) notes.append(el('p', '', `runs ${r.facts.days} days`));
+  r.flags.forEach(f => notes.append(el('p', '', f)));
+  node.append(notes);
+  node.dataset.ym = `${y}-${m} ${y}-${m}`; node.dataset.d = d; node.dataset.cn = r.cn_start; if (r.prts) node.dataset.prts = r.prts;
+  return node;
+}
+function tbaCell(i, label) {
+  const y = String(Math.floor(i / 12)), m = String(i % 12 + 1).padStart(2, '0');
+  const node = el('article', 'unit empty');
+  setAcc(node, /sui/i.test(label) ? '#d76300' : /summer/i.test(label) ? '#317cbf' : /CN/.test(label) ? '#cc0000' : '#f5f5f5');
+  const when = el('div', 'when', String(+m)); when.append(el('small', '', y)); node.append(when);
+  const ops = el('div', 'ops'); ops.append(el('div', 'tba', 'TBA')); node.append(ops);
+  if (label) node.append(el('div', 'ttl', label));
+  node.style.setProperty('--n', 1); node.dataset.ym = `${y}-${m} ${y}-${m}`;
+  node.append(el('div', 'foot'), el('div', 'info'));
+  return node;
+}
+function machine(sec) {
+  sec.querySelectorAll('.unit.empty').forEach(u => u.remove());   // the sheet's TBA cells: the window below makes its own
+  const used = new Set();
+  sec.querySelectorAll('.unit:not(.evrow)').forEach(u => {
+    const names = unitNames(u), r = KAY.rows.find(k => k.ops && k.ops.some(o => names.includes(cleanName(o.name))));
+    if (!r) return;
+    used.add(r);
+    const was = monthIndex(u.dataset.ym.split(' ')[0]), is = monthIndex(r.en);
+    if (was === is) return;
+    if (r.how === 'confirmed') {   // a confirmed date beats the sheet, the row and its notes move
+      const [y, m] = r.en.split('-'), when = u.querySelector('.when');
+      when.firstChild.textContent = String(+m); when.querySelector('small').textContent = y;
+      u.dataset.ym = `${y}-${m} ${y}-${m}`;
+      noteOn(u, `Global confirmed ${dayName(r.en)}; the sheet says ${monthName(was)}`);
+      placeRow(sec, u, r.en);
+    } else noteOn(u, `Kay-chan's estimate: ${monthName(is)}; the sheet's month stays`);
+  });
+  for (const r of KAY.rows) {
+    if (r.kind === 'event' || used.has(r) || (r.kind === 'standard' && /复刻/.test(r.cn_title))) continue;
+    placeRow(sec, newBanner(r), r.en);
+  }
+  const rowMonths = [...sec.querySelectorAll('.unit')].map(u => monthIndex(u.dataset.ym.split(' ')[1]));
+  const last = Math.max(NOW - 1, ...rowMonths, ...KAY.rows.map(r => monthIndex(r.en)));
+  for (let i = last + 1; i < NOW + 12; i++) {
+    const ym = `${Math.floor(i / 12)}-${String(i % 12 + 1).padStart(2, '0')}`, t = (KAY.tba || []).find(x => x.month === ym);
+    yearLine(sec, ym.slice(0, 4)).append(tbaCell(i, t ? t.label : ''));
+  }
+}
+// old out, too far ahead out: a row leaves on the 1st of the month after it ends
+function rotate(sec) {
+  sec.querySelectorAll('.unit').forEach(u => {
+    const [a, b] = u.dataset.ym.split(' ').map(monthIndex);
+    if (b < NOW || a >= NOW + 12) u.remove();
+  });
+  sec.querySelectorAll('.yrblock').forEach(b => { if (!b.querySelector('.unit')) b.remove(); });
+  sec.querySelectorAll('.yrblock').forEach((b, i) => b.classList.toggle('later', i > 0));
+}
+
+// ---------- KAY-CHAN FILLS THE GAPS (author, 2026-10-12: "we patch whats missing from our road map; leave log in
+// events; include solo banner reruns, seasonal gamemodes") ----------
+// From her forecast (future/data/roadmap_auto.json, future/tools/auto_roadmap.py at full power): temporary game
+// modes become picture cells like the side-panel events, and solo standard reruns whose operator is not already on
+// the sheet become banner rows with her avatar-matched art. Log-in events never come in (she reads them as
+// "rewards"); everything the sheet has stays as it is. Each added row says so on hover.
+let KAY = { rows: [] };
+function kayPatch(sec) {
+  const onSheet = new Set([...sec.querySelectorAll('.unit:not(.evrow) .nm > span:not(.ltag)')].map(s => s.textContent.trim().toLowerCase()));
+  for (const r of KAY.rows) {
+    const skin = r.kind === 'event' && r.tone === 'skin collab' && !SIDE.some(x => x.prts && r.cn_title.includes(x.prts.split('/').pop()));
+    const mode = (r.kind === 'event' && r.tone === 'game mode') || skin;
+    const rerun = r.kind === 'standard' && /复刻/.test(r.cn_title);
+    if (!mode && !rerun) continue;
+    if (rerun && r.ops.some(o => onSheet.has(o.name.toLowerCase()))) continue;
+    // reruns keep CN's banner order, no predicted date (author, 2026-10-12: "no prediction, adhere to banner
+    // sequence"): the row joins the month of the banner it followed in CN, right after that banner's block
+    const anchor = rerun ? cnAnchor(sec, r.cn_start) : null;
+    if (rerun && !anchor) continue;
+    let [y, m, d] = r.en.split('-');
+    if (anchor) { [y, m] = anchor.dataset.ym.split(' ')[0].split('-'); d = '01'; }
+    const blk = anchor ? anchor.closest('.yrblock') : [...sec.querySelectorAll('.yrblock')].find(b => b.querySelector('.yr').textContent.trim() === y);
+    if (!blk) continue;
+    const tl = blk.querySelector('.tl');
+    let node;
+    if (mode) {
+      node = el('article', 'unit evrow has-notes kay filler' + (skin ? ' skin' : ''));
+      if (skin) setAcc(node, '#ffd4e9');   // skin collabs: the collab pink
+      else { node.style.setProperty('--acc', '#8a8d96'); node.style.setProperty('--acc-ink', '#c9ccd4'); }
+      node.append(el('div', 'when', String(+m)));
+      const ops = el('div', 'ops');
+      if (r.pic_file) { const i = el('img', 'pic evwide'); i.src = `../img/auto/${r.pic_file}`; i.alt = r.name; ops.append(i); }
+      node.append(ops);
+      const info = el('div', 'info'); info.append(el('div', 'nm', r.name)); node.append(info);
+      if (r.facts && r.facts.skin_avatars) {   // the collab's skins on the cell (author, 2026-10-30: "op portraits pls")
+        const row = el('div', 'skinops');
+        r.facts.skin_avatars.forEach((a, n) => {
+          const i = el('img'); i.src = `https://lemonwait.github.io/operator/avatars/${encodeURIComponent(a)}.png`; i.alt = i.title = r.facts.skins[n] || '';
+          i.onerror = () => { i.onerror = null; i.src = `https://lemonwait.github.io/operator/avatars/${a.split('_').slice(0, 3).join('_')}.png`; };   // a skin not on the site yet: the operator
+          row.append(i);
+        });
+        node.append(row);
+      }
+    } else {
+      node = el('article', 'unit has-notes kay filler' + (r.ops.length === 1 || (r.pic_file && !r.ops.some(o => o.art)) ? ' solo' : '')); setAcc(node, '#ffffff');
+      const when = el('div', 'when', String(+m)); when.append(el('small', '', y)); node.append(when);
+      const ops = el('div', 'ops');
+      if (r.pic_file && !r.ops.some(o => o.art)) {   // no operator art yet: the banner's (or its event's) picture, one wide tile
+        const op = el('div', 'op'), i = el('img', 'pic wide'); i.src = `../img/auto/${r.pic_file}`; i.alt = r.ops.map(o => o.name).join(' & '); if (r.pic_fy) i.style.objectPosition = `50% ${r.pic_fy}`; op.append(i); ops.append(op);
+      } else
+      for (const o of r.ops) {
+        const op = el('div', 'op');
+        if (o.art) { const i = el('img', 'pic wide'); const mm = META[o.art]; i.src = `../img/auto/${o.art}` + (mm ? `?v=${mm.ratio}-${mm.fx}` : ''); i.alt = o.name; op.append(i); }
+        op.append(el('div', 'name', o.name)); ops.append(op);
+      }
+      node.append(ops);
+      const info = el('div', 'info'), nm = el('div', 'nm'); nm.append(el('span', '', r.ops.map(o => o.name).join(' & ')));
+      const vt = el('div', 'vt'); vt.append(el('span', 'verdict', 'RERUN')); info.append(nm, vt); node.append(info);
+    }
+    node.dataset.ym = `${y}-${m} ${y}-${m}`; node.dataset.d = d; node.dataset.cn = r.cn_start; if (r.prts) node.dataset.prts = r.prts;
+    const notes = el('div', 'notes'); notes.dataset.head = (r.name || r.ops.map(o => o.name).join(' + ')) + ' · added by Kay-chan';
+    notes.append(el('p', '', anchor ? `CN ${r.cn_start} ${r.cn_title}, after ${anchor.querySelector('.nm').textContent.replace(/L(?=&|$)/, '')} in CN's order`
+      : `CN ${r.cn_start} ${r.cn_title} → Global ${r.how === 'confirmed' ? '' : '~'}${r.en}`));
+    if (r.facts && r.facts.days) notes.append(el('p', '', `runs ${r.facts.days} days`));
+    if (r.facts && r.facts.skins) notes.append(el('p', '', `skins: ${r.facts.skins.join(', ')}`));
+    (r.flags || []).forEach(f => notes.append(el('p', '', f)));
+    node.append(notes);
+    const all = [...tl.querySelectorAll(':scope > .unit')];
+    const next = anchor ? all.slice(all.indexOf(anchor) + 1).find(u => !u.classList.contains('filler'))
+      : all.find(u => u.classList.contains('empty') || u.dataset.ym.split(' ')[0] + (u.classList.contains('evrow') ? '-' + u.dataset.d : '-01') > r.en);
+    tl.insertBefore(node, next || null);
+  }
+}
+// Inside a month the rows keep CN's order (author, 2026-10-12): the month comes from each row's own start, the order
+// from CN's start dates (MLP, CN 07-03, sits above Aphrissa, CN 07-10, in December). Banner rows take their CN start
+// from Kay-chan's row with the same operators; a month with a row of unknown CN start keeps its date order.
+function cnOrder(sec) {
+  const byOps = new Map(KAY.rows.filter(r => r.ops && r.ops.length && r.cn_start).map(r => [r.ops.map(o => o.name.toLowerCase().replace(/\?$/, '')).sort().join('+'), r.cn_start]));
+  sec.querySelectorAll('.unit:not(.empty):not(.evrow):not(.filler)').forEach(u => {
+    const key = [...u.querySelectorAll('.nm > span:not(.ltag)')].map(x => x.textContent.trim().toLowerCase()).sort().join('+');
+    if (byOps.has(key)) u.dataset.cn = byOps.get(key);
+  });
+  sec.querySelectorAll('.yrblock > .tl').forEach(tl => {
+    const rows = [...tl.querySelectorAll(':scope > .unit:not(.empty)')];
+    for (const ym of new Set(rows.map(u => u.dataset.ym.split(' ')[0]))) {
+      const grp = rows.filter(u => u.dataset.ym.split(' ')[0] === ym);
+      if (grp.length < 2 || grp.some(u => !u.dataset.cn)) continue;
+      const after = grp[grp.length - 1].nextSibling;
+      [...grp].sort((a, b) => a.dataset.cn.localeCompare(b.dataset.cn)).forEach(u => tl.insertBefore(u, after));
+    }
+  });
+}
+// Event reruns with no banner rerun get a row with their splash (author, 2026-10-12: "the masses' travel, but no
+// limited banner rerun so event splash, since it has SM as welfare for ppl who wants him"). A rerun that brings its
+// banner back (A Flurry to the Flame -> Yato2, Act or Die -> Tragodia) is already there as the banner. Splash: PRTS
+// 活动预告_<event>_01, saved small into future/img/auto/events/. Free operators from the PRTS notices.
+let WELF = {};   // free operators per PRTS page (future/tools/welfare.py)
+const RERUN_CY = { '众生行记2026': '0%', '墟2026': '0%' };     // the faces' height in each splash
+function rerunEvents(sec) {
+  const withBanner = KAY.rows.filter(r => r.kind !== 'event' && r.prts).map(r => r.prts.split('/')[0]);
+  for (const ev of SCHED.events) {
+    if (ev.type !== 'rerun' || !['estimated', 'confirmed', 'ongoing'].includes(ev.status) || withBanner.includes(ev.prts)) continue;
+    const [y, m, d] = ev.en.split('-');
+    const blk = [...sec.querySelectorAll('.yrblock')].find(b => b.querySelector('.yr').textContent.trim() === y);
+    if (!blk) continue;
+    const tl = blk.querySelector('.tl');
+    const node = el('article', 'unit evrow has-notes filler rerun-ev');
+    node.style.setProperty('--acc', '#8a8d96'); node.style.setProperty('--acc-ink', '#c9ccd4');
+    node.append(el('div', 'when', String(+m)));
+    const ops = el('div', 'ops'), i = el('img', 'pic evwide');
+    i.src = `../img/auto/events/活动预告_${ev.prts}_01_jpg.webp`; i.alt = ev.name; i.style.setProperty('--cy', RERUN_CY[ev.prts] || '30%'); ops.append(i); node.append(ops);
+    const info = el('div', 'info'); info.append(el('div', 'nm', ev.name)); node.append(info);
+    const est = ev.status === 'estimated', notes = el('div', 'notes'); notes.dataset.head = ev.name;
+    notes.append(el('p', '', `CN ${ev.cnstart}${ev.cnend ? ' – ' + ev.cnend : ''} ${ev.cn_short}`),
+      el('p', '', est ? `Global ~${ev.en}: CN + 5 months (estimate)` : `Global ${ev.en}`));
+    notes.append(el('p', '', 'event rerun only, no banner rerun'));
+    node.append(notes);
+    node.dataset.ym = `${y}-${m} ${y}-${m}`; node.dataset.d = d; node.dataset.cn = ev.cnstart; node.dataset.prts = ev.prts + '/活动公告';
+    const next = [...tl.querySelectorAll(':scope > .unit')].find(u => u.classList.contains('empty') || u.dataset.ym.split(' ')[0] + (u.classList.contains('evrow') ? '-' + u.dataset.d : '-01') > ev.en);
+    tl.insertBefore(node, next || null);
+  }
+}
+// Every row's note names its event's free operators with their portraits (author, 2026-10-12: "limiteds, limited
+// event reruns, collab, collab reruns, solo banner reruns, solo banners, all have welfares"; 5★, 6★, some 1★)
+function welfareNotes(sec) {
+  // banner rows and event reruns only: a game mode shares its parent event's page, so it would repeat the operator
+  sec.querySelectorAll('.unit[data-prts]:not(.evrow), .unit.rerun-ev[data-prts]').forEach(u => {
+    const ops = WELF[u.dataset.prts], notes = u.querySelector('.notes');
+    if (!ops || !ops.length || !notes) return;
+    for (const o of ops) {
+      const w = el('div', 'welf'), t = el('div');
+      if (o.cid) w.append(Object.assign(el('img'), { src: `https://lemonwait.github.io/operator/avatars/${o.cid}.png`, alt: o.name, loading: 'lazy' }));
+      t.append(el('span', '', 'free operator'), el('b', '', `${o.name} ${'★'.repeat(o.stars)}`)); w.append(t); notes.append(w);
+    }
+    const row = el('div', 'welf-row');
+    ops.filter(o => o.cid).forEach(o => row.append(Object.assign(el('img'), { src: `https://lemonwait.github.io/operator/avatars/${o.cid}.png`, alt: o.name, title: o.name, loading: 'lazy' })));
+    u.append(row);
+  });
+  const btn = el('button', 'foldbtn'), set = on => {
+    document.body.classList.toggle('show-welf', on);
+    twoState(btn, 'Show free operators', 'Hide free operators', on);
+    btn.setAttribute('aria-pressed', String(on));
+    try { localStorage.setItem('future-show-welf', on ? '1' : '0'); } catch (e) {}
+  };
+  let start = false;
+  try { start = localStorage.getItem('future-show-welf') === '1'; } catch (e) {}
+  btn.onclick = () => set(!document.body.classList.contains('show-welf'));
+  sec.querySelector('.shbtns').prepend(btn);
+  set(start);
+}
+// the roadmap's banner row (from the sheet) that started last in CN on or before a date: CN starts come from
+// Kay-chan's rows with the same operators
+function cnAnchor(sec, cn) {
+  const byOps = new Map(KAY.rows.filter(r => r.ops && r.ops.length && r.cn_start).map(r => [r.ops.map(o => o.name.toLowerCase().replace(/\?$/, '')).sort().join('+'), r.cn_start]));
+  let best = null, bestCn = '';
+  sec.querySelectorAll('.unit:not(.empty):not(.evrow):not(.filler)').forEach(u => {
+    const key = [...u.querySelectorAll('.nm > span:not(.ltag)')].map(x => x.textContent.trim().toLowerCase()).sort().join('+');
+    const c = byOps.get(key);
+    if (c && c <= cn && c > bestCn) { best = u; bestCn = c; }
+  });
+  return best;
+}
+
+// ---------- BANNER NOTES (sheet rows 14-34) ----------
+// Left: the pity note (C14); the banner key (rows 16-18: C16's swatches were a Sheets workaround, author
+// 2026-10-10, so the swatches are the roadmap's own: rainbow L = limited, pink = collab); C21's lead to the link
+// list (E/J 23-34, reading order, direct URLs) and the loose footnotes (J29, C32). Right (BU14-BZ33, the sheet's
+// pink) moved to the roadmap as event chips (author, 2026-10-11), see events().
+const MISC = 'https://lemonwait.github.io/doc/misc/';
+const SITE_ICONS = [
+  { host: 'oldwell.info', icon: 'oldwell_favicon.png', c: '#9fc3b0' },
+  { host: 'docs.google.com', icon: 'sheets_2020q4_48dp.png', c: '#34a853' },
+  { host: 'arknights.wiki.gg', icon: 'arknights_wikigg_favicon.png', c: '#8fb4e0' },
+  { host: 'imivi.github.io', icon: 'imivi_pulls_calculator_favicon.png', c: '#b2a9e0' },
+];
+const direct = h => { try { return new URL(h).searchParams.get('q') || h; } catch (e) { return h; } };
+// the notes sit in the roadmap's free right side (author, 2026-10-12: "the banner explanation and urls" there);
+// below the rows when the screen has no room beside them
+function notes() {
+  const sec = el('aside', 'road-notes'), inner = el('div', 'rn-in'); sec.append(inner);
+  const at = ref => G.cells.find(c => c.ref === ref);
+  const wrap = el('div', 'nt'), left = el('div', 'nt-l');
+  // colour (author, 2026-10-12: "colorize this"): "1 รุ้ง (1 Pity)" in the limited rainbow, the rest as the sheet has it
+  const pity = el('div', 'nt-pity'), pt = at('C14').text, pm = pt.match(/^1 รุ้ง \(1 Pity\)/);
+  if (pm) pity.append(el('b', 'rb', pm[0]), document.createTextNode(pt.slice(pm[0].length))); else pity.textContent = pt;
+  left.append(pity);
+  // the limited / collab key (sheet F16, F18) is gone: the roadmap's colour key and the L tags say it (author, 2026-10-12)
+  const more = el('div', 'nt-more');
+  // reruns are on the roadmap now, so the first part of the sheet's C21 reads the author's new wording (2026-10-12)
+  more.append(el('div', 'lead', at('C21').text.replace(/^\*?ไม่แสดงตู้รีรันและตู้ Joint หรือกิจอื่น\.\.\.\s*/, '*ไม่แสดงตู้ Joint และตู้อื่น ๆ... ')));
+  const ul = el('ul', 'nt-links'), foot = el('ul', 'nt-foot');
+  for (const c of G.cells.filter(c => c.row >= 21 && c.row <= 34 && c.ci < 60 && c.text && c.ref !== 'C21').sort((a, b) => a.row - b.row || a.ci - b.ci)) {
+    if (!c.href) { foot.append(el('li', /คอลแลป/.test(c.text) ? 'col' : '', c.text)); continue; }
+    const u = direct(c.href), a = el('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener';
+    // each site's own icon (saved to the site's doc/misc, author 2026-10-12) and a stripe in its colour
+    const site = SITE_ICONS.find(x => u.includes(x.host));
+    if (site) { a.style.setProperty('--site', site.c); a.classList.add('has-ic'); a.append(Object.assign(el('img', 'ic'), { src: MISC + site.icon, alt: '' })); }
+    a.append(el('span', 't', c.text), el('span', 'u', u.replace(/^https?:\/\/(www\.)?/, '').replace(/[?#].*$/, '').replace(/\/$/, '')), goArrow());
+    const li = el('li'); li.append(a); ul.append(li);
+  }
+  more.append(ul); if (foot.childElementCount) more.append(foot);
+  left.append(more);
+  wrap.append(left); inner.append(wrap);
+  return sec;
+}
+
+// ---------- LIMITED (sheet rows 39-63) ----------
+// One card per limited banner (a 16-column span from its row-43 title). Author, 2026-10-10: green name cells =
+// spark price 200 (the sheet's J41 is that key); the groups under the pool are separate: free selector, free 5★
+// selector, one-time buyable 6★ ($29.99), each opened by its red heading row in the sheet.
+const HERO_TILE = { 'Angelina2': '../img/tiles/char_1015_aglna2_2.webp', "Kal'tsit2": '../img/tiles/char_1052_kalts2_2.webp' };
+const RED = '#cc0000', GREEN = '#a9d5b3';
+function limited() {
+  const sec = el('section', 'limsec'); sec.append(header(2, 6, 'limited'));
+  const intro = el('div', 'lim-intro');
+  for (const r of [39, 40]) for (const c of byRow[r].filter(c => c.text)) intro.append(el('div', '', c.text));
+  const l41 = el('div', 'l41');
+  for (const c of byRow[41]) l41.append(el('span', st(c).bg === GREEN ? 'hl' : '', c.text));
+  intro.append(l41);
+  const art = byRow[39].find(c => c.img); if (art) { const a = pic(art, ''); a.classList.add('emblem'); intro.prepend(a); }
+  sec.append(intro);
+  const wrap = el('div', 'lims');
+  for (const t of byRow[43].filter(c => c.cs > 5)) {
+    const span = [t.ci, t.ci + 16];
+    const inSpan = r => (byRow[r] || []).filter(c => c.ci >= span[0] && c.ci < span[1]);
+    const nameUnder = c => cellAt[`${c.row + c.rs}:${c.ci}`];
+    const card = el('article', 'lim'); setAcc(card, st(t).bg);
+    // header: title, subtitle, roman numeral
+    const hd = el('div', 'hd'), tl = lines(t.text);
+    hd.append(el('div', 't1', tl[0]), el('div', 't2', tl.slice(1).join(' ')));
+    const rn = inSpan(43).find(c => c !== t); if (rn) hd.append(el('div', 'rn', rn.text));
+    card.append(hd);
+    // hero: the limited operator's art, or the sheet's "?" with its name (CN 7.5th, 2027 Sui)
+    const hero = el('div', 'hero'), h44 = inSpan(44)[0], h45 = inSpan(45)[0];
+    if (h44 && h44.img) {
+      const n = h45 && h45.text, i = HERO_TILE[n] ? Object.assign(el('img'), { src: HERO_TILE[n], alt: n }) : pic(h44, n);
+      hero.append(i);
+    } else if (h44) { hero.classList.add('tbd'); hero.append(el('div', 'q', h44.text)); }
+    if (h45) hero.append(el('div', 'nm', h45.text));
+    card.append(hero);
+    // off-rate pool: picture rows 46 / 49 / 52, names under; green name = spark 200
+    const pool = el('div', 'pool');
+    for (const r of [46, 49, 52]) for (const c of inSpan(r)) if (c.img) {
+      const n = nameUnder(c), op = el('div', 'op' + (n && st(n).bg === GREEN ? ' g200' : ''));
+      op.append(pic(c, n && n.text), el('div', 'name', n ? n.text : '')); pool.append(op);
+    }
+    if (pool.childElementCount) { const g = el('div', 'grp pool-grp'); g.append(pool); card.append(g); }
+    // groups, rows 55-63: each red heading opens one; notes beside a group's pictures stay in it, others go last
+    const groups = [], loose = [];
+    let cur = null;
+    for (let r = 55; r <= 63; r++) for (const c of inSpan(r)) {
+      const s = st(c);
+      if (c.text && s.bg === RED) { cur = { head: c, ops: [], price: null, upto: null, notes: [], rows: new Set() }; groups.push(cur); continue; }
+      if (c.img) {
+        if (!cur) continue;
+        const n = nameUnder(c), label = n && n.text && !/Selectable/.test(n.text) ? n.text : '';
+        cur.ops.push({ c, label, permit: /doc\/misc/.test((IM[c.ref] || {}).site || '') });
+        for (let k = 0; k < c.rs + 1; k++) cur.rows.add(c.row + k);
+        continue;
+      }
+      if (!c.text) continue;
+      if (/Selectable/.test(c.text)) { if (cur) cur.upto = c; continue; }   // sits under the permit, not its name
+      const above = cellAt[`${c.row - 1}:${c.ci}`];
+      if (above && above.img) continue;                       // an operator's name, already used
+      if (/ราคา|\$/.test(c.text)) { if (cur) cur.price = c; continue; }
+      if (cur && cur.rows.has(c.row)) cur.notes.push(c); else loose.push(c);
+    }
+    for (const gr of groups) {
+      const g = el('div', 'grp');
+      g.append(el('h4', 'gh' + (/standard/i.test(gr.head.text) ? ' std' : ''), lines(gr.head.text).join(' ')));   // the one-time buy is a standard 6*
+      const permits = gr.ops.filter(o => o.permit), chars = gr.ops.filter(o => !o.permit);
+      if (permits.length) {
+        // a permit you buy or are given, then the operator it reaches
+        const row = el('div', 'buy');
+        for (const o of permits) { const p = pic(o.c, 'permit'); p.classList.add('permit'); row.append(p); }
+        const mid = el('div', 'mid');
+        if (gr.price) mid.append(el('div', 'price', lines(gr.price.text).join('  ')));
+        if (gr.upto) mid.append(el('div', 'upto', gr.upto.text));
+        gr.notes.forEach(n => mid.append(el('div', 'gnote', lines(n.text).join(' '))));
+        row.append(mid);
+        for (const o of chars) { const op = el('div', 'op target'); op.append(pic(o.c, o.label), el('div', 'name', o.label)); row.append(op); }
+        g.append(row);
+      } else {
+        const grid = el('div', 'pool');
+        for (const o of chars) { const op = el('div', 'op'); op.append(pic(o.c, o.label), el('div', 'name', o.label)); grid.append(op); }
+        g.append(grid);
+        gr.notes.forEach(n => g.append(el('div', 'gnote', lines(n.text).join(' '))));
+      }
+      card.append(g);
+    }
+    if (loose.length) { const n = el('div', 'cnotes'); loose.forEach(c => lines(c.text).forEach(l => n.append(el('div', '', l)))); card.append(n); }
+    wrap.append(card);
+  }
+  // the key for the green names above the cards is gone (author, 2026-10-12): the intro's green chip says it
+  sec.append(wrap);
+  return sec;
+}
+
+
+// ---------- STANDARD POOL (sheet rows 65-82) ----------
+// The sheet's own title (D65). The pool in sheet order; the four with a month under them (row 75) join later.
+// Then the selector reminder (77-78, the permit and the sheet's band colour) and the Kernel move (80-82).
+function richText(c) {             // a cell's text with its coloured runs, as a link when the sheet links it
+  const t = el(c.href ? 'a' : 'span');
+  if (c.href) { t.href = new URL(c.href).searchParams.get('q') || c.href; t.target = '_blank'; t.rel = 'noopener'; }
+  if (c.runs) for (const r of c.runs) { const sp = el('span', '', r.text); if (r.color) sp.style.color = r.color; t.append(sp); }
+  else t.textContent = c.text;
+  return t;
+}
+function standard() {
+  const d65 = byRow[65][0], m = d65.text.match(/^([^฀-๿]+?)\s*([฀-๿].*)$/);   // English title, then the Thai line
+  const sec = el('section', 'stdsec');
+  sec.append(header(3, 6, { title: m ? m[1] : d65.text, ghost: 'STANDARD', sheet: true }, m ? m[2] : ''));
+  const pool = el('div', 'std-pool');
+  for (const r of [67, 70, 73]) for (const c of byRow[r]) if (c.img) {
+    const n = cellAt[`${r + 1}:${c.ci}`], when = cellAt[`${r + 2}:${c.ci}`];
+    const op = el('div', 'op' + (when && when.text ? ' soon' : ''));
+    const nm = el('div', 'name', n ? n.text : '');
+    if (n && st(n).sizePx) nm.style.setProperty('--k', (st(n).sizePx / 14.67).toFixed(3));   // the sheet's own size ratio (Degenbrecher 12 px)
+    op.append(pic(c, n && n.text), nm);
+    if (when && when.text) op.append(el('div', 'when', when.text));
+    pool.append(op);
+  }
+  sec.append(pool);
+  // selector reminder
+  const call = el('div', 'std-call'), p77 = byRow[77].find(c => c.img);
+  call.style.setProperty('--band', st(byRow[77].find(c => c.text)).bg);
+  if (p77) { const i = pic(p77, 'permit'); i.classList.add('permit'); call.append(i); }
+  const tx = el('div', 'tx'); for (const r of [77, 78]) for (const c of byRow[r]) if (c.text) tx.append(el('div', '', c.text));
+  call.append(tx); sec.append(call);
+  // Kernel move
+  const mv = el('div', 'std-move'), d80 = byRow[80].find(c => c.img), k80 = byRow[80].find(c => c.text);
+  if (d80) { const i = pic(d80, 'Closure'); i.classList.add('who'); mv.append(i); }
+  const body = el('div', 'body');
+  if (k80) body.append(richText(k80));
+  const ops = el('div', 'ops');
+  for (const c of byRow[81] || []) if (c.img) {
+    const n = cellAt[`82:${c.ci}`]; const op = el('div', 'op'); op.append(pic(c, n && n.text), el('div', 'name', n ? n.text : '')); ops.append(op);
+  }
+  body.append(ops); mv.append(body); sec.append(mv);
+  return sec;
+}
+
+
+// ---------- SELECTOR PLEDGE (sheet rows 85-95) ----------
+// Four promises, Thai then English, each with the sheet's gold checkbox (K85, K88, K91, K94), beside the tall
+// permit on the sheet's band colour (D85). The reader can tick them; ticks stay in that browser only.
+function pledge() {
+  const sec = el('section', 'plsec'); sec.append(header(4, 6, 'pledge'));
+  const box = el('div', 'pledge'), d85 = byRow[85].find(c => c.img);
+  box.style.setProperty('--band', st(d85).bg || '#b73052');
+  const side = el('div', 'side'); if (d85) { const i = pic(d85, 'permit'); i.classList.add('permit'); side.append(i); }
+  const list = el('ol', 'items');
+  const KEY = 'future-pledge';
+  let saved = []; try { saved = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) {}
+  [85, 88, 91, 94].forEach((r, i) => {
+    const th = (byRow[r] || []).find(c => c.text), en = (byRow[r + 1] || []).find(c => c.text);
+    const li = el('li', 'item'), lab = el('label');
+    const cb = Object.assign(el('input'), { type: 'checkbox', checked: !!saved[i] });
+    cb.onchange = () => { saved[i] = cb.checked; li.classList.toggle('on', cb.checked); done();
+      try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} };
+    li.classList.toggle('on', cb.checked);
+    const t = el('div', 'tx');
+    if (th) { const a = richText(th); a.classList.add('th'); t.append(a); }
+    if (en) { const b = richText(en); b.classList.add('en'); t.append(b); }
+    lab.append(cb, el('span', 'box'), t); li.append(lab); list.append(li);
+  });
+  const done = () => box.classList.toggle('all', [...list.querySelectorAll('input')].every(x => x.checked));
+  box.append(side, list); sec.append(box); done();
+  return sec;
+}
+
+
+
+// Chance of getting one given operator at least once in N pulls on one limited banner, exact (no simulation):
+// walk every pity state (pulls since the last 6*) pull by pull. Arknights pity: 2%, +2% per pull after 50
+// without a 6*; counts start at 0 on each limited banner (sheet T41). per6 = that operator's share of a 6*.
+function firstHit(N, per6) {
+  let st = new Map([[0, 1]]), hit = 0;
+  for (let n = 0; n < N; n++) {
+    const nx = new Map();
+    for (const [k, pr] of st) {
+      const r = Math.min(1, 0.02 + Math.max(0, k - 49) * 0.02);
+      hit += pr * r * per6;
+      nx.set(0, (nx.get(0) || 0) + pr * r * (1 - per6));
+      nx.set(k + 1, (nx.get(k + 1) || 0) + pr * (1 - r));
+    }
+    st = nx;
+  }
+  return hit;
+}
+// The SA2 spook table (author, 2026-10-11): how likely SA2 comes back as off-rate on later limited banners,
+// at 200 and 300 pulls a banner; every number shows its working on hover (or keyboard focus).
+function spookTable(x5Text, normText) {
+  const x5 = parseFloat(x5Text) / 100, nm = parseFloat(normText) / 100;
+  const P = v => (v * 100).toFixed(1) + '%';
+  const rows = [
+    { label: 'One x5 banner', f: (a) => a, math: (N, a) =>
+      `${N} pulls on one banner, ${x5Text} per 6★ (x5)\nexact sum over every pity path:\nP(at least one SA2) = ${P(a)}` },
+    { label: 'All three x5 banners', f: (a) => 1 - (1 - a) ** 3, math: (N, a) =>
+      `three banners, ${N} pulls each\n1 − (1 − ${P(a)})³\n= 1 − ${(1 - a).toFixed(3)}³ = ${P(1 - (1 - a) ** 3)}` },
+    { label: 'One banner at normal rate', f: (a, c) => c, math: (N, a, c) =>
+      `${N} pulls on one banner, ${normText} per 6★ (x5 over)\nexact sum over every pity path:\nP(at least one SA2) = ${P(c)}` },
+    { label: 'A year at normal rate (4 banners)', f: (a, c) => 1 - (1 - c) ** 4, math: (N, a, c) =>
+      `four banners, ${N} pulls each\n1 − (1 − ${P(c)})⁴ = ${P(1 - (1 - c) ** 4)}` },
+    { label: 'Three x5 banners, then 2 years normal', f: (a, c) => 1 - (1 - a) ** 3 * (1 - c) ** 8, math: (N, a, c) =>
+      `3 banners at x5 + 8 at normal, ${N} pulls each\n1 − (1 − ${P(a)})³ × (1 − ${P(c)})⁸\n= ${P(1 - (1 - a) ** 3 * (1 - c) ** 8)}` },
+  ];
+  const t = el('div', 'rt-odds');
+  t.append(el('div', 'h ph', 'Chance SA2 comes back as off-rate'), el('div', 'h', '200 pulls / banner'), el('div', 'h', '300 pulls / banner'));
+  const A = { 200: firstHit(200, x5), 300: firstHit(300, x5) }, C = { 200: firstHit(200, nm), 300: firstHit(300, nm) };
+  for (const r of rows) {
+    t.append(el('div', 'lab ph', r.label));
+    for (const N of [200, 300]) {
+      const d = el('div', 'v'); d.tabIndex = 0;
+      d.append(el('b', '', P(r.f(A[N], C[N]))), el('div', 'math', r.math(N, A[N], C[N])));
+      t.append(d);
+    }
+  }
+  t.append(el('div', 'foot', 'Exact, not simulated. Pity: 2%, +2% per pull after 50 without a 6★; counts reset each banner.'));
+  return t;
+}
+
+
+// SA2 example, read from the sheet's table (rows 121-131): years down (X123 / X127 / X131), the two limited months
+// across (AB121 / AG121). A picture = x5 that banner; text with ปกติ = normal rate; other text = no chance (debut,
+// not a year yet). Per-banner chance from firstHit(); the running total = 1 - product of (1 - each).
+function sa2Slots(x5Text, normText) {
+  const cell = ref => G.cells.find(c => c.ref === ref) || {};
+  const x5 = parseFloat(x5Text) / 100, nm = parseFloat(normText) / 100;
+  const A = { 200: firstHit(200, x5), 300: firstHit(300, x5) }, C = { 200: firstHit(200, nm), 300: firstHit(300, nm) };
+  const months = [cell('AB121').text, cell('AG121').text].map(t => lines_(t));
+  const slots = [];
+  for (const [y, a, b] of [['X123', 'AB123', 'AG123'], ['X127', 'AB127', 'AG127'], ['X131', 'AB131', 'AG131']]) {
+    [a, b].forEach((r, i) => {
+      const c = cell(r);
+      const kind = c.img ? 'x5' : /ปกติ/.test(c.text || '') ? 'norm' : (i === 0 && cell(y).text === cell('X123').text ? 'debut' : 'none');
+      slots.push({ year: cell(y).text, month: months[i], c, kind, text: c.img ? '' : lines_(c.text),
+        p: { 200: kind === 'x5' ? A[200] : kind === 'norm' ? C[200] : 0, 300: kind === 'x5' ? A[300] : kind === 'norm' ? C[300] : 0 } });
+    });
+  }
+  let r200 = 1, r300 = 1;
+  slots.forEach(s => { r200 *= 1 - s.p[200]; r300 *= 1 - s.p[300]; s.cum = { 200: 1 - r200, 300: 1 - r300 }; });
+  return { slots, x5Text, normText };
+}
+const PCT = v => (v * 100).toFixed(1) + '%';
+function sa2Track(data, avatar) {
+  const box = el('div', 'sa2-track');
+  const n = data.slots.length;
+  // running total line (200 solid, 300 dashed) drawn over the slots
+  const max = Math.max(...data.slots.map(s => s.cum[300]), 0.05);
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', `0 0 ${n * 100} 90`); svg.setAttribute('preserveAspectRatio', 'none'); svg.classList.add('cum');
+  for (const N of [300, 200]) {
+    const pts = data.slots.map((s, i) => `${i * 100 + 50},${80 - (s.cum[N] / max) * 66}`).join(' ');
+    const pl = document.createElementNS(svg.namespaceURI, 'polyline'); pl.setAttribute('points', pts); pl.setAttribute('class', 'l' + N);
+    svg.append(pl);
+  }
+  const head = el('div', 'cumhead');
+  head.append(svg);
+  const labels = el('div', 'cumlab');
+  data.slots.forEach(s => labels.append(el('div', '', s.cum[200] > 0 ? `${PCT(s.cum[200])} · ${PCT(s.cum[300])}` : '')));
+  head.append(labels);
+  const row = el('div', 'slots');
+  data.slots.forEach(s => {
+    const d = el('div', 'slot ' + s.kind); d.tabIndex = 0;
+    d.append(el('div', 'when', `${s.year} · ${s.month}`));
+    const face = el('div', 'face');
+    if (s.kind !== 'none') { const i = el('img'); i.src = avatar; i.alt = 'SilverAsh2'; face.append(i); }
+    d.append(face);
+    d.append(el('div', 'p', s.p[200] ? `${PCT(s.p[200])} / ${PCT(s.p[300])}` : '—'));
+    if (s.text) d.append(el('div', 'txt', s.text));
+    d.append(el('div', 'math', s.p[200]
+      ? `${s.kind === 'x5' ? data.x5Text + ' per 6★ (x5)' : data.normText + ' per 6★ (normal)'}\nthis banner: ${PCT(s.p[200])} at 200 pulls, ${PCT(s.p[300])} at 300\nrunning total: 1 − Π(1 − each banner)\n= ${PCT(s.cum[200])} at 200, ${PCT(s.cum[300])} at 300`
+      : `no chance on this banner (${s.text || 'debut'})`));
+    row.append(d);
+  });
+  box.append(el('div', 'cap ph', 'Chance SA2 comes back as off-rate: each banner, and in total (200 · 300 pulls a banner)'), head, row);
+  return box;
+}
+function sa2Chart(data, strip) {
+  const box = el('div', 'sa2-chart');
+  const art = el('div', 'art'); const im = el('img'); im.src = strip; im.alt = 'SilverAsh2'; art.append(im, el('div', 'nm', 'SILVERASH2'));
+  box.append(art);
+  const bars = el('div', 'bars');
+  const max = Math.max(...data.slots.map(s => s.cum[300]), 0.05);
+  data.slots.forEach(s => {
+    const b = el('div', 'b ' + s.kind); b.tabIndex = 0;
+    const col = el('div', 'col');
+    const h3 = el('div', 'h300'); h3.style.height = (s.cum[300] / max * 100) + '%';
+    const h2 = el('div', 'h200'); h2.style.height = (s.cum[200] / max * 100) + '%';
+    col.append(h3, h2);
+    b.append(el('div', 'v', s.cum[200] > 0 ? PCT(s.cum[200]) : '—'), col, el('div', 'when', `${s.year}\n${s.month}`));
+    b.append(el('div', 'math', s.p[200]
+      ? `this banner: ${PCT(s.p[200])} / ${PCT(s.p[300])} (${s.kind === 'x5' ? 'x5' : 'normal'})\nrunning total: ${PCT(s.cum[200])} at 200 pulls, ${PCT(s.cum[300])} at 300`
+      : `no chance on this banner (${s.text || 'debut'})`));
+    bars.append(b);
+  });
+  box.append(el('div', 'cap ph', 'Running chance SA2 comes back as off-rate (light: 300 pulls a banner, solid: 200)'), bars);
+  return box;
+}
+
+// ---------- LIMITED RATES (sheet rows 98-134) ----------
+// The sheet's own Thai title (D98) under a placeholder English title. Part 1, the rate ladder: the rate-up pair
+// (rows 100-103, 35% each), the last three limited at x5 (105-108, 2.344%), the rest of the off-rate pool (110-117,
+// 0.469%). Part 2, two columns: "หมายความว่า..." (D119, the SA2 example and its year x month table) and
+// "ทำไมสายฟรี..." (AS119, the four limited banners at -50 beside the reasoning).
+function rates() {
+  const sec = el('section', 'rtsec');
+  sec.append(header(5, 6, 'rates', byRow[98][0].text));
+  const cell = ref => G.cells.find(c => c.ref === ref);
+  const txt = ref => (cell(ref) || {}).text || '';
+  const opsIn = (rows, maxCi) => rows.flatMap(r => (byRow[r] || []).filter(c => c.img && c.ci < maxCi)).map(c => {
+    const n = cellAt[`${c.row + c.rs}:${c.ci}`]; return { c, name: n ? n.text : '' };
+  });
+  // numbers inside the sheet's sentences light up (styling only; the words are the sheet's)
+  const hl = (node, text) => {
+    const re = /(\d[\d,.~-]*\s*(?:%|โรล|แต้มทอง|แต้ม))/g;   // amounts with a unit only (%, pulls, points)
+    let last = 0, m;
+    while ((m = re.exec(text))) {
+      if (m.index > last) node.append(document.createTextNode(text.slice(last, m.index)));
+      node.append(el('em', 'n', m[1])); last = m.index + m[1].length;
+    }
+    if (last < text.length) node.append(document.createTextNode(text.slice(last)));
+    return node;
+  };
+
+  // ---- part 1: one panel, a probability bar, three tiers side by side ----
+  const n100 = txt('N100'), m35 = (n100.match(/(\d+%)/) || [])[1] || '';
+  const T = [
+    { k: 't1', pre: n100.replace(/\s*\d+%\s*$/, ''), rate: m35, post: '', ops: opsIn([100], 13),
+      tags: [[txt('D102'), txt('D103')], [txt('I102'), txt('I103')]], note: '' },
+    { k: 't2', pre: `${txt('S105')} ${txt('S106')}`, rate: txt('S107'), post: txt('S108'), ops: opsIn([105], 18), tags: [],
+      note: ['AA105', 'AA106', 'AA107', 'AA108'].map(txt).join(' ') },
+    { k: 't3', pre: ['AM110', 'AM111', 'AM112', 'AM113', 'AM114'].map(txt).join(' '), rate: txt('AM115'), post: txt('AM116'),
+      ops: opsIn([110, 114], 38), tags: [], note: '' },
+  ];
+  const panel = el('div', 'rt-panel');
+  // the bar: each operator's share of a 6* drop, drawn from the sheet's own per-operator rates; the rest of the
+  // off-rate pool takes what is left (the sheet shows 14 of them as examples)
+  const pct = t => parseFloat(t) || 0;
+  const bar = el('div', 'rt-bar');
+  const segs = [];
+  // the limited rate-up gets the rainbow (author, 2026-10-11: "limited rated up has rainbow shade"): its first tag
+  // in the sheet says ลิมิต (D102); the standard rate-up stays plain
+  const isLim = i => /ลิมิต/.test((T[0].tags[i] || [])[0] || '');
+  T[0].ops.forEach((o, i) => segs.push({ w: pct(T[0].rate), cls: 's1' + (isLim(i) ? ' lim' : ''), label: `${o.name} ${T[0].rate}` }));
+  segs.push({ w: pct(T[1].rate) * T[1].ops.length, cls: 's2', label: T[1].rate, title: T[1].ops.map(o => o.name).join(' · ') });
+  segs.push({ w: Math.max(0, 100 - segs.reduce((a, s) => a + s.w, 0)), cls: 's3', label: T[2].rate });
+  segs.forEach(s => { const d = el('div', 'seg ' + s.cls); d.style.flexGrow = s.w; if (s.title) d.title = s.title; d.append(el('span', '', s.label)); bar.append(d); });
+  panel.append(bar);
+  const cols = el('div', 'rt-cols');
+  T.forEach((t, i) => {
+    const c = el('div', 'tier ' + t.k);
+    c.append(el('div', 'idx', `${String(i + 1).padStart(2, '0')} // 03`));
+    const num = el('div', 'rate');
+    if (t.pre) num.append(el('span', 'pre', t.pre));
+    num.append(el('b', '', t.rate));
+    if (t.post) num.append(el('span', 'post', t.post));
+    c.append(num);
+    const grid = el('div', 'ops'); grid.style.setProperty('--n', t.ops.length);
+    t.ops.forEach((o, j) => {
+      const lim = t.k === 't1' && /ลิมิต/.test((t.tags[j] || [])[0] || '');
+      const d = el('div', 'op' + (lim ? ' lim' : '')); d.append(pic(o.c, o.name), el('div', 'name', o.name));
+      (t.tags[j] || []).forEach((tg, k) => d.append(el('div', 'tag' + (k ? ' t2' : ''), tg))); grid.append(d);
+    });
+    c.append(grid);
+    if (t.note) c.append(el('div', 'note', t.note));
+    cols.append(c);
+  });
+  panel.append(cols);
+  sec.append(panel);
+
+  // ---- part 2: two readouts ----
+  const two = el('div', 'rt-two');
+  const left = el('div', 'col');
+  left.append(el('div', 'idx', 'A //'), el('h3', '', txt('D119')));
+  const rows = el('ul', 'lines');
+  for (let r = 121; r <= 132; r++) (byRow[r] || []).filter(c => c.ci === 3 && c.text).forEach(c => rows.append(hl(el('li'), c.text)));
+  left.append(rows, sugList([
+    { refs: ['D121', 'D122'] },
+    { refs: ['D123', 'D124'], why: 'could be one line with the 3-banner chance below' },
+    { refs: ['D126'], strike: true, why: 'the table below shows the 3 banners at x5' },
+    { refs: ['D127', 'D128'], why: 'could be one line with the 1-banner chance above' },
+    { refs: ['D129'] },
+    { refs: ['D130'], strike: true, why: 'same point as the line above' },
+    { refs: ['D131', 'D132'], strike: true, why: "the table's 2028 month-10 cell says this" },
+  ], hl));
+  // the SA2 example as a little timeline: years down, the two limited months across; x5 cells outlined
+  const tl = el('div', 'rt-tl');
+  tl.append(el('div', 'cap', lines_(txt('X121'))));
+  ['AB121', 'AG121'].forEach(r => tl.append(el('div', 'mh', lines_(txt(r)))));
+  for (const [y, a, b] of [['X123', 'AB123', 'AG123'], ['X127', 'AB127', 'AG127'], ['X131', 'AB131', 'AG131']]) {
+    tl.append(el('div', 'yr', txt(y)));
+    for (const r of [a, b]) {
+      const c = cell(r), d = el('div', 'td');
+      if (c && c.img) { d.append(pic(c, 'SilverAsh2')); d.classList.add('x5'); } else d.append(el('span', '', lines_(txt(r))));
+      tl.append(d);
+    }
+  }
+  const sa2 = sa2Slots(txt('S107'), txt('AM115'));
+  const sa2Av = 'https://lemonwait.github.io/operator/avatars/char_1045_svash2.png';
+  const sa2Strip = '../img/strips/char_1045_svash2_2_solo.webp';
+  const tblWrap = el('div', 'sa2-table'); tblWrap.append(tl, spookTable(txt('S107'), txt('AM115')));
+  left.append(tblWrap, sa2Track(sa2, sa2Av), sa2Chart(sa2, sa2Strip), el('div', 'end', txt('D133')));
+
+  const right = el('div', 'col');
+  right.append(el('div', 'idx', 'B //'), el('h3', '', txt('AS119')), el('p', 'lead', txt('AS121')));
+  const strip = el('div', 'rt-spend');
+  for (const [rn, amt] of [['AS122', 'AW122'], ['AS125', 'AW125'], ['AS128', 'AW128'], ['AS131', 'AW131']]) {
+    const b = el('div', 'bn'); b.style.setProperty('--c', st(cell(rn)).bg);
+    b.append(el('span', 'rn', txt(rn)), el('span', 'amt', txt(amt))); strip.append(b);
+  }
+  right.append(strip);
+  const rr = el('ul', 'lines');
+  for (let r = 122; r <= 133; r++) (byRow[r] || []).filter(c => c.ci === 51 && c.text).forEach(c => rr.append(hl(el('li'), c.text)));
+  right.append(rr, sugList([
+    { refs: ['AZ122', 'AZ123'], why: 'the -50 strip above already shows the 200 lost' },
+    { refs: ['AZ125'] },
+    { refs: ['AZ126', 'AZ127', 'AZ128'], why: 'could be one sum: 680 + 152 = 830' },
+    { refs: ['AZ129'] },
+    { refs: ['AZ130'] },
+    { refs: ['AZ131', 'AZ132'], why: 'both about farming 1-7: could be one line' },
+    { refs: ['AZ133'] },
+    { refs: ['AZ124'], why: 'moved down: about monthly-card players, like the closing note' },
+  ], hl), el('p', 'close', txt('AS134')));
+  two.append(left, right); sec.append(two);
+  return sec;
+}
+
+// Suggested view of a card's lines: groups of sheet rows shown as one row; 'strike' = repeats something shown
+// elsewhere (kept visible, faded, with the reason); 'merge' = could become one line with its neighbour.
+function sugList(groups, hl) {
+  const ul = el('ul', 'lines sug');
+  for (const g of groups) {
+    const li = el('li', g.strike ? 'strike' : '');
+    hl(li, g.refs.map(r => (G.cells.find(c => c.ref === r) || {}).text || '').join(' '));
+    if (g.why) li.append(el('span', 'why', g.why));
+    ul.append(li);
+  }
+  return ul;
+}
+const lines_ = t => (t || '').split('\n').map(x => x.trim()).filter(Boolean).join(' · ');
+
+
+// ---------- GACHA SIMULATOR + COLLAB (sheet rows 136-167) ----------
+// D136: a link band in the sheet's teal. D138: the sheet's own title "Collab", S138 its line (no reruns until
+// announced), S139 the key: a green fill = given free. Then one card per collab (rows 142-166, every 3 rows):
+// the event banner (D), its name under it, and the operators (S, X, AC, AH, AM) with their names.
+function collab() {
+  const sec = el('section', 'cosec');
+  const d136 = byRow[136][0];
+  const sim = el('a', 'co-sim'); sim.href = new URL(d136.href).searchParams.get('q') || d136.href; sim.target = '_blank'; sim.rel = 'noopener';
+  sim.style.setProperty('--band', st(d136).bg);
+  sim.append(el('span', 'tx', d136.text), goArrow());
+  sec.append(sim);
+  const d138 = byRow[138].find(c => c.ci === 3), s138 = byRow[138].find(c => c.ci === 18), s139 = byRow[139].find(c => c.ci === 18);
+  sec.append(header(6, 6, { title: d138.text, ghost: 'COLLAB', sheet: true }, s138 ? s138.text : ''));
+  const FREE_KEY = st(s139).bg, FREE = '#a9d5b3';   // the key cell's green, and the green the operator cells use
+  const key = el('div', 'co-key'); key.append(el('i'), el('span', '', s139.text)); key.style.setProperty('--free', FREE_KEY);
+  sec.append(key);
+  const grid = el('div', 'co-grid');
+  for (let r = 142; r <= 166; r += 3) {
+    const art = (byRow[r] || []).find(c => c.ci === 3 && c.img), nameC = (byRow[r + 1] || []).find(c => c.ci === 3);
+    if (!art) continue;
+    const card = el('article', 'co-card');
+    const top = el('div', 'banner'); const bi = pic(art, nameC ? nameC.text : ''); bi.classList.add('bn'); top.append(bi);
+    if (nameC) top.append(el('div', 'nm', nameC.text));
+    card.append(top);
+    const ops = el('div', 'ops');
+    for (const c of (byRow[r] || []).filter(c => c.ci > 3 && c.img)) {
+      const n = cellAt[`${r + 1}:${c.ci}`], free = st(c).bg === FREE;
+      const o = el('div', 'op' + (free ? ' free' : ''));
+      const nm = el('div', 'name', n ? n.text : '');
+      if (n && st(n).sizePx) nm.style.setProperty('--k', (st(n).sizePx / 16).toFixed(3));   // the sheet's size ratio (Terra Research 10.67 px)
+      o.append(pic(c, n && n.text), nm); ops.append(o);
+    }
+    card.append(ops); grid.append(card);
+  }
+  sec.append(grid);
+  return sec;
+}
+
+// data baked next to the page (future/tools/bake_page.py), so it works opened as a file and on the site; the
+// fetch is only a fallback for a page served without the baked file
+const BAKED = window.FUTURE_DATA;
+(BAKED ? Promise.resolve(['grid', 'images', 'meta', 'sched', 'kay', 'kaymeta', 'welfare'].map(k => BAKED[k] || {}))
+  : Promise.all(['../../design/grid/FUTURE.json', '../docs/images-draft.json', '../img/strips/meta.json', '../data/schedule.json', '../data/roadmap_auto.json', '../img/auto/meta.json', '../data/welfare.json'].map(u => fetch(u + '?t=' + Date.now()).then(r => r.ok ? r.json() : {})))).then(([g, im, meta, sched, kay, kaymeta, welf]) => {
+  WELF = welf || {};
+  KAY = kay.rows ? kay : { rows: [] }; for (const k in kaymeta) if (!(k in meta)) meta[k] = kaymeta[k];   // Kay-chan's forecast and her crops' meta
+  G = g; IM = im; META = meta; SCHED = sched;
+  for (const c of G.cells) { cellAt[`${c.row}:${c.ci}`] = c; (byRow[c.row] ||= []).push(c); }
+  for (const r in byRow) byRow[r].sort((a, b) => a.ci - b.ci);
+  const page = document.getElementById('page');
+  const road = timeline(); road.append(notes());
+  page.append(road, limited(), standard(), pledge(), rates(), collab());
+  const fit = () => {
+    // the page may be zoomed on wide screens (CSS zoom on main); measure in page px so everything written back to
+    // CSS is in the same unit (author, 2026-10-12: "kinda tiny on desktop i have to use like 125% zoom")
+    // the roadmap itself is drawn as at a 175% zoom, or as large as the width allows (author, 2026-10-12: "i have
+    // to use desktop zoom 175% to achieve p1 roadmap stripe size i love"); its rows stop at 1010 roadmap px
+    const PZ = parseFloat(getComputedStyle(document.getElementById('page')).zoom) || 1, road = document.querySelector('section.road');
+    road.style.zoom = '';
+    const RZ = document.body.classList.contains('e') ? Math.max(1, Math.min(1.75, road.getBoundingClientRect().width / 1010) / PZ) : 1;
+    road.style.zoom = RZ;
+    const Z = PZ * RZ;
+    const R = e => { const q = e.getBoundingClientRect(); return { top: q.top / Z, bottom: q.bottom / Z, left: q.left / Z, right: q.right / Z, width: q.width / Z, height: q.height / Z }; };
+    const bh = document.getElementById('bar').offsetHeight; document.documentElement.style.setProperty('--bar-h', bh + 'px');
+    const r = document.querySelector('section.road'), top = R(r).top;
+    if (document.body.classList.contains('e')) {
+      // strips: one row per banner, TBA months share a row; the strip height is what the screen has left
+      r.style.removeProperty('--road-w');   // measure the art at full length; a trimmed row would cap it (the rows only ever shrank)
+      r.style.setProperty('--sh', '64px');
+      const rows = new Set([...r.querySelectorAll('.unit')].map(u => Math.round(R(u).top))).size;   // lines, not units: cells share one
+      const used = Math.max(...[...r.querySelectorAll('.yrblock')].map(b => R(b).bottom)) - top - rows * 64;
+      r.style.setProperty('--sh', Math.max(44, Math.min(130, Math.floor(((innerHeight / Z) - bh - used - 16) / rows))) + 'px');
+      r.querySelectorAll('.unit').forEach(u => { const q = R(u); u.classList.toggle('up', q.top + q.height / 2 > (innerHeight / Z) * 0.55); });
+      // faces clear the text at any window size (author, 2026-10-10: faces went under the names when rows got
+      // taller): the first operator's face lands just past the row's text; the art still starts at the left edge
+      // (the shift is never positive), so with short text the face simply sits further right.
+      // One face column for every row (author, 2026-10-10: Orchid2, Aphrissa, Makoto, Clementia should sit where
+      // Yato2 does): the column is just past the longest text; a shift to the right leaves the splash a left gap.
+      const sh = parseFloat(r.style.getPropertyValue('--sh'));
+      // the L tag's top on the top of the name's capitals (author, 2026-10-11), measured from the font itself
+      const cv = document.createElement('canvas').getContext('2d');
+      r.querySelectorAll('.nm .ltag').forEach(tag => {
+        tag.style.transform = '';
+        const name = tag.previousElementSibling, cs = getComputedStyle(name.parentElement);
+        cv.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+        const m = cv.measureText('A'), fm = cv.measureText('Ag');
+        const rect = R(name);
+        const asc = fm.fontBoundingBoxAscent, desc = fm.fontBoundingBoxDescent;
+        const baseline = rect.top + (rect.height - (asc + desc)) / 2 + asc;
+        const capTop = baseline - m.actualBoundingBoxAscent;
+        tag.style.transform = `translateY(${(capTop - R(tag).top).toFixed(1)}px)`;
+      });
+      const strips = [...r.querySelectorAll('.unit:not(.empty):not(.evrow)')];
+      const col = Math.max(...strips.map(u => {
+        const ul = R(u).left;
+        return Math.max(...[...u.querySelector('.info').children].map(c => R(c).right)) - ul;
+      })) + sh * 0.9;
+      r.style.setProperty('--face-x', Math.round(col) + 'px');
+      // event rows: their art starts at the face column, or past their own text when that is longer
+      r.querySelectorAll('.evrow').forEach(u => {
+        const ul = R(u).left;
+        const end = Math.max(...[...u.querySelector('.info').children].map(c => R(c).right)) - ul;
+        u.style.setProperty('--ev-x', Math.round(Math.max(col - sh * 1.2, end + sh * 0.3)) + 'px');
+      });
+      // one skeleton for every banner row (author, 2026-10-30: "one fixed width", "0--0"): the art ends at the same
+      // x on every row, past the first face by SOLO_R row-heights (Yato2's crop has no more); a pair's second face comes
+      // PAIR_GAP row-heights after the first, the joint halfway between them. Each picture slides inside its box, so
+      // its face lands on its spot and the crop runs on to the box's edges.
+      const SOLO_R = 4.9, PAIR_GAP = 2.1;
+      const main = strips.find(u => !u.classList.contains('filler')), endX = R(main).left + col + SOLO_R * sh;
+      strips.forEach(u => {
+        const end = endX - R(u).left, ops = [...u.querySelectorAll('.op')], img = u.querySelector('.op .pic');
+        if (!img) return;
+        const metaOf = o => META[(o.querySelector('.pic').getAttribute('src') || '').split('/').pop().split('?')[0]];
+        ops.forEach((o, i) => {
+          const p = o.querySelector('.pic'), m = metaOf(o), last = i === ops.length - 1, face = col + i * PAIR_GAP * sh;
+          if (!m) { o.style.width = Math.round(end) + 'px'; o.style.marginLeft = '0px'; return; }   // a banner picture with no crop data
+          const W = m.ratio * sh, fw = m.fx * W;
+          const left = i ? face - (PAIR_GAP + 1) * sh / 2 : Math.max(0, col - fw);
+          const right = last ? Math.min(end, face + W - fw) : face + (PAIR_GAP + 1) * sh / 2;
+          const w = right - left, q = W - w > 1 ? (fw - (face - left)) / (W - w) : 0.5;
+          o.style.width = Math.round(w) + 'px';
+          o.style.marginLeft = (i ? -sh : Math.round(left)) + 'px';
+          p.style.objectPosition = (Math.max(0, Math.min(1, q)) * 100).toFixed(2) + '% 50%';
+        });
+        const op = img.closest('.op'), ml = parseFloat(op.style.marginLeft) || 0;
+        op.classList.toggle('gapl', ml > 0);   // starts right of the row's edge: fade its left side in (author: Ange2 hard edge)
+        let gf = u.querySelector('.ops .gapfill');
+        if (ml > 0 && GAPFILL.some(n => u.querySelector('.nm').textContent.startsWith(n))) {   // Yato2's gap is fine as it is (author)
+          if (!gf) { gf = el('div', 'gapfill'); img.closest('.ops').prepend(gf); }
+          gf.style.setProperty('--fill', `url("${img.currentSrc || img.src}")`);
+          gf.style.width = Math.round(ml + sh * 1.4) + 'px';
+        } else if (gf) gf.remove();
+      });
+      // the rows end where the longest art ends, no blank right side (author, 2026-10-12: "could we cut these blank
+      // roadmap right side out?")
+      const artEnd = Math.max(...strips.map(u => Math.max(...[...u.querySelectorAll('.op')].map(o => R(o).right)) - R(u).left));
+      // and never narrower than two event cells side by side (5.5 row-heights each, 6 gap, 34 indent)
+      if (artEnd > 0) r.style.setProperty('--road-w', Math.ceil(Math.max(artEnd, 11 * sh + 40)) + 'px');
+    }
+    // the key: its middle on the yellow bar's middle, and its colour bars whole screen pixels wide so the three
+    // limited bars come out even (author, 2026-10-12: "the 3 bars aren't even")
+    const key = r.querySelector('.rkey'), bar = r.querySelector('.sh .bar');
+    if (key && bar && getComputedStyle(key).position === 'absolute') {
+      const px = Z * (devicePixelRatio || 1), snap = v => Math.max(1, Math.round(v * px)) / px;
+      key.style.setProperty('--kw', snap(4) + 'px'); key.style.setProperty('--kg', snap(3) + 'px');
+      key.style.bottom = 'auto'; key.style.top = '0px';
+      const b = R(bar), k = R(key);
+      key.style.top = ((b.top + b.height / 2) - (k.top + k.height / 2)).toFixed(2) + 'px';
+      key.style.marginLeft = '0px';   // and the bars start on a whole pixel, so no edge is blurred
+      const x = key.querySelector('i').getBoundingClientRect().left * (devicePixelRatio || 1);
+      key.style.marginLeft = ((Math.round(x) - x) / px).toFixed(3) + 'px';
+    }
+    const rn = r.querySelector('.road-notes');
+    if (rn) {
+      rn.querySelector('.rn-in').style.zoom = 1 / RZ;   // the notes keep the page's own text size
+      const rw = parseFloat(r.style.getPropertyValue('--road-w')) || 1010, free = R(r).width - rw - 40;
+      const side = document.body.classList.contains('e') && free * RZ >= 420;
+      rn.classList.toggle('side', side);
+      if (side) rn.style.top = Math.round(R(r.querySelector('.yrblock .tl')).top - top) + 'px';
+    }
+    const need = Math.ceil(Math.max(...[...r.querySelectorAll('.yrblock')].map(b => R(b).bottom)) - top), have = (innerHeight / Z) - bh;
+    document.getElementById('fitinfo').textContent = `roadmap needs ${need} px, screen has ${have} px: ${need <= have ? 'fits' : 'DOES NOT FIT'}`;
+  };
+  // one pass can measure a layout that is still settling (author, 2026-10-12: after resizing the window and back, the
+  // notes sat 1070 px too low and the rows ran long), so run again until nothing it writes changes (at most 4 passes)
+  const road0 = document.querySelector('section.road');
+  const state = () => road0.style.cssText + '|' + [...road0.querySelectorAll('.road-notes, .rkey')].map(e => e.className + e.style.cssText).join('|');
+  const passes = () => { for (let n = 0; n < 4; n++) { const before = state(); fit(); if (state() === before) break; } };
+  let queued = false;
+  const settle = () => {   // now, and once more on the next frame for whatever was still moving
+    passes();
+    if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; passes(); }); }
+  };
+  window.roadFit = settle;
+  if (new URLSearchParams(location.search).has('skeleton')) {
+    document.body.classList.add('skel');
+    setTimeout(() => document.querySelectorAll('section.road .op').forEach(o => { o.dataset.w = Math.round(o.getBoundingClientRect().width) + 'px'; }), 2000);
+  }
+  addEventListener('resize', settle); document.fonts.ready.then(settle);
+  if (window.ResizeObserver) new ResizeObserver(settle).observe(document.documentElement);   // any later width change (scrollbar, zoom step)
+  document.querySelectorAll('.road img').forEach(i => i.addEventListener('load', settle));
+  const art = () => document.querySelectorAll('img[data-sq]').forEach(i => {
+    const b = document.body.classList, k = b.contains('e') ? 'strip' : b.contains('d') ? 'tile' : 'sq';
+    i.src = i.dataset[k]; i.classList.toggle('wide', k !== 'sq'); });
+  art(); settle();
+  const rtc = () => (document.querySelector('input[name=rtc]:checked') || {}).value || '';
+  const rtt = () => (document.querySelector('input[name=rtt]:checked') || {}).value || '';
+  const sa2c = () => (document.querySelector('input[name=sa2]:checked') || {}).value || '';
+  document.querySelectorAll('input[name=d]').forEach(i => i.onchange = () => { document.body.className = [i.value, rtc(), rtt(), sa2c()].filter(Boolean).join(' '); art(); settle(); });
+  document.querySelectorAll('input[name=rtt]').forEach(i => i.onchange = () => document.body.classList.toggle('rt-sug', i.value === 'rt-sug'));
+  document.querySelectorAll('input[name=evf]').forEach(i => i.onchange = () => { document.body.classList.remove('ev-blur', 'ev-wide', 'ev-cell'); if (i.value) document.body.classList.add(i.value); settle(); });
+  document.querySelectorAll('input[name=sa2]').forEach(i => i.onchange = () => { document.body.classList.remove('sa2-trk', 'sa2-cht'); if (i.value) document.body.classList.add(i.value); });
+  document.querySelectorAll('input[name=rtc]').forEach(i => i.onchange = () => { document.body.classList.remove('rt-red', 'rt-blue'); if (i.value) document.body.classList.add(i.value); });
+});
+</script>
+</body>
+</html>

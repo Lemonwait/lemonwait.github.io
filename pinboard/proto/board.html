@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PINBOARD board (mock)</title>
+<link rel="preload" href="../../assets/fonts/bebas-neue-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/oswald-600-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/bai-jamjuree-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/sarabun-400-thai.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/sarabun-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/sarabun-700-thai.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../assets/fonts/sarabun-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<script src="data.js?v=8"></script>
+<style>
+/* MOCK: the chosen direction (author 2026-10-12): 3x3 board as in game, P1 "picture is the card" (full-bleed
+   screenshot, text on a dark fade, hover fades the text), and the phase reward at the top of each phase ("reward is
+   another phase tell-tale"). Rewards from the wiki (see build_data.py), icons copied from the site's doc/misc/ into
+   img/. Screenshots are not made yet: striped boxes stand in for them. Texts from data.js (the sheet). http://localhost:8765/pinboard/proto/board.html */
+:root {
+  --bg: #121212; --panel: #202124; --panel-head: #121212; --panel-2: #202124;
+  --line: rgba(255,255,255,.08); --line-2: rgba(255,255,255,.18);
+  --ink: #e6e8f0; --muted: #b7b7b7; --faint: #54575d; --ghost: #1b1c21;
+  --f-display: 'Oswald', sans-serif; --f-label: 'Bai Jamjuree', 'Sarabun', sans-serif;
+  --f-thai: 'Sarabun', sans-serif; --f-num: 'Bebas Neue', sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 var(--f-thai); }
+main { max-width: 1240px; margin: 0 auto; padding: 0 16px 160px; }
+a { color: inherit; }
+
+/* page header */
+.ph { position: relative; isolation: isolate; overflow: hidden; padding: 72px 0 26px; border-bottom: 1px solid var(--line); }
+.ph .idx { font: 600 13px/1 var(--f-label); letter-spacing: .16em; color: var(--muted); }
+.ph h1 { margin: 12px 0 0; font: 600 clamp(48px, 7vw, 88px)/.9 var(--f-display); letter-spacing: -.02em; }
+.ph .meta { margin-top: 14px; font: 600 12px/1 var(--f-label); letter-spacing: .14em; color: var(--muted); }
+.ph .ghost { position: absolute; right: -10px; bottom: -34px; z-index: -1; font: 600 190px/1 var(--f-display);
+  color: var(--ghost); letter-spacing: -.04em; white-space: nowrap; pointer-events: none; }
+
+/* phase strip (the sheet's row 1) */
+.nav { position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px;
+  margin: 0 -16px; padding: 8px 16px; background: var(--bg); border-bottom: 1px solid var(--line); }
+.nav a { padding: 6px 0 4px; border-top: 3px solid var(--acc); text-decoration: none; text-align: center;
+  font: 600 12px/1 var(--f-label); letter-spacing: .1em; color: var(--muted); }
+.nav a:hover, .nav a.cur { color: var(--ink); }
+.nav a { transition: color .4s, border-top-width .2s; }
+.nav a.cur { border-top-width: 5px; padding-top: 4px; }   /* the phase in view, as in the pinned bar */
+.nav a b { color: var(--acc-ink); font-weight: 600; }
+@media (max-width: 860px) { .nav a span { display: none; } }   /* "08 PHASE" wrapped under ~860 px: numbers only */
+
+/* phase head, aligned by ink, not by text boxes (author 2026-10-13: "06 real height doesn't cover its children").
+   Glyph metrics measured in the browser (canvas measureText, per 1 px of font size):
+     Bebas Neue digits: ink .71 above the baseline, .01 below; with line-height = size the baseline sits .80 down.
+     Oswald caps: ink .82 above, .01 below; with line-height = size the baseline sits .95 down.
+   The number is 75 px: its ink is .72 x 75 = 54 px (H). Row 1 (20 px) holds "// 08" and the unlock tag, whose box top
+   is the ink top of the number; row 2 holds PHASE n, whose ink bottom is the ink bottom of the number. Offsets:
+     number: top -.09 x 75 = -6.75 px (ink top to 0)
+     title 32 px: baseline at 54 - .32 -> box top 53.68 - .95 x 32 = 23.28 -> 3.28 px into row 2
+   The reward side repeats the left side's lines: the reward name is set exactly like PHASE n (32 px, same offset), "REWARD" sits exactly like "// 08", and the amount is in the
+   name's own face, so name and amount share one cap height and baseline (author 2026-10-13: "tidy up"). */
+.phase { padding-top: 44px; scroll-margin-top: var(--land, -2px); }   /* a phase link lands the header on the pinned spot: 42 - 44 (pinUpdate sets --land) */
+/* pinned phase bar, adapted from BANNERS' rail (author 2026-10-13): one bar that never moves, under the strip; the page
+   scrolls beneath it behind a soft shadow. It is a copy of the phase header, full size (author: "like our usual
+   header"); when a phase's own header reaches the pinned spot, the copy swaps to it with a short fade. */
+#pin { position: fixed; z-index: 19; left: 0; right: 0; top: 42px; pointer-events: none; opacity: 0; transition: opacity .25s; }
+#pin.on { opacity: 1; pointer-events: auto; }
+#pin .in { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+#pin .head { margin-bottom: 0; background: var(--bg); box-shadow: 0 10px 14px -10px #000; }
+#pin .in > div { display: grid; }
+#pin .head { grid-area: 1 / 1; visibility: hidden; }
+#pin .head.cur { visibility: visible; }   /* all 8 copies stacked: the swap only changes which one shows, nothing redraws (author: no blink) */
+/* phones (stacked headers): the pinned copy is slim, one 36 px line: number, PHASE n, unlock tag, then the reward icon
+   and amount at the right (author 2026-10-13: "for phone slimmer"); wider screens keep the full copy */
+#pin .head.stack { grid-template-columns: auto auto auto 1fr auto auto; grid-template-rows: 36px; column-gap: 10px; align-items: center; padding: 6px 0; }
+#pin .head.stack > * { position: static; margin: 0; }
+#pin .head.stack .num { grid-area: 1 / 1; font-size: 36px; line-height: 36px; height: auto; }
+#pin .head.stack h2 { grid-area: 1 / 2; font-size: 22px; line-height: 22px; }
+#pin .head.stack .l1 { grid-area: 1 / 3; height: auto; }
+#pin .head.stack .l1 small, #pin .head.stack .rl { display: none; }
+#pin .head.stack .tf { grid-area: 1 / 5; width: 32px; height: 32px; }
+#pin .head.stack .rn { grid-area: 1 / 6; font: 600 0/1 var(--f-display); white-space: nowrap; }
+#pin .head.stack .rn b { font-size: 20px; margin-left: 0; }
+#pin .head.stack .rn:not(:has(b)) { font-size: 18px; }   /* an operator (Texas): no amount, show the name */
+.head { padding-top: 12px; }
+.head { display: grid; grid-template-columns: var(--c1, auto) var(--c2, auto) 1px auto auto 1fr; grid-template-rows: 20px 34px;
+  column-gap: 16px; align-items: start; padding-bottom: 14px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+.head .num { grid-row: 1 / 3; position: relative; top: -6.75px; height: 54px; font: 400 75px/75px var(--f-num); color: var(--acc-ink); }
+.head .l1 { grid-column: 2; grid-row: 1; position: relative; top: .5px; display: flex; align-items: flex-start; gap: 10px; height: 20px; }
+.head small { margin-top: 3px; font: 600 12px/12px var(--f-label); letter-spacing: .16em; color: var(--muted); }
+.head h2 { grid-column: 2; grid-row: 2; position: relative; top: 3.28px; margin: 0; font: 600 32px/32px var(--f-display); white-space: nowrap; }
+.head .sep { grid-column: 3; grid-row: 1 / 3; align-self: stretch; background: var(--line-2); }
+.head .tf { grid-column: 4; grid-row: 1 / 3; position: relative; top: .5px; width: 54px; height: 54px; }
+.head .tf:not(.op) > img { width: 128.4%; height: 128.4%; max-width: none; }   /* item art 1.3 x 1.3 bigger in the header (76% x 1.69), frame stays 54 px, art may pass the rim (author 2026-10-13) */
+.head .rl { grid-column: 5; grid-row: 1; position: relative; top: .5px; margin-top: 3px; font: 600 12px/12px var(--f-label); letter-spacing: .16em; color: var(--muted); }
+.head .rn { --rs: 32px; grid-column: 5; grid-row: 2; position: relative; top: calc(33.68px - .95 * var(--rs)); font: 600 var(--rs)/var(--rs) var(--f-display); white-space: nowrap; }   /* fitHeads() lowers --rs (32 -> 18) so it fits beside the title */
+.head .rn b { font: inherit; color: var(--acc-ink); margin-left: 6px; }
+/* tag box centred on the text body (author 2026-10-13: centre around ผ่าน without the tone mark, and 3-4), not on the
+   tone mark. Sarabun 700, measured per 1 px of size: Thai body (ข ภ น) .59, digits .71, tone mark on ผ่าน .91 above
+   the baseline. The box is even around the 0-.71 band; the tone
+   mark rises into the top margin. At 14/14 the baseline sits 12.88 px down, Text snaps to whole pixels, so the box is whole too: 18 px, digits (10 px) 4 px from both edges at 1x, 2x and 4x. */
+.unlock { align-self: flex-start; padding: 1px 1.75px 3px 1px; background: var(--acc-ink); color: var(--bg); font: 700 14px/14px var(--f-thai); white-space: nowrap; }
+/* item in its tier frame (INFO's .tf); an operator reward is a square avatar edged in the phase colour */
+.tf { display: inline-grid; place-items: center; background: var(--frame) center / contain no-repeat; }
+.tf > img { width: 76%; height: 76%; object-fit: contain; }
+.tf.op { background: var(--panel-2); box-shadow: inset 0 0 0 2px var(--acc-ink); }
+.tf.op > img { width: 100%; height: 100%; }
+
+/* the 3x3 board (author 2026-10-13): the picture area on top, the mission text beneath it (no longer over it). Until the
+   card is played, the picture area previews the mission's reward, big in its tier frame; hover or a finger holding the
+   card swaps in the clip and plays it. Cards in a row share one height (grid stretch), the text block takes the rest. */
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.task { display: flex; flex-direction: column; background: var(--panel); border-top: 3px solid var(--acc); }
+.task .media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--panel-2); }   /* lighter than the page (author 2026-10-13) */
+.task .prev { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 14px;
+  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--acc) 22%, transparent), transparent 62%); transition: opacity .2s; }
+.task .prev .tf { width: 96px; height: 96px; }
+.task .prev .tf > img { width: 98.8%; height: 98.8%; }
+.task .prev b { font: 400 40px/1 var(--f-num); color: var(--ink); letter-spacing: .01em; }
+.task .prev small { display: block; font: 600 11px/1.2 var(--f-label); letter-spacing: .12em; color: var(--muted); text-transform: uppercase; margin-top: 6px; max-width: 150px; }
+.task video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity .2s; }
+.task .still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity .2s; }
+.task.play video, .task.play .still { opacity: 1; }
+.task.play .prev { opacity: 0; }
+.task .no { position: absolute; top: 10px; left: 12px; z-index: 2; background: rgba(18,18,18,.85); padding: 4px 6px;
+  font: 600 12px/1 var(--f-label); letter-spacing: .12em; color: var(--muted); }
+/* seek bar (author 2026-10-13: every card): a 3 px line on the picture's bottom edge, filled in the phase colour as
+   the clip plays; press or drag on it (mouse or finger) to jump. The touch area is 16 px tall, the line 3 px. */
+.task .seek { position: absolute; left: 0; right: 0; bottom: 0; height: 16px; z-index: 3; cursor: pointer; touch-action: none; }
+.task .seek::before, .task .seek i { content: ""; position: absolute; left: 0; bottom: 0; height: 3px; }
+.task .seek::before { right: 0; background: rgba(255,255,255,.14); transition: height .15s; }
+.task .seek i { width: calc(var(--p, 0) * 100%); background: var(--acc-ink); transition: height .15s; }
+.task .seek:hover::before, .task .seek:hover i, .task .seek.drag::before, .task .seek.drag i { height: 5px; }
+.task .seek { opacity: 0; transition: opacity .2s; }   /* hidden until the card plays: an idle grey line joined the rows (author 2026-10-13) */
+.task.play .seek, .task .seek.drag { opacity: 1; }
+.task .txt { flex: 1; padding: 8px 14px 14px; }   /* caption close to its picture (author 2026-10-13) */
+.task p { margin: 0; white-space: pre-line; font-size: 15px; }   /* 1 px under the page's 16 (author 2026-10-13) */
+.task .nw { white-space: nowrap; }
+.task a { color: var(--acc-ink); text-decoration: underline; text-underline-offset: 3px; }
+.task:has(video) { -webkit-touch-callout: none; user-select: none; }
+.task:has(video) .media { cursor: pointer; }
+.task .media::after { content: ""; position: absolute; left: 50%; top: 50%; width: 22px; height: 26px; margin: -13px 0 0 -11px; z-index: 2;
+  border-left: 7px solid #fff; border-right: 7px solid #fff; box-sizing: border-box; opacity: 0; transition: opacity .15s; pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(0,0,0,.7)); }
+.task.held .media::after { opacity: .9; }   /* paused by a click: a pause mark in the middle */
+
+@media (max-width: 860px) { .grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+/* .stack (set by fitHeads() below): the reward did not fit beside the title even at 18 px, so it moves under the
+   title, its icon level with the number. In practice phones only (author 2026-10-13: reward on the header's rows). */
+.head.stack { grid-template-columns: max(54px, var(--c1, 54px)) minmax(0, 1fr); grid-template-rows: 20px 34px 20px 34px; column-gap: 14px; row-gap: 0; }
+.head.stack .sep { display: none; }
+.head.stack .tf { grid-column: 1; grid-row: 3 / 5; margin-top: 10px; }
+.head.stack .rl { grid-column: 2; grid-row: 3; margin-top: 13px; }
+.head.stack .rn { grid-column: 2; grid-row: 4; margin-top: 10px; --rs: 24px; white-space: normal; }
+</style>
+</head>
+<body>
+<main>
+  <header class="ph">
+    <div class="idx">REDALURK'S HANDBOOK // PINBOARD</div>
+    <h1>PINBOARD</h1>
+    <div class="meta" id="meta"></div>
+    <div class="ghost">PINBOARD</div>
+  </header>
+  <nav class="nav" id="nav"></nav>
+  <div id="pin" aria-hidden="true"><div class="in"><div></div></div></div>
+  <div id="board"></div>
+</main>
+<script>
+const P = window.PINBOARD;
+function mix(h, w) { const n = parseInt(h.slice(1), 16), c = [n >> 16, n >> 8 & 255, n & 255];
+  return '#' + c.map(v => Math.round(v + (255 - v) * w).toString(16).padStart(2, '0')).join(''); }
+function lum(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255]
+  .map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }).reduce((s, v, i) => s + v * [.2126, .7152, .0722][i], 0); }
+const BG = lum('#121212');
+function ink(h) { for (let w = 0; w <= 1; w += .02) { const m = mix(h, w); if ((lum(m) + .05) / (BG + .05) >= 7) return m; } return '#fff'; }
+const esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+// a number stays on the line with the word after it ("1 ห้อง") and the word before it ("เลเวล 3", "Rank 5"): those spaces are non-breaking
+const GLUE = ['ในฐาน', 'ไอเทม', 'อย่างน้อย', 'คราฟท์', 'เฟอร์นิเจอร์'];   // Thai words the browser must not split at a line end (author 2026-10-13: "ใน / ฐาน")
+// wrapped in no-wrap spans (invisible joiners inside Thai confused the browser's word dictionary: "ขอ | ง")
+const keep = s => GLUE.reduce((t, w) => t.split(w).join(`<span class="nw">${w}</span>`), esc(s)).replace(/(\d) (?=[\u0e00-\u0e7f<])/g, '$1\u00a0').replace(/([\u0e00-\u0e7fA-Za-z.>]) (?=\d)/g, '$1\u00a0');
+const body = t => '<p>' + t.parts.map(p => p.link ? `<a href="${p.link}" target="_blank" rel="noopener">${keep(p.t)}</a>` : keep(p.t)).join('') + '</p>';
+const pad = n => String(n).padStart(2, '0');
+const vars = p => `--acc:${p.band};--acc-ink:${ink(p.band)}`;
+const num = n => n.toLocaleString('en-US');
+const icon = r => r.op ? `<span class="tf op"><img src="img/${r.icon}" alt="" width="56" height="56"></span>`
+  : `<span class="tf" style="--frame:url(img/Item_Tier_${r.tier}.png)"><img src="img/${r.icon}" alt="" decoding="async"></span>`;
+const big = r => `<span class="tf" style="--frame:url(img/Item_Tier_${r.tier}.png)"><img src="img/${r.icon}" alt="" width="96" height="96" decoding="async"></span>`;
+const total = P.reduce((s, p) => s + p.tasks.length, 0);
+
+document.getElementById('meta').textContent = `${pad(P.length)} PHASES // ${total} MISSIONS`;
+document.getElementById('nav').innerHTML = P.map(p => `<a href="#p${p.n}" style="${vars(p)}"><b>${pad(p.n)}</b><span> PHASE</span></a>`).join('');
+document.getElementById('board').innerHTML = P.map(p => `
+  <section class="phase" id="p${p.n}" style="${vars(p)}">
+    <div class="head"><div class="num">${pad(p.n)}</div>
+      <div class="l1"><small>// ${pad(P.length)}</small>${p.unlock ? `<span class="unlock" title="${esc(p.unlock)}">${esc(p.unlock.replace(/^ปลดหลัง/, ''))}</span>` : ''}</div><h2>PHASE ${p.n}</h2>
+      <i class="sep"></i>${icon(p.reward)}<div class="rl">${p.reward.op ? 'OPERATOR' : 'REWARD'}</div>
+      <div class="rn" title="${esc(p.reward.name)}">${esc(p.reward.name)}${p.reward.n ? `<b>×${num(p.reward.n)}</b>` : ''}</div>
+    </div>
+    <div class="grid">${p.tasks.map((t, i) => `<div class="task">
+      <div class="media"><div class="prev">${big(t.reward)}<div><b>×${num(t.reward.n)}</b><small>${esc(t.reward.name)}</small></div></div>
+        ${t.still ? `<img class="still" data-still="${t.still}" alt="" width="800" height="450" decoding="async">` : ''}
+        ${t.clip ? `<video muted loop playsinline preload="none" data-clip="${t.clip}"></video><div class="seek" aria-hidden="true"><i></i></div>` : ''}
+        <span class="no">${pad(i + 1)}</span></div>
+      <div class="txt">${body(t)}</div></div>`).join('')}</div>
+  </section>`).join('');
+
+
+// clips (author 2026-10-13): paused on the first frame; they play only while the mouse is over the card or a finger
+// holds it, and pause again on leaving or lifting; while not playing the reward preview covers them. A finger that starts scrolling cancels (pointercancel), so scrolling
+// never starts a clip. Sources are set when a card comes within a screen of view (preload: metadata only).
+// AV1 first, H.264 for devices without AV1.
+const near = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  const v = e.target, id = v.dataset.clip;
+  v.preload = 'metadata';   // no poster: the reward preview covers the clip until it plays
+  v.innerHTML = `<source src="../clips/${id}.av1.mp4" type='video/mp4; codecs="av01.0.05M.08"'><source src="../clips/${id}.h264.mp4" type="video/mp4">`;
+  v.load(); near.unobserve(v);
+}), { rootMargin: '100% 0px' });
+// stills (a screenshot where there is no clip): loaded when near, shown on hover, or toggled by a tap, like the clips
+const nearImg = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.src = `../clips/${e.target.dataset.still}.webp`; nearImg.unobserve(e.target); } }), { rootMargin: '100% 0px' });
+document.querySelectorAll('img.still').forEach(img => {
+  nearImg.observe(img);
+  const card = img.closest('.task');
+  card.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') card.classList.add('play'); });
+  card.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') card.classList.remove('play'); });
+  card.addEventListener('click', e => { if (e.pointerType && e.pointerType !== 'mouse') card.classList.toggle('play'); });
+});
+const off = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting && e.target.classList.contains('tap')) e.target.stopClip(); }));
+document.querySelectorAll('video[data-clip]').forEach(v => {
+  near.observe(v);
+  const card = v.closest('.task');
+  const play = () => { card.classList.add('play'); v.play().catch(() => {}); };
+  const stop = () => { card.classList.remove('play', 'held', 'tap', 'kept'); v.pause(); };
+  // the last clip stays on when the mouse leaves the window (to the game, another app), until another card is hovered
+  // (author 2026-10-13); leaving the card inside the page still stops it
+  card.addEventListener('pointerenter', e => {
+    if (e.pointerType !== 'mouse') return;
+    document.querySelectorAll('.task.kept').forEach(c => c !== card && c.stopClip());
+    card.classList.remove('kept'); play();
+  });
+  card.addEventListener('pointerleave', e => {
+    if (e.pointerType !== 'mouse') return;
+    if (!e.relatedTarget) card.classList.add('kept'); else stop();
+  });
+  // click (mouse) pauses on the current frame and clicks again to go on (author 2026-10-13); leaving the card resets it
+  card.querySelector('.media').addEventListener('click', e => {
+    if (e.pointerType && e.pointerType !== 'mouse') return;
+    if (v.paused) { card.classList.remove('held'); v.play().catch(() => {}); } else { card.classList.add('held'); v.pause(); }
+  });
+  // finger (author 2026-10-13): a tap toggles (plays on, a second tap stops); holding plays only while held.
+  // A finger that starts scrolling cancels and stops nothing that was tapped on. Starting one card stops the others.
+  let t0 = 0, wasOn = false;
+  card.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse') return;
+    t0 = performance.now(); wasOn = card.classList.contains('tap');
+    if (!wasOn) { document.querySelectorAll('.task.tap').forEach(c => c !== card && c.stopClip()); play(); }
+  });
+  card.addEventListener('pointerup', e => {
+    if (e.pointerType === 'mouse') return;
+    const tap = performance.now() - t0 < 300;
+    if (tap && wasOn) stop(); else if (tap) card.classList.add('tap'); else if (!wasOn) stop();
+  });
+  card.addEventListener('pointercancel', e => { if (e.pointerType !== 'mouse' && !wasOn) stop(); });
+  card.stopClip = stop;
+  off.observe(card);
+  // seek bar: fill follows the clip; pressing or dragging on it jumps there (a finger on the bar scrubs instead of playing)
+  const bar = card.querySelector('.seek');
+  const fill = () => { if (v.duration) bar.style.setProperty('--p', v.currentTime / v.duration); };
+  const tick = () => { fill(); if (!v.paused) requestAnimationFrame(tick); };
+  v.addEventListener('play', tick); v.addEventListener('seeked', fill); v.addEventListener('timeupdate', fill);
+  const seek = e => { const r = bar.getBoundingClientRect(); if (v.duration) v.currentTime = Math.min(.999, Math.max(0, (e.clientX - r.left) / r.width)) * v.duration; fill(); };
+  bar.addEventListener('pointerdown', e => {
+    e.stopPropagation(); bar.setPointerCapture(e.pointerId); bar.classList.add('drag');
+    if (e.pointerType !== 'mouse') { card.classList.add('play'); v.pause(); }
+    if (v.readyState === 0) v.load();
+    seek(e);
+  });
+  bar.addEventListener('pointermove', e => { if (bar.hasPointerCapture(e.pointerId)) seek(e); });
+  ['pointerup', 'pointercancel'].forEach(t => bar.addEventListener(t, e => {
+    e.stopPropagation(); bar.classList.remove('drag');
+    if (e.pointerType !== 'mouse') card.classList.remove('play');
+  }));
+  card.addEventListener('contextmenu', e => { if (card.classList.contains('play')) e.preventDefault(); });   // long press: no menu
+});
+
+// header fit (author 2026-10-13): the reward stays on the title's rows; its name shrinks from 32 px down to 18 px to fit
+// the line, and only if 18 px does not fit either do the headers stack (reward under the title)
+// locked boxes (author 2026-10-13): every header gets the same column widths, the widest number ("01"-"08") and the
+// widest title block ("// 08 + tag", "PHASE n") over all phases, so the divider and reward never shift between phases
+function lockCols(heads) {
+  const root = document.documentElement.style;
+  root.removeProperty('--c1'); root.removeProperty('--c2');
+  const w = sel => Math.ceil(Math.max(...heads.map(h => Math.max(...[...h.querySelectorAll(sel)].map(e => e.scrollWidth)))));
+  root.setProperty('--c1', w('.num') + 'px'); root.setProperty('--c2', w('.l1, h2') + 'px');
+}
+function fitHeads() {
+  // one size for every phase (the longest reward name decides), and either every header stacks or none does
+  const heads = [...document.querySelectorAll('#board .head')];
+  heads.forEach(h => { h.classList.remove('stack'); h.querySelector('.rn').style.removeProperty('--rs'); });
+  const fits = () => heads.every(h => { const rn = h.querySelector('.rn');
+    return rn.scrollWidth <= h.getBoundingClientRect().right - rn.getBoundingClientRect().left - 2; });
+  lockCols(heads);
+  let size = 32;
+  while (size > 18 && !fits()) { size--; heads.forEach(h => h.querySelector('.rn').style.setProperty('--rs', size + 'px')); }
+  if (!fits()) heads.forEach(h => { h.querySelector('.rn').style.removeProperty('--rs'); h.classList.add('stack'); });
+}
+const refit = () => { fitHeads(); buildPin(); };
+document.fonts.ready.then(refit); addEventListener('resize', refit);
+
+// pinned header: copies of all 8 headers stacked in the pinned spot; the one of the phase in view shows. A phase is in
+// view once its own header has slid up to the pinned spot (the strip's bottom), so the copy lands exactly on it.
+const pin = document.getElementById('pin'), pinBox = pin.querySelector('.in > div');
+let pinPhase = 0, pinQueued = false;
+function buildPin() {
+  pinBox.innerHTML = '';
+  P.forEach(p => { const h = document.querySelector(`#p${p.n} .head`).cloneNode(true); h.style.cssText = vars(p); h.dataset.n = p.n; pinBox.append(h); });
+  pinPhase = -1; pinUpdate();
+}
+function pinUpdate() {
+  pinQueued = false;
+  const slim = document.querySelector('#board .head.stack') !== null, pinH = slim ? (pinBox.querySelector('.head')?.offsetHeight || 49) : 0;
+  const line = 42 + pinH + 1;   // wide: the real header reaches the strip; phones: it reaches the slim bar's bottom
+  document.documentElement.style.setProperty('--land', (slim ? 50 - 44 : 42 - 44) + 'px');   // phones: just under the strip, the slim bar still hidden
+  let cur = 0;
+  P.forEach(p => { if (document.querySelector(`#p${p.n} .head`).getBoundingClientRect().top <= line) cur = p.n; });
+  const last = document.querySelector('#board .phase:last-child');
+  // phones: the slim bar waits until the phase's own header slides under it (no copy above a header still in full view)
+  const under = !slim || (cur > 0 && document.querySelector(`#p${cur} .head`).getBoundingClientRect().top <= 43);
+  pin.classList.toggle('on', cur > 0 && under && last.getBoundingClientRect().bottom >= line + pin.offsetHeight);
+  if (cur === pinPhase) return;
+  pinPhase = cur;
+  document.querySelectorAll('#nav a').forEach((a, i) => a.classList.toggle('cur', i + 1 === cur));
+  pinBox.querySelectorAll('.head').forEach(h => h.classList.toggle('cur', +h.dataset.n === cur));
+}
+addEventListener('scroll', () => { if (!pinQueued) { pinQueued = true; requestAnimationFrame(pinUpdate); } }, { passive: true });
+
+// back to the tab: a clip that was playing when the tab was hidden plays on (browsers may pause it in the background)
+document.addEventListener('visibilitychange', () => {
+  document.querySelectorAll('.task.play video').forEach(v => {
+    const card = v.closest('.task');
+    if (document.hidden) v.dataset.was = v.paused ? '' : '1';
+    else if (v.dataset.was && !card.classList.contains('held')) v.play().catch(() => {});
+  });
+});
+
+// smooth wheel (author 2026-10-13): a mouse wheel's steps glide instead of jumping. Trackpads send small steps that
+// are already smooth and are left alone (|deltaY| < 40); off for readers who ask for reduced motion; ctrl+wheel zooms.
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  let target = scrollY, moving = false;
+  const max = () => document.documentElement.scrollHeight - innerHeight;
+  const step = () => {
+    const d = target - scrollY;
+    if (Math.abs(d) < .5) { scrollTo({ top: target, behavior: 'instant' }); moving = false; return; }
+    scrollTo({ top: scrollY + d * .14, behavior: 'instant' }); requestAnimationFrame(step);
+  };
+  addEventListener('wheel', e => {
+    if (e.ctrlKey || e.deltaX || Math.abs(e.deltaY) < 40) return;
+    e.preventDefault();
+    if (!moving) target = scrollY;
+    target = Math.max(0, Math.min(max(), target + e.deltaY * (e.deltaMode === 1 ? 40 : 1)));
+    if (!moving) { moving = true; requestAnimationFrame(step); }
+  }, { passive: false });
+}
+</script>
+</body>
+</html>
