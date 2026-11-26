@@ -1,0 +1,40 @@
+/* The handbook's shared colours (AUTHOR-DECISIONS #20). One name per job; a page asks for the job, not the hex:
+   background: var(--dark-sub). Add a colour here only when the author decides it; tools/check_pages.py flags any
+   colour a page uses that is neither here nor in tools/known_colours.json (the colours in use on 2026-10-22). */
+:root {
+  /* Dark tiers: each layer one step lighter than the one it sits on. */
+  --dark-main:   #121212;   /* the page */
+  --dark-sub:    #202124;   /* cards, panels */
+  --dark-subsub: #313236;   /* boxes inside a card, chips, rows */
+  --black:       #000000;   /* only photo shades and what sits behind a popup */
+
+  /* Text (grey tiers, #21) */
+  --text-main:   #e6e8f0;   /* bright: headings, main text */
+  --text-body:   #b7b7b7;   /* body text (the sheet's) */
+  --text-muted:  #8a8a8a;   /* notes, labels */
+  --text-faint:  #6a6d74;   /* tiny hints only: too dim for reading */
+  --white:       #ffffff;
+
+  /* Lines: borders, rules, icons (grey tiers, #21) */
+  --line-light:  #b7b7b7;
+  --line-mid:    #8a8d96;
+  --line-soft:   #54575d;
+
+  /* Accents (#24): gold is the sheet's; cyan is the official site's, the second accent */
+  --accent-cyan: #18d1ff;
+
+  /* Blue tints (author 2026-10-27): the X Bind block's (#305), beside its blue #0098dc */
+  --tint-hatch:  #123a4e;   /* hatch stripes: DOWN / WALKED */
+  --tint-fill:   #1f4f68;   /* soft blue fill: the average chip, STUN's UPTIME range */
+
+  /* Rarity (#23): the star token only; a sentence keeps its own colour */
+  --rarity-6:    #f2763a;   /* 6★ */
+  --rarity-5:    #ffc04d;   /* 5★: #ffa500 made 30% lighter (author) */
+  --rarity-4:    #b98bde;   /* 4★: the in-game purple, lightened (INFO's proposal, author 2026-10-23) */
+
+  /* Element fades (author 2026-10-29): the X partner rows' colour behind the name, fading to clear */
+  --fade-burn:      #4e2d18;
+  --fade-corrosion: #253b5a;
+  --fade-necrosis:  #40375c;
+  --fade-nervous:   #1a383c;
+}

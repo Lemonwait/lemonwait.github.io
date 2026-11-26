@@ -1,0 +1,210 @@
+/* Shared by the DP compare page (x-dp-compare.html, inlined by build_x_dp_compare.py) and its mocks (A race, B lanes, C ledger, D sheet). The X pages' charcoal and gold; one colour per
+   operator: Saileach a warm banner amber, Myrtle a leaf green (both toned down, no neon). */
+:root{--bg:#121212;--panel:#202124;--text:#e6e8f0;--dim:#b7b7b7;--grey:#8a8a8a;--band:#3a3c40;--line:#4a4c52;
+  --gold-rule:#dfd27c;--gold-num:#b8af78;--gold-stat:#e9d853;--sail:#e5b066;--myr:#9ccc84;--on:#515461}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Google Sans",sans-serif}
+a{color:inherit}
+.th{font-family:"Sarabun","Google Sans",sans-serif}
+.wrap{max-width:1280px;margin:0 auto;padding:20px 16px 60px}
+.sh-top{font:400 15px/1 "Bebas Neue";letter-spacing:.06em;color:var(--dim)}
+.sh-top a{text-decoration:none}
+h1{font:400 44px/1 "Bebas Neue";letter-spacing:.03em;margin:14px 0 4px}
+h1 .vs{color:var(--gold-rule);margin:0 .25em}
+h1 .s{color:var(--sail)} h1 .m{color:var(--myr)}
+.sub{color:var(--dim);font-size:14px;margin:0 0 18px}
+.mockbar{display:flex;gap:6px;align-items:center;margin:0 0 16px;font:400 15px/1 "Bebas Neue";letter-spacing:.05em;color:var(--dim)}
+.mockbar a{background:var(--band);color:var(--text);padding:6px 10px;text-decoration:none}
+.mockbar a.cur{background:var(--gold-num);color:#121212}
+.lab{font:400 15px/1 "Bebas Neue";letter-spacing:.06em;color:var(--dim)}
+.ctl{display:flex;gap:10px;align-items:center}
+.ctl input[type=range]{flex:1;min-width:90px;accent-color:var(--gold-rule)}
+.ctl output{font:400 20px/1 "Bebas Neue";min-width:3em;text-align:right;color:var(--gold-stat)}
+.seg{display:flex;flex-wrap:wrap;gap:3px}
+.seg button{font:400 15px/1 "Bebas Neue";letter-spacing:.04em;color:var(--text);background:var(--band);border:0;padding:6px 9px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--gold-num);color:#121212}
+.seg button:disabled{opacity:.3;cursor:not-allowed}
+/* the team of 12 */
+.team{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:1px;background:var(--line)}
+.team .slot{background:var(--panel);padding:6px 6px 5px;display:grid;grid-template-columns:auto 1fr;gap:2px 4px;align-items:center}
+.team .sn{font:400 13px/1 "Bebas Neue";color:var(--grey)}
+.team .sv{grid-column:1/-1;font:400 22px/1 "Bebas Neue"}
+.team .sv i{font-style:normal}
+.team input{grid-column:1/-1;width:100%;font:400 22px/1 "Bebas Neue";color:var(--gold-stat);background:transparent;border:0;
+  border-bottom:1px solid var(--line);padding:0 0 2px}
+.team .gr{grid-column:1;grid-row:1;justify-self:end;font:400 12px/1 "Bebas Neue";border:0;padding:2px 4px;background:var(--band);color:var(--dim);cursor:pointer}
+.team .slot .gr{grid-column:2}
+.team .gr[aria-pressed=true]{background:#5a5f4a;color:var(--text)}
+.team .sr{grid-column:1/-1;font-size:10px;color:var(--grey);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:760px){.team{grid-template-columns:repeat(6,minmax(0,1fr))}}
+/* figures that open a step table */
+[data-step]{cursor:pointer}
+[data-step]:hover .v{text-decoration:underline dotted;text-underline-offset:4px}
+.stp-pop{position:absolute;z-index:20;background:#202124;border:1px solid var(--line);border-top:2px solid var(--gold-rule);padding:12px 14px;
+  box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.stp-t{font:400 18px/1 "Bebas Neue";letter-spacing:.05em;color:var(--gold-rule);margin-bottom:8px}
+table.stp{width:100%;border-collapse:collapse;font-size:13px}
+.stp th{font:400 13px/1 "Bebas Neue";letter-spacing:.06em;color:var(--dim);text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
+.stp th:last-child,.stp td:last-child{text-align:right}
+.stp td{padding:4px 6px;border-bottom:1px solid #3a3c40}
+.stp tr:last-child td{border-bottom:0;color:var(--gold-stat)}
+.stp-n{font-size:11.5px;color:var(--dim);margin:8px 0 0;line-height:1.5}
+.stp-x{margin-top:8px;font:400 13px/1 "Bebas Neue";letter-spacing:.06em;background:var(--band);color:var(--text);border:0;padding:5px 9px;cursor:pointer}
+.notes{margin-top:26px;color:var(--dim);font-size:13px;line-height:1.6}
+.notes b{color:var(--text)}
+.ava{width:56px;height:56px;object-fit:cover;background:var(--band)}
+.sx{font-family:"Google Sans",sans-serif;font-size:.55em;letter-spacing:0;margin-left:.06em}
+.u .sx,.stp .sx,.stp-n .sx,.def .sx,.notes .sx,.meta .sx{font-size:1em;margin:0}   /* in a sentence: plain text */
+/* team icons with their deployment order (1ST-11TH; V = the vanguard compared) */
+.tav{grid-column:1/-1;position:relative;display:flex;gap:2px}
+.tav img{width:100%;max-width:56px;aspect-ratio:1;object-fit:cover;background:var(--band);display:block}
+.slot.v .tav img{width:50%;border-bottom:2px solid}
+.flag{position:absolute;left:0;top:0;font:400 12px/1 "Bebas Neue";letter-spacing:.04em;color:var(--text);background:rgba(18,18,18,.85);padding:2px 4px 1px}
+/* who gets this member on the field first: filled in her colour (no outline tags) */
+.win{grid-column:1/-1;font:400 13px/1 "Bebas Neue";letter-spacing:.05em;text-align:center;padding:3px 2px 2px;white-space:nowrap;overflow:hidden}
+.team .slot{grid-template-columns:1fr auto}
+.team .slot input{grid-column:1;grid-row:2}
+.team .slot .gr{grid-column:2;grid-row:2}
+/* the stage bar, folded away while the page is scrolled past it (UI.autoFold) */
+.stagebar.fixed{position:fixed;top:0;z-index:20;margin:0;transition:transform .25s ease,opacity .25s ease}
+.stagebar.fixed.folded{transform:translateY(-100%);opacity:0;pointer-events:none}
+.fold-sum{position:fixed;top:0;z-index:19;display:flex;gap:6px 16px;flex-wrap:wrap;align-items:center;padding:6px 0 5px;
+  background:rgba(32,33,36,.96);border-bottom:1px solid var(--line);font:400 13px/1 "Bebas Neue";letter-spacing:.05em;color:var(--dim);cursor:pointer}
+.fold-sum[hidden]{display:none}   /* its display:flex would otherwise beat the hidden attribute (bug: shown at the top) */
+.fold-sum b{font-weight:400;color:var(--gold-stat)}
+.fold-sum i{font-style:normal;margin-left:auto;color:var(--gold-rule)}
+.win .sx,.fold-sum .sx{font-size:.85em;margin-left:0}   /* small text: the "s" only lower-case, not smaller */
+/* the cost and, when multiplied, this stage's cost right after it: "15→30" */
+.team .slot .cv{grid-column:1;grid-row:2;display:flex;align-items:baseline;min-width:0}
+.team .slot .cv input{grid-column:auto;grid-row:auto;padding-right:0;-moz-appearance:textfield}
+.team .slot .cv input::-webkit-inner-spin-button,.team .slot .cv input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.team .slot .tx{font:400 16px/1 "Bebas Neue";color:var(--dim);pointer-events:none;white-space:nowrap}
+/* each operator's own controls in her colour (author, 2026-10-19: "saileach / myrtle accents pls"); the stage stays gold */
+.seg[data-op="0"] button[aria-pressed=true]{background:var(--sail);color:#121212}
+.seg[data-op="1"] button[aria-pressed=true]{background:var(--myr);color:#121212}
+/* the left vanguard's portrait opens a row of picks: Saileach and the 5* Standard Bearers */
+.ava.pickable{cursor:pointer;box-shadow:0 0 0 2px var(--sail)}
+.ava.pickable:hover{filter:brightness(1.15)}
+.pick{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.pick[hidden]{display:none}
+/* each pick a centred portrait with its name laid over the bottom of it (author, 2026-10-24: "center op portraits, op
+   names over their portraits"); the stars over the top */
+.pick button{position:relative;width:76px;height:76px;padding:0;border:0;background:var(--band);cursor:pointer;overflow:hidden}
+.pick button img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.pick button span{position:absolute;left:0;right:0;bottom:0;padding:10px 2px 3px;text-align:center;font:400 15px/1 "Bebas Neue";
+  letter-spacing:.04em;color:var(--text);background:linear-gradient(transparent,rgba(20,20,20,.85) 55%)}
+.pick button i{position:absolute;left:0;right:0;top:2px;text-align:center;font-style:normal;font-size:8px;color:var(--gold-stat);
+  text-shadow:0 1px 2px #000}
+.pick button[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--sail)}
+.pick button[aria-pressed=true] span{color:var(--sail)}
+/* team cards: the portrait centred in its card, the name laid over its bottom (author, 2026-10-24: "center op portraits,
+   op names over their portraits") */
+.team .tav{justify-content:center}
+.team .tvi{position:relative;display:block;width:100%;max-width:56px}
+.team .tvi img{width:100%;max-width:none}
+.team .tnm{position:absolute;left:0;right:0;bottom:0;padding:8px 2px 2px;text-align:center;font-size:10px;line-height:1.1;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:linear-gradient(transparent,rgba(20,20,20,.85) 55%)}
+/* the picks short (author: "for selectable, pls make them short in height"): a strip across the face */
+.pick button{width:84px;height:40px}
+.pick button img{object-position:50% 22%}
+.pick button span{padding:6px 2px 2px;font-size:14px}
+.pick button i{top:1px;font-size:7px}
+/* the picks on her name line, always showing (author, 2026-10-24: "here for portraits no need to fold") */
+.nmrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.nmrow .pick{margin-top:0;gap:4px}
+.nmrow .pick button{width:72px;height:32px}
+/* mini icons (author, 2026-10-24: "mini icons no name or rarity needed") */
+.nmrow .pick button{width:32px;height:32px;opacity:.55}
+.nmrow .pick button:hover{opacity:.85}
+.nmrow .pick button img{object-position:center}
+.nmrow .pick button[aria-pressed=true]{opacity:1;box-shadow:0 0 0 2px var(--sail)}
+/* team card (author, 2026-10-24): the name above, the portrait filling the card with its order on it and the cost row laid
+   over its bottom ("the dp cost row can be over her instead"), the winner flag, then each vanguard's skill-th */
+.team .slot{display:flex;flex-direction:column;align-items:stretch;gap:3px}
+.team .slot .tnm{position:static;padding:0;background:none;font-size:10.5px;line-height:1.2;color:var(--dim);text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team .slot .tvi{position:relative;display:block;width:100%;max-width:none;aspect-ratio:1}
+.team .slot .tvi img{width:100%;height:100%;object-fit:cover;display:block}
+.team .slot .cvbar{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 4px 3px;background:linear-gradient(transparent,rgba(20,20,20,.88) 45%)}
+.team .slot .cvbar .cv{display:flex;align-items:baseline;min-width:0}
+.team .slot .cvbar input{border-bottom:0;text-shadow:0 1px 2px #000}
+.team .slot .cvbar .gr{grid-column:auto;grid-row:auto}
+.team .slot .win{grid-column:auto}
+.team .skn{display:flex;justify-content:center;gap:4px;font:400 12px/1 "Bebas Neue";letter-spacing:.04em}
+.team .skn b{font-weight:400;padding:2px 4px 1px}
+/* the picks rooted at Saileach's name end (author, 2026-10-24: "root icons position at saileach tail's gap"): her name
+   sits invisibly under whoever is picked, so a shorter name never pulls the icons left */
+.nmrow .nm{display:inline-grid}
+.nmrow .nm>span{grid-area:1/1}
+.nmrow .nm .nmroot{visibility:hidden}
+/* the name laid over the portrait too, beside its order, so the whole face shows between the two bands (author,
+   2026-10-24: "overlay name too so the face can be fully displayed"): the portrait a little taller than wide */
+.team .slot .tvi{aspect-ratio:1/1.22}
+.team .slot .tvi img{object-position:50% 40%}
+.team .slot .tband{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:3px;padding:0 3px 8px 0;
+  background:linear-gradient(rgba(20,20,20,.85) 50%,transparent)}
+.team .slot .tband .flag{position:static;flex:none}
+.team .slot .tband .tnm{flex:1;min-width:0;text-align:right;color:var(--text);font-size:10px}
+/* the cost row off the portrait, touching the winner flag under it (author, 2026-10-24: "move the dp cost row to
+   skin-to-skin the row below") */
+.team .slot .tvi{aspect-ratio:1/1.08}
+.team .slot .cvbar{position:static;padding:3px 4px;margin-bottom:-3px;background:rgba(20,20,20,.88)}
+/* ...with its shadow still over the portrait (author, 2026-10-24: "while keep it shadow over portraits"): the row reaches up
+   over the portrait's bottom as a fade, its numbers still on the flag */
+.team .slot .cvbar{position:relative;z-index:1;margin-top:-20px;padding-top:16px;background:linear-gradient(transparent,rgba(20,20,20,.9) 62%)}
+/* both rows on the portrait, the face centred between them, the flag right under it (author, 2026-10-24, sketch: a
+   square portrait, the name band across its top, the cost band across its bottom, the face in the middle) */
+.team .slot .tvi{aspect-ratio:1}
+.team .slot .tvi img{object-position:50% 50%}
+.team .slot .cvbar{position:absolute;left:0;right:0;bottom:0;z-index:1;margin:0;padding:10px 4px 2px;
+  background:linear-gradient(transparent,rgba(20,20,20,.88) 55%)}
+.team .slot .tband{padding-bottom:6px}
+.team .slot .tvi+.win{margin-top:-3px}
+/* thin bands, the face in the middle (the sketch): cost in 17px type, the fades short */
+.team .slot .cvbar{padding:4px 3px 1px;background:linear-gradient(transparent,rgba(20,20,20,.85) 40%)}
+.team .slot .cvbar input{font-size:17px;line-height:1;padding:0}
+.team .slot .cvbar .tx{font-size:13px}
+.team .slot .cvbar .gr{font-size:10px;padding:1px 3px}
+.team .slot .tband{padding:0 3px 3px 0;background:linear-gradient(rgba(20,20,20,.85) 60%,transparent)}
+.team .slot .tband .flag{font-size:11px;padding:1px 3px 0}
+/* the bottom row: a soft shadow behind the cost only, no full-width fade, no G/R switch (author, 2026-10-24: "for the
+   bottom row, try shadow over only cost pls, you can remove range"); ground / ranged stays in the data for BEA-Y */
+.team .slot .cvbar{background:none;justify-content:flex-start;padding:0 0 2px 4px}
+.team .slot .cvbar .cv{position:relative;isolation:isolate}
+.team .slot .cvbar .cv::before{content:"";position:absolute;inset:0 -7px -1px -6px;z-index:-1;border-radius:6px;
+  background:rgba(14,14,14,.82);filter:blur(4px)}
+.team .skn sup{font:600 8px/1 "Google Sans",sans-serif;vertical-align:4px;margin-left:1px}   /* 1st: the suffix raised, lower case */
+/* the skill counts 50% bigger (author, 2026-10-24: "50% bigger"): 12 -> 18 px, the suffix 8 -> 12 px */
+.team .skn{font-size:18px;gap:6px}
+.team .skn b{padding:3px 6px 1px}
+.team .skn sup{font-size:12px;vertical-align:6px}
+@media (max-width:760px){.team .skn{font-size:13px;gap:2px}.team .skn b{padding:2px 2px 1px}.team .skn sup{font-size:8px;vertical-align:4px}}   /* phone cards are 54px wide */
+@media (max-width:760px){.team .skn{flex-direction:column;align-items:center;gap:1px}}   /* phone: the two counts stacked */
+/* the winner flag's margin 40% bigger (author, 2026-10-24: "40% bigger": 13 -> 18.2 px), and the skill counts under it
+   10% smaller than that ("make the bottom row 10% smaller than the adjusted 1s": 16.4 px, the suffix 10.9 px) */
+.team .win .wgap{font-size:18.2px;line-height:1;vertical-align:-1px}
+.team .skn{font-size:16.4px}
+.team .skn sup{font-size:10.9px;vertical-align:5px}
+@media (max-width:760px){.team .win .wgap{font-size:1em}.team .skn{font-size:13px}.team .skn sup{font-size:8px;vertical-align:4px}.team .win{font-size:10px;letter-spacing:0}}   /* phone cards are 54px wide */
+@media (max-width:760px){.team .win{white-space:normal;line-height:1.1}}   /* phone: "SAILEACH" then "· 2s" on its own line */
+/* the raised st / nd / rd in Jost 300 (author, 2026-10-24: "Use C, Jost 300"): Google Sans had no 600, so it came out bold */
+.team .skn sup{font-family:"Jost",sans-serif;font-weight:300;font-size:11px}
+@media (max-width:760px){.team .skn sup{font-size:8px}}
+/* trying Google Sans 400 for the st / nd / rd (author, 2026-10-24: "try google sands 400") */
+.team .skn sup{font-family:"Google Sans",sans-serif;font-weight:400;font-size:10.9px}
+@media (max-width:760px){.team .skn sup{font-size:8px}}
+/* a member picked to go first (author, 2026-10-24): click the portrait; its place number filled like a pressed button */
+.team .slot .tvi{cursor:pointer}
+.team .slot.first .tband .flag{background:var(--gold-num);color:#121212}
+/* the racers' place among the picks, beside THE TEAM OF 12 (author, 2026-10-24): small enough not to grow the heading */
+.teamhead{display:flex;align-items:flex-end;flex-wrap:wrap;gap:4px 16px;margin:26px 0 4px}
+.teamhead h2{margin:0}
+.teamhead .ctl{display:flex;align-items:center;gap:6px}
+.teamhead .lab{font-size:13px}
+.teamhead .seg button{font-size:13px;padding:3px 7px 2px}
+/* tooltips above what they explain (author, 2026-10-24: "my mouse clogging tooltip"), in the step popup's colours */
+.tip{position:absolute;z-index:30;pointer-events:none;max-width:340px;background:#202124;border:1px solid var(--line);
+  color:var(--text);font:12px/1.35 "Google Sans",sans-serif;padding:4px 8px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.tip[hidden]{display:none}
+.tip sup{font-size:9px;line-height:0}

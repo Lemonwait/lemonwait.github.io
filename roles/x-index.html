@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X Roles</title>
+<link rel="stylesheet" href="../assets/x-bar.css"><script src="../assets/x-bar.js" defer></script>
+<script>try { if (localStorage.getItem('x-index-fam') !== '0') document.documentElement.classList.add('fam'); } catch (e) { document.documentElement.classList.add('fam'); }</script>
+<link rel="preload" href="../assets/fonts/bebas-neue-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/google-sans-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<!-- the other first-screen fonts too (author, 2026-10-27: "just preload the fonts"; a reload left text blank while they
+     loaded): Google Sans 700 (the system line), Sarabun Latin and Thai (the section names) -->
+<link rel="preload" href="../assets/fonts/google-sans-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/sarabun-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/sarabun-400-thai.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">   <!-- self-hosted Google Fonts (assets/fonts, OFL) -->
+<!--
+  Index of the X tab's roles (2026-10-05). The role pages carry the navigation header since 2026-10-07 (approved),
+  and link back here from its top line. Every role is a banner with the operator the author picked for it (2026-10-05), in the sheet's row-1 order; roles without a page yet say "Not built yet".
+  Crops: roles/build_banner.py (the zoom rule in roles/docs/X-DESIGN.md, "Role banners"). Hand-written: update
+  ROLES when a page is built; each number is operators, each counted once however many skills or modules have a card (author, 2026-11-02: "no unit count duplicated"); SP counts only those who give allies SP ("sp i only counts 32ish, only the ones with allies"). Art: 2.7:1 crops of the operators' E2 art (from PuppiizSunniiz/
+  Arknight-Images, characters/), saved to the author's site, operator/banners/ (2026-10-05).
+-->
+<style>
+:root{
+  --bg:#121212; --text:#e6e8f0; --band:#3a3c40; --gold-rule:#dfd27c; --gold-num:#b8af78; --dim:#8a8a8a;
+  /* the header (top-line hover, SIMPLE, column buttons, rule) and the loader in the official site's cyan, an exception to
+     gold for this page (author, 2026-10-27: "cyan?", "Put the cyan header on the live X index"); banners keep their golds */
+  --cyan:#18d1ff;
+  --u:min(1.28px, calc((100vw - 32px) / 537));
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text)}
+body{font-family:"Google Sans",sans-serif;padding:48px 16px}
+main{width:calc(537 * var(--u));margin:0 auto}
+/* the header at 75% (author, 2026-10-27: "75% header"): every size from the top line to the gold rule x0.75 */
+h1{font-family:"Bebas Neue";font-weight:400;font-size:calc(30*var(--u));letter-spacing:.02em;line-height:1;margin:0}
+/* back to the landing (author, 2026-10-12) and the Simple page: every role at a glance */
+/* the top line 12px at every width, closer to the title (author, 2026-10-27: "this 12px, less gab to the topic
+   header"; was 9.75u, 12.4u from its baseline to the title's capitals) */
+.top{font-family:"Bebas Neue";font-size:12px;line-height:1;letter-spacing:.18em;color:var(--dim);margin-bottom:0}
+.top a{color:inherit;text-decoration:none}.top a:hover{color:var(--cyan)}
+.head{display:flex;align-items:center;gap:calc(9*var(--u));margin-bottom:calc(12*var(--u))}   /* the line under the title
+   removed (author, 2026-10-27: "can delete this"); its 12u gap to the rule kept */
+.head h1{margin-right:auto}
+.simple{font-family:"Bebas Neue";font-size:calc(15*var(--u));letter-spacing:.06em;color:var(--bg);background:var(--cyan);
+  text-decoration:none;padding:calc(3.75*var(--u)) calc(10.5*var(--u)) calc(2.25*var(--u));box-shadow:0 calc(1.5*var(--u)) calc(4.5*var(--u)) rgba(0,0,0,.5)}
+.simple:hover,.simple:focus-visible{filter:brightness(1.25);outline:none}   /* lighter cyan with no new colour (the page check allows only shared ones) */
+.rule{height:calc(6.75*var(--u));background:var(--cyan);margin-bottom:calc(15*var(--u))}
+/* two or three columns, the reader's pick (author, 2026-10-27: "two buttons 2 columns & 3 columns, 2-3 columns as their
+   icons"): icon buttons left of SIMPLE, as tall as it; the pick is remembered in this browser. Three columns keep every
+   banner's proportions (each still 537u, the u smaller), so nothing wraps or re-crops: 75% of the two-column size ("3
+   columns would be 75% banners size on desktop"), smaller still below 1613px wide; offered from 1500px wide */
+.cols{display:none;gap:calc(4*var(--u))}
+.cols button{display:flex;align-items:center;justify-content:center;width:calc(28*var(--u));height:calc(25.8*var(--u));padding:0;
+  border:0;cursor:pointer;background:none;color:var(--dim);box-shadow:inset 0 0 0 1px #54575d}
+.cols button svg{width:calc(15*var(--u));height:calc(11*var(--u));display:block}
+.cols button:hover,.cols button:focus-visible{color:var(--cyan);outline:none}
+.cols button[aria-pressed="true"]{background:var(--cyan);color:var(--bg);box-shadow:0 calc(1.5*var(--u)) calc(4.5*var(--u)) rgba(0,0,0,.5)}
+
+/* banners: dark band, gold edge, the operator on the right fading into the band */
+.banners{display:flex;flex-direction:column;gap:calc(12*var(--u))}
+/* two columns on a wide screen (author, 2026-10-11): the page doubles in width (2 x 537u + an 18u column gap, 50% wider than the 12u row gap: author, 2026-10-11), each
+   banner keeps its single-column size; below 900px it is one column again */
+@media (min-width:900px){
+  :root{--u:min(1.28px, calc((100vw - 32px) / 1092))}
+  main{width:calc(1092 * var(--u))}
+  .banners{display:grid;grid-template-columns:1fr 1fr;gap:calc(12*var(--u)) calc(18*var(--u))}
+}
+@media (min-width:1500px){
+  .cols{display:flex}
+  html.cols3{--u:min(.96px, calc((100vw - 32px) / 1647))}   /* 3 x 537u + 2 x 18u; 75% of the 1.28px */
+  html.cols3 main{width:calc(1647 * var(--u))}
+  html.cols3 .banners{grid-template-columns:1fr 1fr 1fr}
+}
+.banner{position:relative;overflow:hidden;height:calc(128*var(--u));isolation:isolate;
+  background:linear-gradient(100deg,#313236 0%,#3a3c40 55%,#3a3c40 100%);
+  box-shadow:0 calc(6*var(--u)) calc(18*var(--u)) rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06)}
+.banner::before{content:"";position:absolute;left:0;top:0;bottom:0;width:calc(6*var(--u));background:var(--edge,var(--acc,var(--gold-rule)));z-index:4}
+/* the art fills the whole band (author, 2026-10-05: the splash art, not dark, behind the text) */
+.banner .art:not([src]){visibility:hidden}   /* until the site is chosen (below) */
+.banner .art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:saturate(1.08) contrast(1.04);
+  transition:transform .6s cubic-bezier(.2,.7,.2,1);will-change:transform}
+/* the art answers the hover with a slow 3% zoom, no brightening (author, 2026-10-27, mockup
+   roles/proto/x-index-system-line.html: "i like the zoom but not the light lift"). A transform, kept on its own layer
+   from the start (will-change): made on the first hover, the layer showed a rough picture until drawn (author,
+   2026-10-27: "on zoom in when hover, the splash lose its resolution for a brief"); growing the box instead stepped
+   by whole pixels ("made the splash art tremble when zoom in and lost its smooth motion") */
+.banner:hover .art,.banner.zoom .art,.banner:focus-within .art{transform:scale(1.03)}
+.banner .shade{position:absolute;inset:0;z-index:1;
+  background:linear-gradient(0deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 40%)}
+/* no sheen (author, 2026-10-27: "think we can safely remove sheen") */
+.banner .body{position:relative;z-index:3;height:100%;width:max-content;display:flex;flex-direction:column;justify-content:flex-start;
+  gap:calc(4*var(--u));padding:calc(14.7*var(--u)) calc(34*var(--u)) 0 calc(22*var(--u));
+  /* a light shade only for text contrast, fitted to the tag and the name (the chips take no width), fading out over the
+     last 34u (author, 2026-10-05; removed and brought back 2026-10-27: "might want to bring back the shadow") */
+  background:linear-gradient(90deg,rgba(18,18,18,.62) 0%,rgba(18,18,18,.5) calc(100% - 34*var(--u)),rgba(18,18,18,0) 100%)}
+/* the tag stays where a one-line banner had it (14.7u from the top, author 2026-10-05); a Thai second line
+   grows downward instead of pushing the tag up */
+.banner .tag{font-family:"Bebas Neue";font-size:calc(46.8*var(--u));line-height:.9;letter-spacing:.03em;
+  text-shadow:0 calc(1*var(--u)) calc(2*var(--u)) rgba(0,0,0,.75)}   /* tight shadow (author: slicker than a wide glow) */
+.banner .name{font-family:"Sarabun";font-size:calc(12*var(--u));line-height:1.2;color:#e6e8f0;
+  text-shadow:0 1px 1px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.8)}   /* tight, still readable where a name runs onto the art */
+.banner .who{position:absolute;right:calc(10*var(--u));bottom:calc(6*var(--u));z-index:3;font-family:"Bebas Neue";
+  font-size:calc(12*var(--u));letter-spacing:.06em;color:rgba(230,232,240,.75);text-shadow:0 1px 4px rgba(0,0,0,.9)}
+.links{display:flex;flex-wrap:wrap;gap:calc(8*var(--u));margin-top:calc(4*var(--u))}
+/* the chips take no width, so the text block is only as wide as the tag and the name (author, 2026-10-27: "it covers
+   tragodia face, not only the info area") */
+.banner .links{width:0;flex-wrap:nowrap}
+/* the chips start where the hover fill does, 4u left of the text (author, 2026-10-27: "fit left the categories chunk"),
+   and take the role's accent like the left edge (": accent", "pic2 accent too"); roles with no accent keep the golds */
+/* the chips' text on the tag's left line, their fills fitted like the tag's (author, 2026-10-27: "try left children and
+   fit their fills like roles"): no padding on the chip itself; the fill reaches 5.7u past the capitals above, right and
+   below, its left edge at -2u like the tag's (measured: the chip's capitals sit 2.3u below its line top, 3.9u above its
+   bottom, 0.5u of letter spacing on the right). Chips 15.2u apart so their fills keep the old 8u between them; the
+   row 6.4u under the name so its fills clear the name's Thai marks */
+/* then the same space right of the text as left of it (author, 2026-10-27: "make children right gap between text and
+   its fills the same as the left gap"): measured over every chip, the fill 2u left of the box and 1.4u right of it
+   puts 1.7px between the letters and the fill's edge on both sides (at 1.28px a u; the trailing letter spacing makes
+   up the rest); 12u between chips so their fills keep about 8u */
+.banner .links{margin-left:0;margin-top:calc(6.4*var(--u));gap:calc(12*var(--u))}
+/* the chips at one height on every banner (author, 2026-10-27: "the children y-axis position needs equalized; eg DR's
+   child is lower in y-axis than others"), at the one-row height ("children gap as if the middle text is one row"):
+   the name is one row on every banner (below), so the chips follow it at 85.6u */
+/* the name, the middle text, one row as the sheet writes it (no break at " — " or ": "); no box behind it (author,
+   2026-10-27: "the middle text doesn't need dark filled box"; it had one for a moment) */
+.banner .name{white-space:nowrap}
+/* the three parts, tag, name and chips, centred in the banner's height (author, 2026-10-27: "try center height the
+   three chunks"); was: the tag 14.7u from the top. Centred by what shows: the tag's fill to the chips' fills, 15.8u
+   clear above and below (the 1.6u top padding evens the fills' unequal reach) */
+.banner .body{justify-content:center;padding-top:calc(1.6*var(--u));padding-bottom:0}
+/* the system line over the tag, its number and family (author, 2026-10-27, mockup roles/proto/x-index-system-line.html:
+   "i like the first version of system flair, simply need lighter color for reds purples"): the number white, "// FAMILY"
+   in the family's colour, 60% lighter (mixed with white) for all three (author, 2026-10-27: "system text lighter on enemy,
+   ally, damage"; was 40% for red and purple, olive as it is); purple and olive then brighter and less grey, about the
+   damage word's colour strength (author, 2026-10-27: "try brighter ON ENEMY and ON ALLY system text"); 2u clear of the
+   tag's fill */
+.banner .sys{position:absolute;left:calc(22*var(--u));top:calc(5*var(--u));font-family:"Google Sans",sans-serif;
+  font-weight:700;font-size:calc(8.6*var(--u));letter-spacing:.14em;line-height:1;color:var(--sys,var(--gold-rule));
+  text-shadow:0 1px 1px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.8)}
+.banner .sys b{color:#e6e8f0;font-weight:700}
+.banner .links a{padding:0}
+/* the chips wipe in with the tag and the name (author, 2026-10-27: "make each role's CHILDREN slides too"): at rest
+   their text alone, with the name's tight shadow; on hover their fill wipes in from the left */
+.banner .links a{position:relative;background:none;box-shadow:none;color:#e6e8f0;
+  text-shadow:0 1px 1px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.8);transition:color 0s .15s,text-shadow 0s .15s}
+.banner .links a::before{content:"";position:absolute;inset:calc(-3.4*var(--u)) calc(-1.4*var(--u)) calc(-1.8*var(--u)) calc(-2*var(--u));z-index:-1;background:var(--acc,var(--gold-num));
+  box-shadow:0 0 0 1px rgba(0,0,0,.275),0 calc(2*var(--u)) calc(6*var(--u)) rgba(0,0,0,.25);
+  transform:scaleX(0);transform-origin:right;transition:transform .3s cubic-bezier(.65,0,.35,1);will-change:transform}
+.banner:hover .links a,.banner.wipe .links a,.banner:focus-within .links a{color:var(--ink,var(--bg));text-shadow:none}
+.banner:hover .links a::before,.banner.wipe .links a::before,.banner:focus-within .links a::before{transform:scaleX(1);transform-origin:left}
+/* a chip under the pointer: its own colour 20% lighter (author, 2026-10-27: "not this color when hover, just native but
+   20% lighter"; it was mixed with 25% white; then "try 40% lighter instead"): a lighter hex of the same colour, 40% of
+   the way to white, not a brightness boost ("not pic1 lighter, that would hurt the eye", "lighter hex of pic2 pls") */
+.banner .links a:hover::before,.banner .links a:focus-visible::before{background:var(--hov,color-mix(in srgb,var(--acc,var(--gold-num)) 60%,#fff))}
+/* damage chips: the red under the pointer, crimson otherwise; on-enemy / on-ally chips 15% lighter (--hov, ROLE_ACC) */
+.banner .links a:hover,.banner .links a:focus-visible{background:none}   /* not the old gold chip hover (.links a:hover) */
+/* hovering a role: the tag gets a solid fill behind it, dark text on it, like INFO's filled count badge (author,
+   2026-10-27: "make text adopt INFO's filled banner behind text when hovered"), in its family's colour (ROLE_ACC); only
+   the tag and the chips, not the name between them ("only ROLES and CHILDREN get the filled slides, not the middle
+   text"). The fill wipes in from the left and out to the right ("like it wipes"), behind the text, so nothing moves */
+/* the text flips between its two colours halfway through the wipe, never a grey between them (author, 2026-10-27, AFK
+   grey on its fill: "is this text color intended? i thought we only have white and black"): it faded over .3s with a
+   quick start while the fill starts slowly, so leaving showed grey text on a still-full fill; the chips the same */
+.banner .tag{position:relative;align-self:flex-start;transition:color 0s .15s,text-shadow 0s .15s}
+.banner .tag::before{content:"";position:absolute;z-index:-1;background:var(--acc,var(--gold-rule));
+  transform:scaleX(0);transform-origin:right;transition:transform .3s cubic-bezier(.65,0,.35,1);
+  /* on its own layer the whole time (will-change): drawn on one while it wiped and on the page once still, the fill
+     rounded its fractional edges two ways and jumped a pixel when the wipe ended (author, 2026-10-27, ATK+: "rest ROLE
+     boxes height desync"); the chips the same */
+  will-change:transform;
+  /* a soft shadow and rim lift it off the art: half of mockup way B ("shadow + rim but 50% less intense than b") */
+  box-shadow:0 0 0 1px rgba(0,0,0,.275),0 calc(2*var(--u)) calc(6*var(--u)) rgba(0,0,0,.25);
+  /* fitted to the capitals ("fit boxes tighter to its texts"), then 20% bigger on top, right and bottom ("20% bigger on
+     ROLE's top right bottom"): measured at 1.28px a u, the capitals sit 2.3u below the line top and 7u above its
+     bottom; 5.7u round them, the left edge at -2u with the chips */
+  inset:calc(-3.4*var(--u)) calc(-2.7*var(--u)) calc(1.3*var(--u)) calc(-2*var(--u))}
+.banner:hover .tag,.banner.wipe .tag,.banner:focus-within .tag{color:var(--ink,var(--bg));text-shadow:none}
+.banner:hover .tag::before,.banner.wipe .tag::before,.banner:focus-within .tag::before{transform:scaleX(1);transform-origin:left}
+/* the operator's name: no box on hover after all, its own mild shadow only (author, 2026-10-27: "we might not need name
+   boxes afterall, just mild shadow is fine"; boxed in PR 328) */
+/* a click anywhere on the banner opens the role's first page; only the chips stay their own links (author, 2026-10-27:
+   "allow clicking on banner image to bring us to its first page of its role") */
+.banner .go{position:absolute;inset:0;z-index:2}
+.banner .body,.banner .who{pointer-events:none}
+.banner .links a{pointer-events:auto}
+.banner .links>*{flex:none}
+.links a{font-family:"Bebas Neue";font-size:calc(16*var(--u));letter-spacing:.04em;color:var(--bg);background:var(--gold-num);
+  text-decoration:none;padding:calc(3*var(--u)) calc(9*var(--u)) calc(2*var(--u));box-shadow:0 calc(2*var(--u)) calc(6*var(--u)) rgba(0,0,0,.5)}
+.links a:hover,.links a:focus-visible{background:var(--gold-rule);outline:none}
+.links a span{opacity:.7}
+.links .soon{font-family:"Bebas Neue";font-size:calc(14*var(--u));letter-spacing:.06em;color:#b7b7b7;
+  border:1px solid rgba(183,183,183,.45);padding:calc(2*var(--u)) calc(8*var(--u)) calc(1*var(--u));
+  background:rgba(18,18,18,.7)}   /* readable on bright art */
+
+
+
+/* ---- the loading screen (author, 2026-10-27: "gorgeous, approved"; AUTHOR-DECISIONS #7 pass) (BASIC's logic: covers the page until fonts + the first row of banners + the
+   markup are in, at least 800 ms, then fades out). Drawn with shapes only, so it never waits on a
+   font; its one word fades in once the fonts are there. ---- */
+.ld{position:fixed;inset:0;z-index:60;background:var(--bg);display:grid;place-items:center;
+  transition:opacity .5s ease}
+.ld.done{opacity:0;pointer-events:none}   /* fades out (author, 2026-10-27: "fade?"; was BASIC's bottom-to-top wipe) */
+.ld .box{width:min(320px,70vw);display:grid;gap:7.8px}   /* 14px, then 9px (author, 2026-10-27: "a bit less gap to the bar"), then 13% less ("another 13% less") */
+.ld .bar{height:6px;background:#ffffff14;position:relative;overflow:hidden}
+/* the bar and its number in the official site's cyan, the one exception to gold (author, 2026-10-27: "AK cyan #18d1ff, an exception for
+   the loader only", "loading number too") */
+.ld .bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--cyan);transition:width .3s ease}
+.ld .row{display:flex;justify-content:space-between;font-family:"Bebas Neue";font-size:15px;letter-spacing:.2em;
+  color:var(--dim);opacity:0;transition:opacity .2s ease}
+.ld.f .row{opacity:1}
+.ld .row b{font-weight:400;color:var(--cyan);display:inline-block;min-width:4ch;text-align:right}
+
+/* families (author, 2026-10-29: "try categorize AFK (casual, no longer core), DP TANK HEAL", "each family start a new
+   row; DP TANK HEAL is one core family", "how do we visualize background to present family better ... i love fades",
+   "side fade but make the color joints fade too"): each family is its own block with its colour fading in from the
+   left edge of the window; each band also fades out at its top and bottom and overlaps the next, so neighbours blend.
+   A switch left of the column buttons turns it off for the former layout ("make the family optional trigger, rmb user
+   setting, since i love former layouts too"); on by default, remembered in this browser */
+html,body{overflow-x:clip}
+html.fam .banners{display:flex;flex-direction:column;gap:calc(44*var(--u))}
+html:not(.fam) .fam{display:contents}
+html:not(.fam) .fam::before{display:none}
+html.fam .banner{order:0!important}
+html.fam .sys .flat,html:not(.fam) .sys .famv{display:none}
+.cols.famt{display:flex}
+.fam{position:relative;isolation:isolate;display:flex;flex-direction:column;gap:calc(12*var(--u))}
+@media (min-width:900px){ html.fam .fam{display:grid;grid-template-columns:1fr 1fr;gap:calc(12*var(--u)) calc(18*var(--u))} }
+@media (min-width:1500px){ html.cols3.fam .fam{grid-template-columns:1fr 1fr 1fr} }
+.fam::before{content:"";position:absolute;z-index:-1;pointer-events:none;top:calc(-60*var(--u));bottom:calc(-60*var(--u));
+  left:calc(-42*var(--u));width:calc(50% + 50vw + 42*var(--u));
+  background:linear-gradient(90deg,transparent 0,color-mix(in srgb,var(--fc) 45%,transparent) calc(42*var(--u)),transparent 55%);
+  /* only a strip of the margin left of the pictures, fading in to them, not the whole margin to the window's edge
+     (author, 2026-10-29: "horizontal fade the left not beyond this", "since it's too wide, the former pic highlights
+     enough empty space but not too much": a narrow window's ~30px; 32u, then 30% longer, 42u: "the left fade head a
+     bit too short, 30% longer pls"); was left:calc(50% - 50vw);width:100vw */
+  -webkit-mask:linear-gradient(180deg,transparent 0,#000 calc(80*var(--u)),#000 calc(100% - 80*var(--u)),transparent 100%);
+          mask:linear-gradient(180deg,transparent 0,#000 calc(80*var(--u)),#000 calc(100% - 80*var(--u)),transparent 100%)}
+/* news:css */
+/* ==== What's new (2026-11-16). A strip in the header row's empty space, "NEW" above it like the top line,
+   on a dark cyan fade; a click, or resting on it, opens the patch notes as a vertical timeline ==== */
+.head{position:relative}   /* the strip floats in the header, so the header keeps its height and nothing below moves (#13) */
+/* the fade stronger (author, 2026-11-16: "the fades need to be more prominent"): .3 / .15, hover .4 / .2 (was .16 / .07) */
+/* the strip and its panel keep the two-column size in three columns, where the page shrinks to 75% (author, 2026-11-16:
+   "it's so small on desktop screen") */
+@media (min-width:1500px){ html.cols3 .news{--u:min(1.28px, calc((100vw - 32px) / 1092))} }
+.news{position:absolute;min-width:0;display:flex;flex-direction:column;padding:0 calc(9*var(--u)) 0 calc(18*var(--u));
+  background:linear-gradient(90deg,rgba(24,209,255,0) 0%,rgba(24,209,255,.3) calc(24*var(--u)),rgba(24,209,255,.15) 60%,rgba(24,209,255,0) 100%);
+  cursor:pointer;outline:none}
+.news .fade{display:flex;align-items:center;gap:calc(18*var(--u));width:100%}
+.news:hover,.news.open,.news:focus-visible{background:linear-gradient(90deg,rgba(24,209,255,0) 0%,rgba(24,209,255,.4) calc(24*var(--u)),rgba(24,209,255,.2) 65%,rgba(24,209,255,0) 100%)}
+.grp{display:flex;align-items:center;gap:calc(6*var(--u));flex:none}
+.grp.off{display:none}
+/* no room for the strip (phones): a NEWS chip beside SIMPLE, as tall as it, with a red dot while a note is unseen; it
+   opens the same panel under the header (author, 2026-11-16: "make it a news chip, same height as simple chip's, with
+   red notis if user haven't seen the news"). The red is Google's #ea4335, already in the known colours */
+/* filled cyan like SIMPLE, a newspaper icon instead of the word (author, 2026-11-16: "filled cyan, newspaper icon") */
+.newsb{display:none;position:relative;align-items:center;justify-content:center;width:calc(28*var(--u));padding:0;border:0;cursor:pointer;
+  background:var(--cyan);color:var(--bg);box-shadow:0 calc(1.5*var(--u)) calc(4.5*var(--u)) rgba(0,0,0,.5)}
+.newsb svg{width:calc(15*var(--u));height:calc(13*var(--u));display:block}
+.newsb:hover,.newsb:focus-visible,.newsb[aria-expanded="true"]{filter:brightness(1.25);outline:none}
+.newsb .dot{position:absolute;top:calc(-3*var(--u));right:calc(-3*var(--u));width:calc(7*var(--u));height:calc(7*var(--u));border-radius:50%;
+  background:#ea4335;box-shadow:0 0 0 calc(1.5*var(--u)) var(--bg);display:none}
+.newsb.unseen .dot{display:block}
+html.newsphone .newsb{display:flex}
+.news.none{background:none!important;pointer-events:none}
+/* on phones the panel keeps the full desktop size, one column, instead of shrinking with the page (author, 2026-11-16: "looks like ant text") */
+.news.none{--u:1.28px}
+/* the header buttons at a finger's size on phones, not shrunk with the page (author, 2026-11-16: "these need to be bigger
+   on phones"): their own unit fixed at 1.2px below 600px wide; the taller row grow up into the page's top space; the cyan hr stays put (author: "can't we use the top space instead?")
+   (author, 2026-11-16: "Keep it") */
+@media (max-width:599px){ .head{height:calc(30*var(--u))} .head .simple,.head .cols,.head .cols button,.head .newsb{--u:1.2px} }
+.news.none .fade{display:none}
+.news.none .notes{pointer-events:none}
+.news.none.open .notes{pointer-events:auto}
+/* captions in Roboto (author, 2026-11-16: "roboto"; #29, no small Bebas), the capitals' top on the portraits' top edge and
+   the date snug under its caption ("align top edge to the op portraits, snug date to its parent"). Roboto at line-height 1:
+   capitals measured .071em under the line top (canvas, 2026-11-16) */
+.cap{display:flex;flex-direction:column;font-family:"Roboto";line-height:1;white-space:nowrap}
+.cap b{font-weight:700;font-size:calc(11*var(--u));letter-spacing:.02em;color:var(--text);margin-top:calc(-.071*11*var(--u))}
+.cap i{font-style:normal;font-weight:500;font-size:calc(9.5*var(--u));letter-spacing:.02em;color:var(--cyan);margin-top:calc(-.8*var(--u));margin-bottom:calc(-.158*9.5*var(--u))}   /* a bit more room under the caption (author, 2026-11-16: "a bit margin between date and new module") */
+/* caption font trials, ?f=<key> (author, 2026-11-16: "this font sucks") */
+html.f-gs .cap b{font:700 calc(11*var(--u))/1 "Google Sans";letter-spacing:.02em} html.f-gs .cap i{font:500 calc(9.5*var(--u))/1 "Google Sans";letter-spacing:.02em}
+html.f-osw .cap b{font:500 calc(11.5*var(--u))/1 "Oswald";letter-spacing:.03em} html.f-osw .cap i{font:400 calc(9.5*var(--u))/1 "Oswald";letter-spacing:.03em}
+html.f-bar .cap b{font:600 calc(11.5*var(--u))/1 "Barlow";letter-spacing:.03em} html.f-bar .cap i{font:500 calc(9.5*var(--u))/1 "Barlow";letter-spacing:.03em}
+html.f-urb .cap b{font:800 calc(11*var(--u))/1 "Urbanist";letter-spacing:.03em} html.f-urb .cap i{font:700 calc(9.5*var(--u))/1 "Urbanist";letter-spacing:.03em}
+html.f-int .cap b{font:600 calc(11*var(--u))/1 "Inter Tight";letter-spacing:.01em} html.f-int .cap i{font:500 calc(9.5*var(--u))/1 "Inter Tight"}
+html.f-bai .cap b{font:600 calc(11*var(--u))/1 "Bai Jamjuree";letter-spacing:.02em} html.f-bai .cap i{font:500 calc(9.5*var(--u))/1 "Bai Jamjuree"}
+html.f-rob .cap b{font:700 calc(11*var(--u))/1 "Roboto";letter-spacing:.02em} html.f-rob .cap i{font:500 calc(9.5*var(--u))/1 "Roboto";letter-spacing:.02em}
+
+/* a kind the reader has already seen in the panel: its caption, date and column heading in grey; a new note brings
+   the colour back (author, 2026-11-16: "grey the headers if user has clicked the preview and seen the new headers") */
+.grp.seen .cap b{color:var(--dim)} .grp.seen .cap i{color:var(--dim)} .col.seen .kh{color:var(--dim)}
+.ic{position:relative;width:calc(30*var(--u));height:calc(30*var(--u));flex:none;background:#313236;box-shadow:inset 0 0 0 1px #54575d;display:block}
+.ic img.av{width:100%;height:100%;display:block}
+.ic img.md{position:absolute;right:calc(-4*var(--u));bottom:calc(-4*var(--u));width:calc(15*var(--u));height:calc(15*var(--u));
+  background:#202124;border-radius:50%;padding:calc(1.5*var(--u));box-shadow:0 0 0 1px #54575d}
+.ics{display:flex;gap:calc(7*var(--u))}
+
+/* the patch notes: cards stacked down a timeline, under the strip, over the banners (nothing moves) */
+.notes{position:absolute;left:0;right:0;top:100%;z-index:20;   /* flush with the strip (author, 2026-11-16: "no gap between area and popup") */
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(calc(170*var(--u)),1fr));gap:calc(14*var(--u));align-items:start;max-height:min(70vh,calc(520*var(--u)));
+  overflow:auto;overscroll-behavior:contain;padding:calc(12*var(--u)) calc(12*var(--u)) calc(4*var(--u)) calc(12*var(--u));
+  background:#202124;box-shadow:0 calc(6*var(--u)) calc(18*var(--u)) rgba(0,0,0,.6);border-top:calc(2*var(--u)) solid var(--cyan);   /* a border, not an inset shadow: scrolled cards painted over the shadow (author, 2026-11-16: "bug") */
+  
+  opacity:0;transform:translateY(calc(-6*var(--u)));pointer-events:none;transition:opacity .18s,transform .18s;cursor:default}
+.news.open .notes{opacity:1;transform:none;pointer-events:auto}
+.notes{scrollbar-width:thin;scrollbar-color:#54575d transparent}
+.kh{font:700 calc(9.5*var(--u))/1 "Roboto";letter-spacing:.1em;color:var(--cyan);margin-bottom:calc(3.5*var(--u))}   /* snug to its cards (author, 2026-11-16: "headers more snug to its content") */
+.tl{position:relative;padding-left:calc(16*var(--u))}
+.tl::before{content:"";position:absolute;left:calc(4*var(--u));top:calc(4*var(--u));bottom:0;width:1px;background:#54575d}
+.pn{position:relative;margin-bottom:calc(10*var(--u));padding:calc(3.5*var(--u)) calc(9*var(--u)) calc(2*var(--u));background:#313236}
+.pn::before{content:"";position:absolute;left:calc(-15*var(--u));top:calc(6*var(--u));width:calc(7*var(--u));height:calc(7*var(--u));
+  background:var(--dim);transform:rotate(45deg)}   /* filled grey, not an outline on the panel's dark (author, 2026-11-16: "this pins are hard to contrast") */
+.pn:first-child::before{background:var(--cyan);box-shadow:none}
+.pn .hd{display:flex;align-items:baseline;gap:calc(8*var(--u));font-family:"Roboto";line-height:1.1}
+.pn .hd b{font-weight:700;font-size:calc(11*var(--u));letter-spacing:.01em;color:var(--text)}
+.pn .hd i{font-style:normal;font-weight:500;font-size:calc(9.5*var(--u));white-space:nowrap;color:var(--cyan);margin-left:auto}
+.pn:last-child{margin-bottom:0}
+.pn .ics{padding-bottom:calc(1*var(--u))}
+.pn .hd + .ics{margin-top:calc(3*var(--u))}
+.pn p{margin:calc(1.5*var(--u)) 0 calc(3*var(--u));font-size:calc(10*var(--u));line-height:1.25;color:#b7b7b7}   /* the shared body grey (#21) */
+/* the strip's portraits: no box or frame, 30% bigger (39u), touching; the module 30% bigger, on a shadow instead of a
+   dark disc (author, 2026-11-16: "try no op backgrounds or frame, op get 30% bigger, snug to each other, module gets
+   shadow to contrast instead of filled dark circle, make module 30% bigger too") */
+.fade .ics,.pn .ics{gap:0}
+.fade .ic,.pn .ic{width:calc(39*var(--u));height:calc(39*var(--u));background:none;box-shadow:none}
+.fade .ic{width:var(--ph,calc(39*var(--u)));height:var(--ph,calc(39*var(--u)))}
+.fade .ic img.md,.pn .ic img.md{width:calc(19.5*var(--u));height:calc(19.5*var(--u));right:calc(-2*var(--u));bottom:calc(-2*var(--u));padding:0;
+  background:none;border-radius:0;box-shadow:none;filter:drop-shadow(0 0 calc(1*var(--u)) #000) drop-shadow(0 0 calc(2*var(--u)) #000) drop-shadow(0 0 calc(4*var(--u)) rgba(0,0,0,.9))}   /* stronger (author, 2026-11-16) */
+.fade .ic img.md{width:calc(var(--ph,calc(39*var(--u))) / 2);height:calc(var(--ph,calc(39*var(--u))) / 2)}
+.pn a.ic:hover,.pn a.ic:focus-visible{outline:none}
+.pn a.ic:hover img.av,.pn a.ic:focus-visible img.av{filter:drop-shadow(0 0 calc(2*var(--u)) var(--cyan))}
+/* /news:css */</style>
+</head>
+<body>
+<div class="ld" aria-hidden="true"><div class="box"><div class="bar"><i id="lf"></i></div>
+  <div class="row"><span>LOADING // X ROLES</span><b><span id="lp">0</span> %</b></div></div></div>
+<main>
+  <div class="top"><a href="../redalurks-handbook-landing_30.html">RDLB'S HANDBOOK</a> //</div>
+  <div class="head"><h1>Roles</h1><!-- news:html -->
+    <button type=button class=newsb id=newsb aria-expanded=false aria-label="News"><svg viewBox="0 0 15 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 1.2h10.8v9.6a1.5 1.5 0 0 1-1.5 1.5H2.2A1.5 1.5 0 0 1 .7 10.8V4.2H3"/><path d="M3 1.2v9.6a1.5 1.5 0 0 1-1.5 1.5"/><rect x="5.2" y="3.4" width="3.4" height="3" fill="currentColor" stroke="none"/><path d="M10 3.9h2M10 6h2M5.2 8.3h6.8M5.2 10.2h6.8"/></svg><i class=dot></i></button>
+    <div class=news id=news tabindex=0 role=button aria-expanded=false aria-label="What's new">
+      <div class=fade><span class=grp data-ids="mod|15 Nov|SA2, Matsukiri, Horn, Muelsyse"><span class=ics><span class=ic title="SilverAsh2"><img class=av src="https://lemonwait.github.io/operator/avatars/char_1045_svash2.png" alt="SilverAsh2"><img class=md src="https://lemonwait.github.io/operator/equip/type/csr-x.png" alt=""></span><span class=ic title="Matsukiri"><img class=av src="https://lemonwait.github.io/operator/avatars/char_4199_makiri.png" alt="Matsukiri"><img class=md src="https://lemonwait.github.io/operator/equip/type/csr-x.png" alt=""></span><span class=ic title="Horn"><img class=av src="https://lemonwait.github.io/operator/avatars/char_4039_horn.png" alt="Horn"><img class=md src="https://lemonwait.github.io/operator/equip/type/isw-a.png" alt=""></span><span class=ic title="Muelsyse"><img class=av src="https://lemonwait.github.io/operator/avatars/char_249_mlyss.png" alt="Muelsyse"><img class=md src="https://lemonwait.github.io/operator/equip/type/tac-d.png" alt=""></span></span><span class=cap><b>NEW MODULE</b><i>15 Nov</i></span></span><span class=grp data-ids="card|7 Nov|Talulah, Yu S2"><span class=ics><span class=ic title="Talulah"><img class=av src="https://lemonwait.github.io/operator/avatars/char_4247_oxi.png" alt="Talulah"></span><span class=ic title="Yu"><img class=av src="https://lemonwait.github.io/operator/avatars/char_2026_yu.png" alt="Yu"></span></span><span class=cap><b>NEW CARD</b><i>7 Nov</i></span></span><span class=grp data-ids="page|15 Nov|Toska S2"><span class=ics><span class=ic title="Toska"><img class=av src="https://lemonwait.github.io/operator/avatars/char_4244_tocka.png" alt="Toska"></span></span><span class=cap><b>NEW PAGE</b><i>15 Nov</i></span></span><span class=grp data-ids="fix|15 Nov|Matsukiri S2~fix|15 Nov|Toska builder~fix|14 Nov|AFK block counts"><span class=ics><span class=ic title="Matsukiri"><img class=av src="https://lemonwait.github.io/operator/avatars/char_4199_makiri.png" alt="Matsukiri"></span></span><span class=cap><b>BUG FIXES</b><i>15 Nov</i></span></span><span class=grp data-ids="misc|14 Nov|AFK records~misc|13 Nov|AFK page~misc|6 Nov|Shredders"><span class=ics><span class=ic title="Pramanix2"><img class=av src="https://lemonwait.github.io/operator/avatars/char_1046_sbell2.png" alt="Pramanix2"></span></span><span class=cap><b>MISC</b><i>14 Nov</i></span></span></div>
+      <div class=notes><div class=col data-ids="mod|15 Nov|SA2, Matsukiri, Horn, Muelsyse"><div class=kh>NEW MODULE</div><div class=tl><div class=pn data-id="mod|15 Nov|SA2, Matsukiri, Horn, Muelsyse"><div class=hd><b>SA2, Matsukiri, Horn, Muelsyse</b><i>15 Nov</i></div><div class=ics><a class=ic href="x-dp-vanguards.html" target=_blank title="SilverAsh2"><img class=av src="https://lemonwait.github.io/operator/avatars/char_1045_svash2.png" alt="SilverAsh2"><img class=md src="https://lemonwait.github.io/operator/equip/type/csr-x.png" alt=""></a><a class=ic href="x-hpup.html" target=_blank title="Matsukiri"><img class=av src="https://lemonwait.github.io/operator/avatars/char_4199_makiri.png" alt="Matsukiri"><img class=md src="https://lemonwait.github.io/operator/equip/type/csr-x.png" alt=""></a><a class=ic href="x-phys-aoe.html" target=_blank title="Horn"><img class=av src="https://lemonwait.github.io/operator/avatars/char_4039_horn.png" alt="Horn"><img class=md src="https://lemonwait.github.io/operator/equip/type/isw-a.png" alt=""></a><a class=ic href="x-atkdown.html" target=_blank title="Muelsyse"><img class=av src="https://lemonwait.github.io/operator/avatars/char_249_mlyss.png" alt="Muelsyse"><img class=md src="https://lemonwait.github.io/operator/equip/type/tac-d.png" alt=""></a></div></div></div></div><div class=col data-ids="card|7 Nov|Talulah, Yu S2"><div class=kh>NEW CARD</div><div class=tl><div class=pn data-id="card|7 Nov|Talulah, Yu S2"><div class=hd><b>Talulah, Yu S2</b><i>7 Nov</i></div><div class=ics><a class=ic href="x-arts-aoe.html" target=_blank title="Talulah"><img class=av src="https://lemonwait.github.io/operator/avatars/char_4247_oxi.png" alt="Talulah"></a><a class=ic href="x-ele-burn.html" target=_blank title="Yu"><img class=av src="https://lemonwait.github.io/operator/avatars/char_2026_yu.png" alt="Yu"></a></div></div></div></div><div class=col data-ids="page|15 Nov|Toska S2"><div class=kh>NEW PAGE</div><div class=tl><div class=pn data-id="page|15 Nov|Toska S2"><div class=hd><b>Toska S2</b><i>15 Nov</i></div><p>Crews, AFK ASPD upkeep and an army builder.</p><div class=ics><a class=ic href="proto/toska/crew.html" target=_blank title="Toska"><img class=av src="https://lemonwait.github.io/operator/avatars/char_4244_tocka.png" alt="Toska"></a></div></div></div></div><div class=col data-ids="fix|15 Nov|Matsukiri S2~fix|15 Nov|Toska builder~fix|14 Nov|AFK block counts"><div class=kh>BUG FIXES</div><div class=tl><div class=pn data-id="fix|15 Nov|Matsukiri S2"><div class=hd><b>Matsukiri S2</b><i>15 Nov</i></div><p>HP+ now runs forever.</p><div class=ics><a class=ic href="x-hpup.html" target=_blank title="Matsukiri"><img class=av src="https://lemonwait.github.io/operator/avatars/char_4199_makiri.png" alt="Matsukiri"></a></div></div><div class=pn data-id="fix|15 Nov|Toska builder"><div class=hd><b>Toska builder</b><i>15 Nov</i></div><p>A share can no longer reach 100%.</p><div class=ics><a class=ic href="proto/toska/crew.html" target=_blank title="Toska"><img class=av src="https://lemonwait.github.io/operator/avatars/char_4244_tocka.png" alt="Toska"></a></div></div><div class=pn data-id="fix|14 Nov|AFK block counts"><div class=hd><b>AFK block counts</b><i>14 Nov</i></div><p>Mountain and Hoshiguma2 block the right number.</p><div class=ics><a class=ic href="x-afk.html" target=_blank title="Mountain"><img class=av src="https://lemonwait.github.io/operator/avatars/char_264_f12yin.png" alt="Mountain"></a><a class=ic href="x-afk.html" target=_blank title="Hoshiguma2"><img class=av src="https://lemonwait.github.io/operator/avatars/char_1044_hsgma2.png" alt="Hoshiguma2"></a></div></div></div></div><div class=col data-ids="misc|14 Nov|AFK records~misc|13 Nov|AFK page~misc|6 Nov|Shredders"><div class=kh>MISC</div><div class=tl><div class=pn data-id="misc|14 Nov|AFK records"><div class=hd><b>AFK records</b><i>14 Nov</i></div><p>arkrec AFK records on 49 of 50 tiles.</p><div class=ics><a class=ic href="x-afk.html" target=_blank title="Pramanix2"><img class=av src="https://lemonwait.github.io/operator/avatars/char_1046_sbell2.png" alt="Pramanix2"></a></div></div><div class=pn data-id="misc|13 Nov|AFK page"><div class=hd><b>AFK page</b><i>13 Nov</i></div><p>The AFK page rebuilt as tiles.</p><div class=ics><a class=ic href="x-afk.html" target=_blank title="Pramanix2"><img class=av src="https://lemonwait.github.io/operator/avatars/char_1046_sbell2.png" alt="Pramanix2"></a></div></div><div class=pn data-id="misc|6 Nov|Shredders"><div class=hd><b>Shredders</b><i>6 Nov</i></div><p>Shredders now count on the scaled cards.</p><div class=ics><a class=ic href="x-nuke.html" target=_blank title="Blaze2"><img class=av src="https://lemonwait.github.io/operator/avatars/char_1040_blaze2.png" alt="Blaze2"></a><a class=ic href="x-nuke.html" target=_blank title="Clementia"><img class=av src="https://lemonwait.github.io/operator/avatars/char_4231_clemnt.png" alt="Clementia"></a></div></div></div></div></div></div>
+    <!-- /news:html -->
+    <div class="cols famt"><button type="button" id="famt" aria-label="Families" aria-pressed="true"><svg viewBox="0 0 15 11"><rect x="0" y="0" width="15" height="2.6" fill="currentColor"/><rect x="0" y="4.2" width="10" height="2.6" fill="currentColor"/><rect x="0" y="8.4" width="13" height="2.6" fill="currentColor"/></svg></button></div>
+    <div class="cols"><button type="button" data-cols="2" aria-label="2 columns" aria-pressed="true"><svg viewBox="0 0 15 11"><rect x="0" y="0" width="6.5" height="11" fill="currentColor"/><rect x="8.5" y="0" width="6.5" height="11" fill="currentColor"/></svg></button><button type="button" data-cols="3" aria-label="3 columns" aria-pressed="false"><svg viewBox="0 0 15 11"><rect x="0" y="0" width="3.6" height="11" fill="currentColor"/><rect x="5.7" y="0" width="3.6" height="11" fill="currentColor"/><rect x="11.4" y="0" width="3.6" height="11" fill="currentColor"/></svg></button></div>
+    <a class="simple" href="x-simple.html">SIMPLE</a></div>
+  <div class="rule"></div>
+  <div class="banners" id="banners"></div>
+</main>
+<script>
+// on a local preview, the banners come from the author's local site (launch.json "site", port 8754), so
+// they show before the site is pushed
+const LOCAL_SITE = 'http://localhost:8754', LIVE_SITE = 'https://lemonwait.github.io';
+const TRY_LOCAL = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+// bump BANNER_VER whenever the banners are rebuilt, so browsers fetch the new files instead of old saved ones
+const BANNER_VER = '2026-11-02a';
+// the local site is not always running: the banners start on the published site and switch only once it answers (below);
+// before, each picture waited ~2.3s for the local site to fail, six at a time, ~7s in all (author, 2026-10-27: "it loads
+// slowly"); a picture that fails on the local site tries the published one
+const FALLBACK = `if(!this.dataset.f){this.dataset.f=1;this.src=this.src.replace('${LOCAL_SITE}','${LIVE_SITE}')}`;
+const ART = (f, host) => `${host}/operator/banners/${f.replace('#', '_')}.webp?v=${BANNER_VER}`;   // E2 (_2) or skin (#n) crops
+// [tag, the sheet's section name, [[link text, page, cards]], banner [art file, operator name]]  (sheet row 1 order;
+// the art is the author's pick, 2026-10-05)
+const ROLES = [
+  ['AFK', 'AFK UNITS', [['AFK units', 'x-afk.html', 50]], ['char_1046_sbell2_2', 'Pramanix the Prerita']],
+  // not a sheet role: Toska S2's own page, beside AFK in CASUAL (author, 2026-11-15: "toska banner on the x page"); the count is the
+  // operators its army builder offers, each once
+  ['TOSKA', 'TOSKA S2 // FULL COVERAGE', [['Toska S2 army', 'proto/toska/crew.html', 48]], ['char_4244_tocka_2', 'Toska']],
+  ['DP', 'DP', [['Vanguards', 'x-dp-vanguards.html', 15]], ['char_1045_svash2_2', 'SilverAsh the Reignfrost']],
+  ['TANK', 'PHYSICAL TANK — แท็งก์กายภาพ', [['Physical tank', 'x-tank.html', 10]], ['char_4235_thumpy_2', 'Thumpy']],
+  ['HEAL', 'HEAL — ฮีลเลอร์', [['Heal', 'x-heal.html', 29]], ['char_2025_shu_nlc#1', 'Shu']],
+  ['LANE', 'LANEHOLDERS (MANUAL)', [['Laneholders', 'x-lane.html', 22]], ['char_4145_ulpia_2', 'Ulpian']],
+  ['DUEL', 'DUELISTS', [['Duelists', 'x-duel.html', 33]], ['char_4217_makoto_p3r#1', 'Makoto Yuki']],
+  ['PHYS', 'BURST DPS: PHYS — เบิร์สกายภาพ', [['AOE', 'x-phys-aoe.html', 10], ['Single target', 'x-phys-st.html', 14]],
+    ['char_1015_aglna2_2', 'Angelina the Mellow Wish']],
+  ['ARTS', 'BURST DPS: ARTS — เบิร์สเวท', [['AOE', 'x-arts-aoe.html', 17], ['Single target', 'x-arts-st.html', 6]],
+    ['char_4247_oxi_2', 'Talulah']],
+  ['ELE', 'ELEMENTAL DMG — ดาเมจธาตุ', [['Necrosis', 'x-ele-necrosis.html', 7], ['Burn', 'x-ele-burn.html', 7], ['Nervous', 'x-ele-nervous.html', 6], ['Corrosion', 'x-ele-corrosion.html', 5], ['Mania', 'x-ele-mania.html', 1]], ['char_1042_phatm2_2', 'Tragodia']],
+  // not a sheet role: the True damage dealers (author, 2026-10-23: "a new role for true dmg: TRUE"); banner Kal'tsit2, moved from HEAL (author, 2026-10-27)
+  ['TRUE', 'TRUE DMG', [['True', 'x-true.html', 6]], ['char_1052_kalts2_2', "Kal'tsit·Esperanta"]],
+  ['NUKE', 'NUKERS', [['Nukers', 'x-nuke.html', 16]], ['char_4231_clemnt_2', 'Clementia']],
+  ['FRD', 'Fast-Redeploy', [['Fast-Redeploy', 'x-frd.html', 13]], ['char_1502_crosly_iteration#5', 'Crownslayer']],
+  // not a sheet role: Contrail's take-off (author, 2026-10-21: "as for contrail, FLY, a new role page"); the count is its operators, one card each with a skill switch (author, 2026-10-26: "6 according to operators")
+  ['FLY', 'FLY', [['Fly', 'x-fly.html', 6]], ['char_1043_leizi2_game#8', 'Leizi the Thunderbringer']],
+  ['D-STH', 'DE-STEALTH', [['De-stealth', 'x-destealth.html', 11]], ['char_4087_ines_ambienceSynesthesia#5', 'Ines']],
+  ['SHFT', 'SHIFT', [['Shift', 'x-shift.html', 17]], ['char_400_weedy_2', 'Weedy']],
+  ['STALL', 'STALLERS', [['Stallers', 'x-stall.html', 12]], ['char_248_mgllan_2', 'Magallan']],
+  ['BIND', 'BIND', [['Bind', 'x-bind.html', 11]], ['char_4082_qiubai_ncg#1', 'Qiubai']],
+  ['STUN', 'STUN', [['Stun', 'x-stun.html', 24]], ['char_416_zumama_boc#3', 'Eunectes']],
+  ['BLCK', 'BODYBLOCKING', [['Bodyblocking', 'x-block.html', 13]], ['char_4195_radian_2', 'Raidian']],
+  ['AADENY', 'DMG Mitigation: AA DENY', [['AA deny', 'x-aadeny.html', 4]], ['char_4204_mantra_2', 'Mantra']],
+  ['ATK-', 'DMG Mitigation: ATK DOWN', [['ATK down', 'x-atkdown.html', 8]], ['char_249_mlyss_2', 'Muelsyse']],
+  ['ATK+', 'ATK BUFFERS', [['ATK buffers', 'x-atkbuff.html', 12]], ['char_4212_nasti_2', 'Nasti']],
+  ['DEF+', 'DMG Mitigation: DEF UP', [['DEF up', 'x-defup.html', 9]], ['char_1039_thorn2_marthe#9', 'Thorns the Lodestar']],
+  ['RES+', 'DMG Mitigation: RES UP', [['RES up', 'x-resup.html', 2]], ['char_179_cgbird_sightseer#1', 'Nightingale']],
+  ['HP+', 'DMG Mitigation: HP UP', [['HP up', 'x-hpup.html', 4]], ['char_4134_cetsyr_epoque#50', 'Civilight Eterna']],
+  ['DR', 'DMG Mitigation: DMG Reduction', [['DMG reduction', 'x-dmgred.html', 9]], ['char_4202_haruka_iteration#6', 'Haruka']],
+  ['BARIR', 'DMG Mitigation: BARRIER', [['Barrier', 'x-barrier.html', 19]], ['char_1041_angel2_iteration#6', 'Exusiai the New Covenant']],
+  ['HP-LOCK', 'DMG Mitigation: HP-LOCK', [['HP-lock', 'x-hplock.html', 3]], ['char_4056_titi_2', 'Titi']],
+  // not a sheet role: built from the game data (2026-10-07); banner the author's pick, Liskarm's skin
+  ['SP', 'SP Battery — ตัวเร่ง SP', [['SP', 'x-sp.html', 33]], ['char_107_liskam_striker#1', 'Liskarm']],
+  // effective HP of the TANK / LANE / DUEL operators (author, 2026-10-07); banner the author's pick, Mechanist (2026-10-27)
+  ['EHP', 'Effective HP', [['eHP', 'x-ehp.html', 63]], ['char_4230_mcnist_2', 'Mechanist']],
+  // E1 / E2 comparison built from the game data (author, 2026-10-16, "x index pls" 2026-10-17); banner the author's pick,
+  // Lappland the Decadenza's skin (2026-10-27).
+  // Since 2026-10-24 one page of five matchup tabs (author: "rename the x-index COMPARE button"): the count is the tabs
+  ['CMP', 'COMPARE: E1 // E2', [['Matchups', 'x-lapp2-click.html', 5]], ['char_1038_whitw2_sale#15', 'Lappland the Decadenza']],
+  // the DP race, second by second (author, 2026-10-19: "it deserves a spot! here!"); banner the author's pick, Bagpipe's
+  // Queen, No.1
+  ['RACE', 'DP RACE: SAILEACH // MYRTLE', [['Saileach // Myrtle', 'x-dp-compare.html', 2]], ['char_222_bpipe_race#1', 'Bagpipe']],
+];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// the section name breaks into two lines: at " — " (English / Thai), else after a ": " (author, 2026-10-05)
+// each role's colour by its family, from the author's sheet row (2026-10-27: "try to categorize each role like this"): DP,
+// AFK, TANK, HEAL their own; damage red; on the enemy (control, debuffs) purple; on your side (buffs, mitigation) olive.
+// TRUE and FLY (not in that row) go with the damage roles. [fill, text on it, a chip under the pointer]; EHP, CMP,
+// RACE keep the gold (SP with on ally). Damage: crimson, the red only under the pointer (author, 2026-10-27: "make the current red hover
+// color, and change the rest state color to crimson"), then 12% dimmer, #E02701 ("12% dimmer"); purple and olive one colour at rest and under the pointer
+// (author, 2026-10-27: "rest 30% brighter (#635DCB / #738435), and no colour change under the pointer for purple and
+// olive"; was darker at rest, see X-DESIGN); then under the pointer 15% lighter, #7A75D3 / #889653 ("these two's
+// children on hover needs 15% lighter"). Olive's left edge 20% lighter, #8F9D5D (author, 2026-10-27, a picture of
+// the edges: "a bit lighter pls"), the fourth value
+const ROLE_ACC = {
+  // the four core roles toned down (author, 2026-10-27: "accent for DP, TANK, AFK, HEAL currently hurts eyes a bit, tone
+  // it down pls"): OKLCH lightness x0.93, chroma x0.7 (DP a light grey); was #FFFFFF, #58E3ED, #F1C232, #ADF848, which
+  // their system line keeps (CORE_SYS)
+  ...Object.fromEntries(['DP'].map(r => [r, ['#DCDEE1', '#000']])),
+  ...Object.fromEntries(['AFK', 'TOSKA'].map(r => [r, ['#74C9D0', '#000']])),
+  ...Object.fromEntries(['TANK'].map(r => [r, ['#D2B25E', '#000']])),
+  ...Object.fromEntries(['HEAL'].map(r => [r, ['#A8DC6F', '#000']])),
+  ...Object.fromEntries(['LANE', 'DUEL', 'PHYS', 'ARTS', 'ELE', 'TRUE', 'NUKE', 'FRD', 'FLY'].map(r => [r, ['#C41E3A', '#fff', '#E02701']])),
+  ...Object.fromEntries(['D-STH', 'SHFT', 'STALL', 'BIND', 'STUN', 'BLCK', 'AADENY', 'ATK-'].map(r => [r, ['#635DCB', '#fff', '#7A75D3']])),
+  ...Object.fromEntries(['ATK+', 'DEF+', 'RES+', 'HP+', 'DR', 'BARIR', 'HP-LOCK', 'SP'].map(r => [r, ['#738435', '#fff', '#889653', '#8F9D5D']]))};
+// the system line's family word and colour (the red and purple 40% lighter, to read on the art); the four
+// own-colour roles are CORE, EHP / CMP / RACE (no family colour) TOOLS; SP on ally (author, 2026-10-27: SP batteries give
+// SP to teammates, "should liskarm be on ally?" ... "approv")
+const FAMILY = {'#C41E3A': ['DAMAGE', '#FFAB99'], '#635DCB': ['ON ENEMY', '#C3ABFF'], '#738435': ['ON ALLY', '#C6F97F']};
+// the core roles' system line in their full colours; TANK's lighter to read on the art ("their system text are fine
+// except TANK's CORE that need a lighter for better contrast"; was #F1C232)
+const CORE_SYS = {DP: '#FFFFFF', TANK: '#F7D478', HEAL: '#ADF848'};
+const sysOf = tag => tag === 'AFK' || tag === 'TOSKA' ? ['CASUAL', '#58E3ED'] : !ROLE_ACC[tag] ? ['TOOLS', ''] : FAMILY[ROLE_ACC[tag][0]] || ['CORE', CORE_SYS[tag]];
+// every role is a banner (author, 2026-10-05); roles without a page yet say so instead of links
+// a missing image stays visible as a broken image with its alt text (author rule, 2026-10-04)
+// AFK first and CASUAL with the families on; the former order (AFK second, CORE) with them off
+const FLAT = ['DP', 'AFK', ...ROLES.map(r => r[0]).filter(t => t !== 'DP' && t !== 'AFK')];
+const sysFlat = tag => tag === 'AFK' ? ['CORE', '#58E3ED'] : sysOf(tag);
+document.getElementById('banners').innerHTML = ROLES.map(([tag, name, links, op], i) =>
+  `<section class="banner"${ROLE_ACC[tag] ? ` style="--acc:${ROLE_ACC[tag][0]};--ink:${ROLE_ACC[tag][1]};--sys:${sysOf(tag)[1]}${ROLE_ACC[tag][2] ? `;--hov:${ROLE_ACC[tag][2]}` : ''}${ROLE_ACC[tag][3] ? `;--edge:${ROLE_ACC[tag][3]}` : ''}"` : ''}>` +
+  (op ? `<img class="art" data-art="${esc(op[0])}" alt="${esc(op[1])}" onerror="${FALLBACK}">` : '') +
+  `<div class="shade"></div>` +
+  (links.length ? `<a class="go" href="${links[0][1]}" aria-label="${esc(tag)}: ${esc(links[0][0])}"></a>` : '') +
+  `<div class="body"><div class="sys"><span class="famv"><b>${String(i + 1).padStart(2, '0')}</b> // ${sysOf(tag)[0]}</span><span class="flat"><b>${String(FLAT.indexOf(tag) + 1).padStart(2, '0')}</b> // ${sysFlat(tag)[0]}</span></div><div class="tag">${esc(tag)}</div>${name ? `<div class="name">${esc(name)}</div>` : ''}` +
+  `<div class="links">${links.length ? links.map(([t, href, n]) => `<a href="${href}">${esc(t)} <span>${n}</span></a>`).join('')
+                                      : '<span class="soon">Not built yet</span>'}</div></div>` +
+  (op ? `<div class="who">${esc(op[1])}</div>` : '') + `</section>`).join('');
+
+// the families as blocks, each with its colour: CASUAL AFK's cyan, CORE the gold accent, the three family colours,
+// TOOLS a line grey; with the families off each banner keeps its former place (CSS order)
+{ const FC = {CASUAL: '#58E3ED', CORE: '#D2B25E', DAMAGE: '#C41E3A', 'ON ENEMY': '#635DCB', 'ON ALLY': '#738435', TOOLS: '#54575d'};
+  const host = document.getElementById('banners'); let cur = null, last = '';
+  [...host.children].forEach((sec, i) => { const f = sysOf(ROLES[i][0])[0];
+    if (f !== last) { cur = document.createElement('div'); cur.className = 'fam'; cur.dataset.fam = f;
+      cur.style.setProperty('--fc', FC[f]); host.appendChild(cur); last = f; }
+    sec.style.order = FLAT.indexOf(ROLES[i][0]); cur.appendChild(sec); }); }
+// the families switch
+{ const H = document.documentElement, t = document.getElementById('famt');
+  const set = on => { H.classList.toggle('fam', on); t.setAttribute('aria-pressed', String(on)); };
+  set(H.classList.contains('fam'));
+  t.addEventListener('click', () => { const v = !H.classList.contains('fam'); set(v); try { localStorage.setItem('x-index-fam', v ? '1' : '0'); } catch (e) {} }); }
+// a hover that ends early still finishes: the fills wipe all the way in (.3s) and the art zooms all the way (.6s)
+// before they go back (author, 2026-10-27: "can we make on-rest finish their animations when mouse early leave", "it
+// doesnt do it when mouse on speed"); the classes hold the hover look until then
+document.querySelectorAll('#banners .banner').forEach(b => {
+  const hold = {wipe: [300], zoom: [600]};
+  b.addEventListener('pointerenter', () => Object.entries(hold).forEach(([k, h]) => {
+    clearTimeout(h[2]); if (!b.classList.contains(k)) h[1] = performance.now(); b.classList.add(k); }));
+  b.addEventListener('pointerleave', () => Object.entries(hold).forEach(([k, h]) =>
+    h[2] = setTimeout(() => b.classList.remove(k), Math.max(0, h[0] - (performance.now() - h[1]))))); });
+// the 2 / 3 column buttons (author, 2026-10-27); the pick kept in this browser when it allows
+const setCols = n => { document.documentElement.classList.toggle('cols3', n === 3);
+  document.querySelectorAll('.cols button[data-cols]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.cols === n))); };   // [data-cols]: not the family switch, which also sits in a .cols (author, 2026-11-02: "when changing layouts, its back to no-sorted family")
+try { setCols(+localStorage.getItem('x-index-cols') === 3 ? 3 : 2); } catch (e) {}
+document.querySelectorAll('.cols button[data-cols]').forEach(b => b.addEventListener('click', () => {
+  setCols(+b.dataset.cols); try { localStorage.setItem('x-index-cols', b.dataset.cols); } catch (e) {} }));
+const showArt = host => document.querySelectorAll('#banners .art').forEach(i => i.src = ART(i.dataset.art, host));
+// the published pictures at once, never a wait (AUTHOR-DECISIONS #7; author, 2026-10-27: "now all brief whenever refresh?",
+// every banner blank ~0.9s while the local site was asked); on a local view the local site is asked beside them with a
+// real picture, never a saved copy (a saved one said yes after the site had stopped, and the 4 new banners then waited
+// ~2.3s: "does shu banner load slower than others?"), and only if it answers do the banners switch to it (crops not
+// pushed yet show there)
+showArt(LIVE_SITE);
+if (TRY_LOCAL) {
+  const probe = new Image();
+  probe.onload = () => showArt(LOCAL_SITE);
+  probe.src = ART(document.querySelector('#banners .art').dataset.art, LOCAL_SITE) + '&probe=' + Date.now();
+}
+
+</script>
+<script>
+// the loading screen: ready = fonts + the first row of banners + the markup, at least 800 ms; a banner that
+// never answers is let go after 4s, so the page is never held longer
+(function () {
+  const ld = document.querySelector('.ld'), lp = document.getElementById('lp'), lf = document.getElementById('lf');
+  const t0 = performance.now(), MIN = 800, CAP = 4000;
+  let done = 0; const steps = 3;
+  const tick = () => { done++; const p = Math.round(done / steps * 100); lp.textContent = p; lf.style.width = p + '%'; };
+  const fonts = document.fonts.ready.then(() => ld.classList.add('f'));
+  const first = [...document.querySelectorAll('#banners .art')].slice(0, document.documentElement.classList.contains('cols3') ? 3 : 2);
+  const imgs = Promise.race([Promise.all(first.map(i => i.complete && i.src ? 0 : new Promise(r => i.addEventListener('load', r, { once: true })))),
+                             new Promise(r => setTimeout(r, CAP))]);
+  [fonts, imgs, Promise.resolve()].forEach(p => p.then(tick));
+  Promise.all([fonts, imgs]).then(() => setTimeout(() => { ld.classList.add('done'); setTimeout(() => ld.remove(), 600); },
+    Math.max(0, MIN - (performance.now() - t0))));
+})();
+</script>
+<!-- news:js --><script>
+// the strip shows only the groups that fit whole; a group that would be cut is left out
+{ const k = new URLSearchParams(location.search).get('f'); if (k) document.documentElement.classList.add('f-' + k); }
+const newsb = document.getElementById('newsb');
+const uProbe = document.createElement('i'); uProbe.style.cssText = 'position:absolute;visibility:hidden;width:calc(100*var(--u));height:0';
+document.querySelector('main').appendChild(uProbe);
+const news = document.getElementById('news'), fade = news.querySelector('.fade');
+const topLine = document.querySelector(".top");
+const titleEl = document.querySelector(".head h1");
+function fit(){
+  fade.querySelectorAll('.grp').forEach(e => e.classList.remove('off')); news.classList.remove('none'); document.documentElement.classList.remove('newsphone');
+  titleEl.style.fontSize = titleEl.style.lineHeight = ""; titleEl.style.top = "0px";
+  // the fade: as high as the top line, from 24u past its end to 9u before the header buttons
+  const u = uProbe.getBoundingClientRect().width / 100, rg = document.createRange(); rg.selectNodeContents(topLine);
+  const head = news.parentNode.getBoundingClientRect();
+  const firstBtn = [...news.parentNode.querySelectorAll(".cols,.simple")].filter(e => getComputedStyle(e).display !== "none")[0];
+  news.style.left = (rg.getBoundingClientRect().right + 24*u - head.left) + "px";
+  news.style.right = (head.right - firstBtn.getBoundingClientRect().left + 9*u) + "px";
+  // every chunk (ROLES, the portraits, the buttons) ends 18.4u above the rule, the live X · ROLES capitals' gap to it
+  // (measured 2026-11-16; author: "use the bigger margin of the x.roles' instead for all chunks"); the portraits' bottom
+  // is that edge, the fade 4u under it
+  // now the same gap as from the rule to the first banner (author, 2026-11-16: "equalize the top's content's gap to be the
+  // same as the gap between pram card and the bar"), measured live
+  const ruleR = document.querySelector(".rule").getBoundingClientRect(), firstBanner = document.querySelector(".banner");
+  const gapBelow = firstBanner ? firstBanner.getBoundingClientRect().top - ruleR.bottom : 15*u;
+  const edgeY = ruleR.top - gapBelow;
+  news.style.setProperty("--ph", (12 + 33*u) + "px");
+  news.style.top = "0px"; const icOff = fade.querySelector(".ic").getBoundingClientRect().bottom - news.getBoundingClientRect().top;
+  news.style.top = (edgeY - icOff - head.top) + "px";
+  const g = [...fade.querySelectorAll('.grp')];
+  const r = fade.getBoundingClientRect().right;
+  // ROLES fills its area (author, 2026-11-16: "fill its area"): its capitals run from 3u under the top line (NEW's gap
+  // to the icons) down to the fade's bottom edge. Bebas Neue's capitals are 0.7em tall. The line box keeps its 30u, so
+  // the header keeps its height and nothing below moves
+  titleEl.style.position = "relative";
+  if (!titleEl.querySelector(".bl")) titleEl.insertAdjacentHTML("beforeend", '<span class=bl style="display:inline-block;width:0;height:0"></span>');
+  // ROLES and the buttons end on the portraits' bottom edge, not the fade's (author, 2026-11-16: "move the two chunks to
+  // equalize to op portraits' bottom edge (not the fades')"); moved by relative offsets, so the header keeps its height
+  // ROLES keeps its size (author, 2026-11-16: "don't resize ROLES"): capitals 30u tall, as when it first filled the
+  // space from the top line to the portraits' bottom; the top line rises to stay 3u above them
+  const edge = edgeY;
+  // on phones ROLES takes the buttons' 1.2px unit, so it keeps its desktop proportion to them (author, 2026-11-16: "on
+  // phone, these need to be same proportion to the chips too"); the top line is 12px everywhere already
+  const hu = matchMedia("(max-width:599px)").matches ? 1.2 : u;
+  titleEl.style.fontSize = (30*hu / 0.7) + "px";
+  topLine.style.position = "relative"; topLine.style.top = "0px";
+  topLine.style.top = (edge - 30*hu - 3*hu - topLine.getBoundingClientRect().bottom) + "px"; titleEl.style.lineHeight = (30*u) + "px";
+  titleEl.style.top = (edge - titleEl.querySelector(".bl").getBoundingClientRect().bottom) + "px";
+  news.parentNode.querySelectorAll(".cols,.simple").forEach(e => { e.style.position = "relative"; e.style.top = "0px";
+    if (getComputedStyle(e).display !== "none") e.style.top = (edge - e.getBoundingClientRect().bottom) + "px"; });
+  let hide = false; g.forEach(e => { if (hide || e.getBoundingClientRect().right > r + .5) { hide = true; e.classList.add('off'); } });
+  const none = g.every(e => e.classList.contains('off'));
+  news.classList.toggle('none', none); document.documentElement.classList.toggle('newsphone', none);
+  if (none) { // the panel spans the header, opening under it
+    news.style.left = "0px"; news.style.right = "0px"; news.style.top = "0px";
+    news.style.top = (edgeY + gapBelow - news.getBoundingClientRect().top) + "px";
+    const sb = news.parentNode.querySelector(".simple").getBoundingClientRect();
+    newsb.style.height = sb.height + "px"; newsb.style.top = "0px"; newsb.style.top = (sb.bottom - newsb.getBoundingClientRect().bottom) + "px";
+  } }
+addEventListener('resize', fit); document.fonts.ready.then(fit); fit();
+// open: the pointer on the strip, at once (author, 2026-11-17: "we don't need that delay on the NEWS panel"; was a
+// 0.5s rest), or a click / tap; close: leaving both, Esc, a click outside
+const LEAVE = 300; let tClose;
+// seen notes: kept in this browser only (a per-reader convenience); ?unseen clears it for testing
+const SEEN_KEY = 'x-index-news-seen';
+let seen = new Set(); try { if (new URLSearchParams(location.search).has('unseen')) localStorage.removeItem(SEEN_KEY);
+  seen = new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]')); } catch (e) {}
+const paintSeen = () => { news.querySelectorAll('[data-ids]').forEach(e => e.classList.toggle('seen', e.dataset.ids.split('~').every(i => seen.has(i))));
+  newsb.classList.toggle('unseen', [...news.querySelectorAll('.pn')].some(p => !seen.has(p.dataset.id))); };
+paintSeen();
+// a note counts as seen only once its card has been on screen in the open panel (author, 2026-11-16: "and seen the
+// header's new content"); a kind greys when all its notes are seen, after the panel closes, so nothing changes mid-read
+const notesBox = news.querySelector('.notes');
+const watch = new IntersectionObserver(es => { let added = false;
+  es.forEach(e => { if (e.isIntersecting && news.classList.contains('open') && !seen.has(e.target.dataset.id)) { seen.add(e.target.dataset.id); added = true; } });
+  if (added) try { localStorage.setItem(SEEN_KEY, JSON.stringify([...seen])); } catch (e) {} }, { root: notesBox, threshold: .6 });
+const set = o => { const was = news.classList.contains('open'); news.classList.toggle('open', o); news.setAttribute('aria-expanded', String(o)); newsb.setAttribute('aria-expanded', String(o));
+  if (o && !was) notesBox.querySelectorAll('.pn').forEach(p => watch.observe(p));
+  if (!o && was) { watch.disconnect(); paintSeen(); } };
+// a click opens, never closes: the pointer has already opened it on the way in, so a toggle would shut it
+news.addEventListener('click', e => { if (e.target.closest('.notes')) return; set(true); });
+news.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); set(!news.classList.contains('open')); } if (e.key === 'Escape') set(false); });
+news.addEventListener('pointerenter', () => { clearTimeout(tClose); if (!news.classList.contains('none')) set(true); });
+news.addEventListener('pointerleave', () => { if (!news.classList.contains('none')) tClose = setTimeout(() => set(false), LEAVE); });
+document.addEventListener('pointerdown', e => { if (!news.contains(e.target) && !newsb.contains(e.target)) set(false); });
+newsb.addEventListener('click', () => set(!news.classList.contains('open')));
+newsb.addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
+</script>
+<!-- /news:js --></body>
+</html>

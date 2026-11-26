@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saileach, Myrtle · DP</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="x-dp-compare.css">
+<!-- MOCK B · LANES. Each operator is a band of lanes on one shared time axis (Endfield's calendar lanes, REFERENCE
+     "Timelines and dates"): her own lane (on field, skill bars, retreat, return), the team's lane (each slot's number
+     where it lands), and DP on hand. The two bands sit one above the other so the same second lines up. Settings in a
+     left rail that stays put. -->
+<style>
+.wrap{max-width:1400px}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:28px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:1fr}}
+.rail{position:sticky;top:12px;display:grid;gap:12px}
+@media (max-width:980px){.rail{position:static}}
+.rail h3{font:400 17px/1 "Bebas Neue";letter-spacing:.06em;color:var(--gold-rule);margin:8px 0 0}
+.rail .ctl{display:grid;grid-template-columns:1fr auto;gap:4px 8px}
+.rail .ctl input{grid-column:1/-1}
+.rail .ctl .seg{grid-column:1/-1}
+.rail .team{grid-template-columns:repeat(4,minmax(0,1fr))}
+.rail .opb{display:grid;gap:8px;padding:8px 0 0 10px;border-left:3px solid currentColor}
+.rail .opb .ctl{color:var(--text)}
+.rail .opb .nm{font:400 22px/1 "Bebas Neue";letter-spacing:.04em}
+.band{margin-bottom:22px}
+.bhead{display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap;padding-bottom:6px;border-bottom:2px solid currentColor}
+.bhead .nm{font:400 38px/.9 "Bebas Neue";letter-spacing:.03em;margin-right:auto;display:flex;gap:10px;align-items:center}
+.bhead .nm img{width:44px;height:44px}
+.hn{color:var(--text)}
+.hn .k{font:400 13px/1 "Bebas Neue";letter-spacing:.06em;color:var(--dim)}
+.hn .v{font:400 34px/1 "Bebas Neue";color:var(--gold-stat)}
+.lanes svg{width:100%;height:auto;display:block}
+.axis svg{width:100%;height:auto;display:block}
+.key{display:flex;gap:16px;flex-wrap:wrap;color:var(--dim);font-size:12px;margin-top:6px}
+.key i{display:inline-block;width:14px;height:6px;margin-right:5px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="wrap" id="root">
+  <div class="sh-top"><a href="../redalurks-handbook-landing_30.html">REDALURK'S HANDBOOK</a> // <a href="x-index.html">ROLES</a> // DP</div>
+  <h1><span class="s">SAILEACH</span><span class="vs">//</span><span class="m">MYRTLE</span></h1>
+  <p class="sub">Saileach (P1 by default) · Myrtle P6 · the same team of 12 · DP from the stage, the skills and retreats</p>
+  <div class="mockbar">MOCK <a href="x-dp-compare-mock-a.html">A · RACE</a><a class="cur" href="x-dp-compare-mock-b.html">B · LANES</a><a href="x-dp-compare-mock-c.html">C · LEDGER</a><a href="x-dp-compare-mock-d.html">D · SHEET</a></div>
+  <div class="layout">
+    <aside class="rail" id="rail"></aside>
+    <main id="bands"></main>
+  </div>
+  <div class="notes" id="notes"></div>
+</div>
+<script src="x-dp-compare-data.js"></script>
+<script src="x-dp-compare-sim.js"></script>
+<script src="x-dp-compare-ui.js"></script>
+<script>
+const {OPS, COL, state} = UI;
+const AVATAR = id => `https://lemonwait.github.io/operator/avatars/${id}.png`;
+const HEX = ['#e5b066', '#9ccc84'];
+function rail() {
+  document.getElementById('rail').innerHTML = `<h3>THE STAGE</h3>${UI.stageControls()}
+    ${OPS.map((o, i) => `<div class="opb" style="color:${COL[o.short]}"><div class="nm">${o.name.toUpperCase()} <span class="lab">P${state.ops[i].pot} · COST ${UI.vcost(i)}</span></div>${UI.opControls(i)}</div>`).join('')}
+    <h3>THE TEAM OF 12</h3>${UI.teamControls(true)}
+    <p class="lab" style="margin:0;font-size:13px">G = GROUND OPERATOR (BEA-Y)</p>`;
+}
+function band(r, i, LAND) {
+  const H = state.horizon, W = 1000, L = 70, Rm = 10, c = HEX[i];
+  const x = t => L + (W - L - Rm) * Math.min(t, H) / H;
+  const rows = {v: 8, team: 62, dp: 104}, h = 162;
+  let g = '';
+  const label = (y, s) => g += `<text x="0" y="${y + 4}" fill="#8a8d96" font-size="12" font-family="Bebas Neue" letter-spacing=".06em">${s}</text>`;
+  label(rows.v + 8, r.o.short.toUpperCase()); label(rows.team + 8, 'TEAM'); label(rows.dp + 22, 'DP ON HAND');
+  // her lane: on field (thin), skill (thick), retreat (gap)
+  const vv = r.ev.filter(e => e.who === 'v');
+  let onAt = null;
+  for (const e of vv) {
+    if (e.k === 'deploy') onAt = e.t;
+    if (e.k === 'retreat') { g += `<rect x="${x(onAt)}" y="${rows.v + 6}" width="${x(e.t) - x(onAt)}" height="4" fill="${c}" opacity=".45"/>
+      <text x="${x(e.t) + 4}" y="${rows.v + 12}" fill="#8a8d96" font-size="11">retreat +${e.n}</text>`; onAt = null; }
+  }
+  if (onAt != null) g += `<rect x="${x(onAt)}" y="${rows.v + 6}" width="${x(H) - x(onAt)}" height="4" fill="${c}" opacity=".45"/>`;
+  for (const ln of r.lanes) g += `<rect x="${x(ln.t0)}" y="${rows.v}" width="${Math.max(2, x(ln.end ?? H) - x(ln.t0))}" height="16" fill="${c}"/>`;
+  for (const e of vv.filter(e => e.k === 'deploy')) g += `<path d="M${x(e.t)},${rows.v - 2}v20" stroke="#e6e8f0" stroke-width="2"/>
+    <text x="${x(e.t) + 3}" y="${rows.v - 3}" fill="#e6e8f0" font-size="11">${e.n}</text>`;
+  // team: each member's icon where it lands, flagged with its order (1-11)
+  g += `<line x1="${L}" x2="${W - Rm}" y1="${rows.team + 8}" y2="${rows.team + 8}" stroke="#3a3c40"/>`;
+  let lastX = -99, lift = 0;
+  for (const e of r.ev.filter(e => e.who === 'team' && e.k === 'deploy')) {
+    const X = x(e.t); lift = X - lastX < 20 ? (lift ? 0 : 1) : 0; lastX = X;
+    const Y = rows.team - 6 - lift * 18, m = state.team[e.slot - 1];
+    g += `<image href="${UI.AV(m.id)}" x="${X - 9}" y="${Y}" width="18" height="18"><title>${UI.ord(e.slot)}: ${m.name}</title></image>
+      <rect x="${X - 9}" y="${Y}" width="18" height="18" fill="none" stroke="${LAND[e.slot - 1].win === i ? c : '#4a4c52'}" stroke-width="${LAND[e.slot - 1].win === i ? 2 : 1}"/>
+      <rect x="${X - 9}" y="${Y + 18}" width="18" height="9" fill="#b8af78"/>
+      <text x="${X}" y="${Y + 25.5}" text-anchor="middle" fill="#121212" font-size="9" font-family="Bebas Neue">${UI.ord(e.slot)}</text>`;
+  }
+  if (r.fieldAll != null) g += `<line x1="${x(r.fieldAll)}" x2="${x(r.fieldAll)}" y1="${rows.v - 6}" y2="${h}" stroke="${c}" stroke-dasharray="3 3"/>`;
+  // DP on hand, 0-99
+  const yd = d => rows.dp + 46 * (1 - Math.min(d, 99) / 99);
+  g += `<path d="M${r.series.map(([t, d]) => `${x(t).toFixed(1)},${yd(d).toFixed(1)}`).join('L')}" fill="none" stroke="${c}" stroke-width="1.5"/>
+    <line x1="${L}" x2="${W - Rm}" y1="${yd(0)}" y2="${yd(0)}" stroke="#3a3c40"/>
+    <text x="${L - 4}" y="${yd(99) + 4}" text-anchor="end" fill="#8a8d96" font-size="10">99</text>`;
+  const f = UI.figures(r);
+  return `<section class="band" style="color:${COL[r.o.short]}">
+    <div class="bhead"><div class="nm"><img class="ava" src="${AVATAR(r.o.id)}" alt="">${r.o.name.toUpperCase()}</div>
+      <div class="hn" data-step="${i}:fieldAll"><div class="k">12TH LANDS</div><div class="v">${UI.clock(f.fieldAll)}</div></div>
+      <div class="hn" data-step="${i}:firstCast"><div class="k">FIRST SKILL</div><div class="v">${UI.clock(f.firstCast)}</div></div>
+      <div class="hn" data-step="${i}:skillDP"><div class="k">SKILL DP</div><div class="v">${UI.n0(f.skillDP)}</div></div>
+      <div class="hn" data-step="${i}:net"><div class="k">DP SHE ADDS</div><div class="v">${UI.n0(f.net)}</div></div></div>
+    <div class="lanes"><svg viewBox="0 0 ${W} ${h}">${g}</svg></div></section>`;
+}
+function axis() {
+  const H = state.horizon, W = 1000, L = 70, Rm = 10, x = t => L + (W - L - Rm) * t / H;
+  const step = H <= 60 ? 10 : H <= 150 ? 15 : 30;
+  let g = '';
+  for (let t = 0; t <= H; t += step) g += `<line x1="${x(t)}" x2="${x(t)}" y1="0" y2="6" stroke="#8a8d96"/><text x="${x(t)}" y="20" text-anchor="middle" fill="#8a8d96" font-size="12">${t}s</text>`;
+  return `<div class="axis"><svg viewBox="0 0 ${W} 26">${g}</svg></div>`;
+}
+function render(kind) {
+  if (kind !== 'input') rail();
+  const R = UI.results();
+  queueMicrotask(() => UI.paintFlags(R));
+  document.getElementById('bands').innerHTML = R.map((r, i) => band(r, i, UI.landings(R))).join('') + axis() + `<div class="key">
+    <span><i style="background:#cccccc;opacity:.5"></i>on the field</span><span><i style="background:var(--gold-num)"></i>skill (DP coming in)</span>
+    <span>icons: the team landing, flagged 1ST-11TH (outlined in her colour: she gets that member on the field first)</span><span>dashed: the 12th lands</span></div>`;
+}
+document.getElementById('notes').innerHTML = `<b>Rules (PRTS).</b> Natural DP 1 a second unless the stage changes it; DP stops at 99.
+  Each departure adds a redeploy penalty layer: the 2nd deployment costs ×1.5, the 3rd on ×2.0 (floored); THEIR DEPLOY COST starts them already ×1.5 or ×2.0. A retreat refunds
+  half of what that deployment cost (floored). Saileach E2 T2: the next Operator after her costs −2 DP.
+  <b>Click a figure</b> for its Step | Value table.`;
+UI.bind(document.getElementById('root')); UI.popups(document.getElementById('root'));
+UI.on(render); render('click');
+</script>
+</body>
+</html>

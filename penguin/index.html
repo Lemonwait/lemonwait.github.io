@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Penguin Statistics | Redalurk's Handbook</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<style>
+/* Every number below is from design/grid/PENGUIN.json, penguin/docs/IMAGES.md or penguin/docs/CELLS.md,
+   in sheet px. One sheet px is --u: 1 css px at the 806 px cap (decision P2), less below it. */
+:root {
+  --bg: #121212;          /* sheet background, 94% of the tab */
+  --accent: #ff204f;      /* title bars, link bars, left stripe, tip markers */
+  --notch: #000000;       /* A4 */
+  --frame: #e0e0e0;       /* screenshot frames */
+  --text: #ffffff;
+  --link-hi: #ffff00;     /* C52's linked words */
+  --font: 'Google Sans', Arial, sans-serif;   /* the sheet's own stack: "docs-Google Sans", Arial */
+  --font-sarabun: 'Sarabun', Arial, sans-serif;   /* cells the sheet sets in Sarabun (C77) */
+  --font-label: 'Bebas Neue', 'Oswald', sans-serif;   /* Arknights layer labels (P6) */
+  --floor: 12px;          /* P5 (author, 2026-10-10: 12 px): smallest body text on small screens, where it fits */
+}
+html, body { margin: 0; background: var(--bg); }
+body { color: var(--text); font-family: var(--font); }
+
+.sheet { max-width: 806px; margin: 0 auto; container-type: inline-size; }
+.grid {
+  --u: calc(100cqw / 806);
+  /* P6 D (author, 2026-10-10): faint dot grid behind the background; pictures and fills cover it */
+  background-image: radial-gradient(rgba(255, 255, 255, .075) calc(1 * var(--u)), transparent calc(1.2 * var(--u)));
+  background-size: calc(14 * var(--u)) calc(14 * var(--u));
+  display: grid;
+  /* columns: 15 35 49x15 21, as fr so they always add up to the full width (806 fr) */
+  grid-template-columns: 15fr 35fr repeat(15, 49fr) 21fr;
+  /* rows 1-78, 7939 in all. Browsers round each track to 1/64 px, so below the cap the bottom of the page can
+     drift by up to about 1 px (measured -0.87 at 600 wide); at the cap it is exact. */
+  grid-template-rows:
+    calc(289*var(--u)) calc(59*var(--u)) calc(79*var(--u)) calc(26*var(--u)) calc(58*var(--u))
+    repeat(5, calc(44*var(--u))) calc(13*var(--u)) calc(431*var(--u)) calc(59*var(--u)) calc(43*var(--u))
+    calc(59*var(--u)) calc(20*var(--u)) calc(491*var(--u)) calc(20*var(--u)) calc(66*var(--u)) calc(20*var(--u))
+    calc(424*var(--u)) calc(15*var(--u)) calc(42*var(--u)) calc(21*var(--u)) calc(378*var(--u)) calc(15*var(--u))
+    repeat(2, calc(42*var(--u))) calc(38*var(--u)) calc(79*var(--u)) calc(20*var(--u)) calc(43*var(--u))
+    calc(20*var(--u)) calc(415*var(--u)) calc(20*var(--u)) calc(294*var(--u)) calc(14*var(--u)) calc(42*var(--u))
+    calc(35*var(--u)) calc(860*var(--u)) calc(14*var(--u)) calc(42*var(--u)) calc(21*var(--u)) calc(146*var(--u))
+    calc(14*var(--u)) calc(42*var(--u)) calc(21*var(--u)) calc(160*var(--u)) calc(14*var(--u)) calc(42*var(--u))
+    calc(21*var(--u)) calc(43*var(--u)) calc(21*var(--u)) calc(509*var(--u)) calc(21*var(--u)) calc(43*var(--u))
+    calc(21*var(--u)) calc(160*var(--u)) calc(14*var(--u)) calc(98*var(--u)) calc(21*var(--u)) calc(184*var(--u))
+    calc(14*var(--u)) calc(42*var(--u)) calc(21*var(--u)) calc(471*var(--u)) calc(14*var(--u)) calc(42*var(--u))
+    calc(21*var(--u)) calc(471*var(--u)) calc(14*var(--u)) repeat(2, calc(42*var(--u))) calc(61*var(--u))
+    repeat(3, calc(41*var(--u))) calc(77*var(--u));
+}
+
+/* Fills: painted empty cells (penguin/docs/CELLS.md) */
+.fill { background: var(--accent); }
+.fill.notch { background: var(--notch); }
+
+/* Text cells: the sheet pads every cell 2px 3px, and the cell's right and bottom 1 px is the gridline */
+.cell {
+  box-sizing: border-box;
+  padding: calc(2 * var(--u)) calc(4 * var(--u)) calc(3 * var(--u)) calc(3 * var(--u));
+  margin: 0; display: flex; align-items: center;
+  white-space: pre; line-height: normal;     /* spaces inside the text stay as typed (C42 has two) */
+}
+.cell.wrap { white-space: pre-wrap; }
+.cell.left   { justify-content: flex-start; text-align: left; }
+.cell.center { justify-content: center;     text-align: center; }
+.cell.right  { justify-content: flex-end;   text-align: right; }
+.red { background: var(--accent); }
+/* Leading spaces: the author used spaces to place text (2026-10-10). They are removed from the text and the
+   same width is given as an indent: Google Sans space = 0.232em (400), 0.234em (700). penguin/docs/CELLS.md */
+.in2 { text-indent: 0.464em; }   /* two spaces, regular */
+.in1 { text-indent: 0.234em; }   /* one space, bold (title bars) */
+/* A 3 px border insets the cell's content by half its width on that side (measured on C21 and C19 in
+   goal-rows-15-21.webp). Tip lines have the red marker on their left boundary. */
+.bl { padding-left: calc(4.5 * var(--u)); }
+/* Symbols Google Sans lacks (C50's stars) come from a system font with taller metrics; keep them out of the
+   line height so the line stays where the sheet puts it */
+.sym { line-height: 0; }
+.link { color: inherit; text-decoration: underline; text-decoration-skip-ink: none; }
+.link.yellow { color: var(--link-hi); }
+
+/* Borders (penguin/docs/CELLS.md): a 3 px line is centred on the cell's last pixel, so a boundary at b is
+   covered from b-2 to b+1. A screenshot frame is one outline from (x-2, y-2) to (x+w+1, y+h+1), over the picture;
+   a tip marker is B's right border, x 48-51, the row's full height. */
+.frame {
+  box-sizing: border-box; pointer-events: none;
+  margin: calc(-2 * var(--u)) calc(-1 * var(--u)) calc(-1 * var(--u)) calc(-2 * var(--u));
+  border: calc(3 * var(--u)) solid var(--frame);
+}
+.hline { background: var(--frame); align-self: end; height: calc(3 * var(--u)); margin: 0 calc(-1 * var(--u)) calc(-1 * var(--u)) 0; }
+.tick { background: var(--accent); justify-self: end; width: calc(3 * var(--u)); margin-right: calc(-1 * var(--u)); }
+
+/* Pictures: a clipping box (cell less the gridline) and the picture at its drawn rectangle (IMAGES.md) */
+.pic {
+  position: relative; overflow: hidden; align-self: start; justify-self: start;
+  width: calc(var(--bw) * var(--u)); height: calc(var(--bh) * var(--u));
+}
+.pic img {
+  position: absolute; display: block; max-width: none;
+  left: calc(var(--x) * var(--u)); top: calc(var(--y) * var(--u));
+  width: calc(var(--w) * var(--u)); height: calc(var(--h) * var(--u));
+}
+
+/* Arknights layer (P6 A + B, author 2026-10-10). Decoration only: placed in space the sheet leaves empty, never
+   moves a measured block, hidden from screen readers. A: section index at the right end of each red title bar.
+   B: system-style text running up the red stripe. */
+.deco { pointer-events: none; z-index: 1; font-family: var(--font-label); line-height: 1; }
+.deco-idx { align-self: center; justify-self: end; margin-right: calc(14 * var(--u)); text-align: right; color: rgba(255, 255, 255, .78); }
+.deco-idx b { display: block; font-weight: 400; font-size: calc(30 * var(--u)); letter-spacing: .04em; }
+.deco-idx i { display: block; font-style: normal; font-size: calc(14 * var(--u)); letter-spacing: .18em; color: rgba(255, 255, 255, .62); }
+.deco-spine { writing-mode: vertical-rl; transform: rotate(180deg); justify-self: center; align-self: start;
+  margin-top: calc(16 * var(--u)); font-size: calc(11 * var(--u)); letter-spacing: .22em; color: rgba(255, 255, 255, .72); white-space: nowrap; }
+
+/* Type, per sheet style */
+.t32  { font-size: calc(32 * var(--u)); }
+.t36b { font-size: calc(36 * var(--u)); font-weight: 700; }
+.t48  { font-size: calc(48 * var(--u)); }
+/* Body text never drops below --floor on small screens, but never grows past what still fits its cell: --fit is
+   the size (sheet px) at which the cell's text fills its content box, measured on the page at 806 px (DOM text
+   width, so fallback glyphs such as C50's stars count), less 1%. Above
+   806 * floor / size every line is at the sheet's size. */
+.t24  { font-size: max(calc(24 * var(--u)), min(var(--floor), calc(var(--fit, 24) * var(--u)))); }
+.t22  { font-size: max(calc(22.67 * var(--u)), min(var(--floor), calc(var(--fit, 22.67) * var(--u)))); }
+.t21  { font-size: max(calc(21.33 * var(--u)), min(var(--floor), calc(var(--fit, 21.33) * var(--u)))); }
+.it   { font-style: italic; }
+.sarabun { font-family: var(--font-sarabun); }   /* no italic file in assets/fonts: the browser slants the upright face */
+</style>
+</head>
+<body>
+<main class="sheet">
+<div class="grid">
+
+  <!-- Row 1: banner A1 (0, 0, 806 x 289), crop -->
+  <div class="pic" data-cell="A1" style="grid-area: 1 / 1 / span 1 / span 18; --bw: 805; --bh: 288; --x: -11; --y: -1; --w: 827; --h: 290;">
+    <img src="img/a1.webp" alt="">
+  </div>
+
+  <!-- Row 2: A2 (0, 289, 806 x 59), Google Sans 24pt, centre, wrap -->
+  <div class="cell center wrap t32" data-cell="A2" style="grid-area: 2 / 1 / span 1 / span 18;">"Char siu APPLE PIE!"</div>
+
+  <!-- Row 3: red A-R; icon B3 (15, 348, 84 x 79), fit; title D3 (99, 348, 686 x 79), Google Sans 27pt bold, left -->
+  <div class="fill" data-fill="A3-R3" style="grid-area: 3 / 1 / span 1 / span 18;"></div>
+  <div class="pic" data-cell="B3" style="grid-area: 3 / 2 / span 1 / span 2; --bw: 83; --bh: 78; --x: 0; --y: 0; --w: 78; --h: 78;">
+    <img src="img/b3.png" alt="">
+  </div>
+  <h1 class="cell left red t36b in1" data-cell="D3" style="grid-area: 3 / 4 / span 1 / span 14;">Penguin Statistics — By item</h1>
+
+  <!-- Left edge (penguin/docs/CELLS.md): black notch A4 (0, 427, 15 x 26), red stripe A5-A78 (x 0-15, y 453 to the end) -->
+  <div class="fill notch" data-fill="A4-A4" style="grid-area: 4 / 1 / span 1 / span 1;"></div>
+  <div class="fill" data-fill="A5-A78" style="grid-area: 5 / 1 / span 74 / span 1;"></div>
+
+  <!-- Rows 4-10: Exusiai. Picture M4 (540, 427, 266 x 304), fit, right / middle -->
+  <div class="pic" data-cell="M4" style="grid-area: 4 / 13 / span 7 / span 6; --bw: 265; --bh: 303; --x: 0; --y: 19; --w: 265; --h: 265;">
+    <img src="img/m4.png" alt="">
+  </div>
+  <!-- Her lines, Google Sans, right / middle: C5 36pt; B6-C10 18pt; C10 italic -->
+  <p class="cell right t48" data-cell="C5" style="grid-area: 5 / 3 / span 1 / span 10;">"โย่วววลีดเดอร์!"</p>
+  <p class="cell right t24" data-cell="B6" style="grid-area: 6 / 2 / span 1 / span 11; --fit: 24.67;">"เอ็กเซียที่จริงใจผู้นี้จะสอนใช้เว็บ Penguin ให้เธอเอง!"</p>
+  <p class="cell right t24" data-cell="C7" style="grid-area: 7 / 3 / span 1 / span 10; --fit: 28.08;">"เอ๋? ชั้นจะคิดค่าตอบแทนเป็นอะไรงั้นเหรอ?"</p>
+  <p class="cell right t24" data-cell="C8" style="grid-area: 8 / 3 / span 1 / span 10; --fit: 97.88;">"อืมมมมมม"</p>
+  <p class="cell right t24" data-cell="C9" style="grid-area: 9 / 3 / span 1 / span 10; --fit: 108.75;">"ลีดเดอร์..."</p>
+  <p class="cell right t24 it" data-cell="C10" style="grid-area: 10 / 3 / span 1 / span 10; --fit: 39.78;">"จงสรรเสริญซะสิ น่องขาคู่นี้น่ะ"</p>
+
+  <!-- Row 12: picture C12 (50, 744, 735 x 431), crop, no frame -->
+  <div class="pic" data-cell="C12" style="grid-area: 12 / 3 / span 1 / span 15; --bw: 734; --bh: 430; --x: 0; --y: -5; --w: 733; --h: 435;">
+    <img src="img/c12.png" alt="">
+  </div>
+
+  <!-- Rows 13-15: picture C13 (50, 1175, 196 x 161), fit, centre / bottom; link bar G14-R14 (246, 1234, 560 x 43),
+       Google Sans 18pt, left; only the words are the link, underlined (the sheet's HTML view) -->
+  <div class="pic" data-cell="C13" style="grid-area: 13 / 3 / span 3 / span 4; --bw: 195; --bh: 160; --x: 17.5; --y: 0; --w: 160; --h: 160;">
+    <img src="img/c13.png" alt="">
+  </div>
+  <p class="cell left red t24 in2" data-cell="G14" style="grid-area: 14 / 7 / span 1 / span 12; --fit: 60.53;">"<a class="link" href="https://penguin-stats.io/result/item" target="_blank" rel="noopener">ว-วาร์ปโลดดดดด</a>!"</p>
+
+  <!-- Row 17: picture C17 (50, 1356, 735 x 491), crop, framed -->
+  <div class="pic" data-cell="C17" style="grid-area: 17 / 3 / span 1 / span 15; --bw: 734; --bh: 490; --x: 0; --y: 0; --w: 734; --h: 490;">
+    <img src="img/c17.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C17" style="grid-area: 17 / 3 / span 1 / span 15;"></div>
+
+  <!-- Row 19: tip C19 (50, 1867, 294 x 66), Google Sans 17pt, left, red tip marker on B19; picture I19 (344, 1867,
+       196 x 66), fit, centre / middle -->
+  <p class="cell left t22 in2 bl" data-cell="C19" style="grid-area: 19 / 3 / span 1 / span 6; --fit: 24.3;">"เลือกอิงข้อมูลจากเซิร์ฟ CN"</p>
+  <div class="tick" data-tick="B19" style="grid-area: 19 / 2 / span 1 / span 1;"></div>
+  <div class="pic" data-cell="I19" style="grid-area: 19 / 9 / span 1 / span 4; --bw: 195; --bh: 65; --x: 3.67; --y: 0; --w: 187.66; --h: 65;">
+    <img src="img/i19.webp" alt="">
+  </div>
+
+  <!-- Row 21: picture C21 (50, 1953, 735 x 424), crop, left / middle, framed; 1.5 px in from its left border -->
+  <div class="pic" data-cell="C21" style="grid-area: 21 / 3 / span 1 / span 15; --bw: 734; --bh: 423; --x: 1.5; --y: 4; --w: 745; --h: 415;">
+    <img src="img/c21.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C21" style="grid-area: 21 / 3 / span 1 / span 15;"></div>
+
+  <!-- Row 23: tip C23 (50, 2392, 735 x 42) -->
+  <p class="cell left t22 in2 bl" data-cell="C23" style="grid-area: 23 / 3 / span 1 / span 15; --fit: 24.26;">"ลากเม้าส์ไปวาง เลขโดดแบบนี้แสดงว่ามีแค่ 15-9 ที่ดรอปแมทนี้เป็นหลักล่ะ!"</p>
+  <div class="tick" data-tick="B23" style="grid-area: 23 / 2 / span 1 / span 1;"></div>
+
+  <!-- Row 25: picture C25 (50, 2455, 539 x 378), fit, left / bottom, framed; fitted inside its borders -->
+  <div class="pic" data-cell="C25" style="grid-area: 25 / 3 / span 1 / span 11; --bw: 538; --bh: 377; --x: 1.5; --y: 1.79; --w: 535; --h: 373.71;">
+    <img src="img/c25.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C25" style="grid-area: 25 / 3 / span 1 / span 11;"></div>
+
+  <!-- Rows 27-28: tips C27 (50, 2848, 735 x 42), C28 (50, 2890, 735 x 42) -->
+  <p class="cell left t22 in2 bl" data-cell="C27" style="grid-area: 27 / 3 / span 1 / span 15; --fit: 29.5;">"ลองคลิกเข้าไปแล้วตั้งค่าให้แสดงแค่ด่านปัจจุบัน เป็นอันเสร็จ!"</p>
+  <div class="tick" data-tick="B27" style="grid-area: 27 / 2 / span 1 / span 1;"></div>
+  <p class="cell left t22 in2 bl" data-cell="C28" style="grid-area: 28 / 3 / span 1 / span 15; --fit: 39.02;">"ถ้าเปิดแปลภาษาทิ้งไว้ ตารางอาจไม่อัพเดทนะ!"</p>
+  <div class="tick" data-tick="B28" style="grid-area: 28 / 2 / span 1 / span 1;"></div>
+
+  <!-- Row 30: red A-R; icon B30 (15, 2970, 84 x 79), fit; title D30 (99, 2970, 686 x 79), Google Sans 27pt bold -->
+  <div class="fill" data-fill="A30-R30" style="grid-area: 30 / 1 / span 1 / span 18;"></div>
+  <div class="pic" data-cell="B30" style="grid-area: 30 / 2 / span 1 / span 2; --bw: 83; --bh: 78; --x: 0; --y: 0; --w: 78; --h: 78;">
+    <img src="img/b3.png" alt="">
+  </div>
+  <h2 class="cell left red t36b in1" data-cell="D30" style="grid-area: 30 / 4 / span 1 / span 14;">Penguin Statistics — Planner</h2>
+
+  <!-- Row 32: link bar C32 (50, 3069, 735 x 43) + R32, red, Google Sans 18pt, centre; only the words are the link -->
+  <div class="fill" data-fill="R32-R32" style="grid-area: 32 / 18 / span 1 / span 1;"></div>
+  <p class="cell center red t24" data-cell="C32" style="grid-area: 32 / 3 / span 1 / span 15; --fit: 106.6;">"<a class="link" href="https://penguin-stats.io/planner" target="_blank" rel="noopener">วาร์ปโลดดดดด</a>!"</p>
+
+  <!-- Row 34: picture C34 (50, 3132, 735 x 415), crop, framed -->
+  <div class="pic" data-cell="C34" style="grid-area: 34 / 3 / span 1 / span 15; --bw: 734; --bh: 414; --x: 1; --y: 1; --w: 732; --h: 412;">
+    <img src="img/c34.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C34" style="grid-area: 34 / 3 / span 1 / span 15;"></div>
+
+  <!-- Row 35: its bottom border runs C-Q (the sheet's line over C36 reaches past C36's right edge) -->
+  <div class="hline" data-hline="C35-Q35" style="grid-area: 35 / 3 / span 1 / span 15;"></div>
+
+  <!-- Row 36: picture C36 (50, 3567, 392 x 294), fit, centre / middle, framed; fitted inside its borders -->
+  <div class="pic" data-cell="C36" style="grid-area: 36 / 3 / span 1 / span 8; --bw: 391; --bh: 293; --x: 1.5; --y: 1.85; --w: 388; --h: 289.31;">
+    <img src="img/c36.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C36" style="grid-area: 36 / 3 / span 1 / span 8;"></div>
+
+  <!-- Row 38: tip C38 -->
+  <p class="cell left t22 in2 bl" data-cell="C38" style="grid-area: 38 / 3 / span 1 / span 15; --fit: 40.11;">"ใช้ปุ่ม RESET ถ้าอยากล้างข้อมูลที่กรอกไว้นะ"</p>
+  <div class="tick" data-tick="B38" style="grid-area: 38 / 2 / span 1 / span 1;"></div>
+
+  <!-- Row 40: picture C40 (50, 3952, 588 x 860), crop, framed -->
+  <div class="pic" data-cell="C40" style="grid-area: 40 / 3 / span 1 / span 12; --bw: 587; --bh: 859; --x: 0; --y: 3; --w: 588; --h: 852;">
+    <img src="img/c40.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C40" style="grid-area: 40 / 3 / span 1 / span 12;"></div>
+
+  <!-- Row 42: tip C42 (two spaces inside the text are the author's) -->
+  <p class="cell left t22 in2 bl" data-cell="C42" style="grid-area: 42 / 3 / span 1 / span 15; --fit: 28.49;">"Exclude ติ๊กออกด่านที่ยังออโต้ไม่ได้  (ในภาพติ๊ก EP0 ถึง EP4)"</p>
+  <div class="tick" data-tick="B42" style="grid-area: 42 / 2 / span 1 / span 1;"></div>
+
+  <!-- Row 44: picture C44 (50, 4889, 588 x 146), crop, framed -->
+  <div class="pic" data-cell="C44" style="grid-area: 44 / 3 / span 1 / span 12; --bw: 587; --bh: 145; --x: -5; --y: 2; --w: 597; --h: 140;">
+    <img src="img/c44.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C44" style="grid-area: 44 / 3 / span 1 / span 12;"></div>
+
+  <!-- Row 46: tip C46 -->
+  <p class="cell left t22 in2 bl" data-cell="C46" style="grid-area: 46 / 3 / span 1 / span 15; --fit: 34.41;">"ลีดเดอร์จะข้ามมาฟาร์มบท 9 ได้ถ้าผ่านด่าน 3-8 แล้ว"</p>
+  <div class="tick" data-tick="B46" style="grid-area: 46 / 2 / span 1 / span 1;"></div>
+
+  <!-- Row 48: picture C48 (50, 5112, 588 x 160), crop, framed -->
+  <div class="pic" data-cell="C48" style="grid-area: 48 / 3 / span 1 / span 12; --bw: 587; --bh: 159; --x: -9; --y: 2; --w: 606; --h: 155;">
+    <img src="img/c48.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C48" style="grid-area: 48 / 3 / span 1 / span 12;"></div>
+
+  <!-- Row 50: tip C50 (50, 5286, 756 x 42), Google Sans 16pt, runs into margin R -->
+  <p class="cell left t21 in2 bl" data-cell="C50" style="grid-area: 50 / 3 / span 1 / span 16; --fit: 22.67;">"บท 15 ก็เช่นกัน ลีดเดอร์สังเกตมั้ย? ด่านพวกนี้ออโต้ได้ด้วยตัว 3<span class="sym">★</span>-6<span class="sym">★</span> Elite 1"</p>
+  <div class="tick" data-tick="B50" style="grid-area: 50 / 2 / span 1 / span 1;"></div>
+
+  <!-- Row 52: red bar C52 (50, 5349, 735 x 43) + R52, Google Sans 18pt, centre; only "เว็บนี้นะ" is the link,
+       yellow and underlined (the sheet's HTML view) -->
+  <div class="fill" data-fill="R52-R52" style="grid-area: 52 / 18 / span 1 / span 1;"></div>
+  <p class="cell center red t24" data-cell="C52" style="grid-area: 52 / 3 / span 1 / span 15; --fit: 33.45;">"แวะมาดูแมทที่ร่างสองชั้นใช้อัพขึ้น Elite 2 กัน! <a class="link yellow" href="https://puppiizsunniiz.github.io/AN-EN-Tags/akhrchars.html?opname=Exusiai_the_New_Covenant" target="_blank" rel="noopener">เว็บนี้นะ</a>!"</p>
+
+  <!-- Row 54: picture C54 (50, 5413, 735 x 509), crop, framed -->
+  <div class="pic" data-cell="C54" style="grid-area: 54 / 3 / span 1 / span 15; --bw: 734; --bh: 508; --x: -1; --y: 0; --w: 737; --h: 507;">
+    <img src="img/c54.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C54" style="grid-area: 54 / 3 / span 1 / span 15;"></div>
+
+  <!-- Row 56: red bar C56 (50, 5943, 735 x 43) + R56, Google Sans 18pt, centre, no link -->
+  <div class="fill" data-fill="R56-R56" style="grid-area: 56 / 18 / span 1 / span 1;"></div>
+  <p class="cell center red t24" data-cell="C56" style="grid-area: 56 / 3 / span 1 / span 15; --fit: 29.91;">"กลับมากรอกแมทที่เราต้องการใน Planner ของเว็บ Penguin!"</p>
+
+  <!-- Row 58: picture C58 (50, 6007, 735 x 160), crop, framed -->
+  <div class="pic" data-cell="C58" style="grid-area: 58 / 3 / span 1 / span 15; --bw: 734; --bh: 159; --x: 1; --y: 0; --w: 731; --h: 159;">
+    <img src="img/c58.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C58" style="grid-area: 58 / 3 / span 1 / span 15;"></div>
+
+  <!-- Row 60: C60 (50, 6181, 441 x 98), Google Sans 17pt, centre, tip marker; picture L60 (491, 6181, 147 x 98),
+       fit, left / middle -->
+  <p class="cell center t22 in2 bl" data-cell="C60" style="grid-area: 60 / 3 / span 1 / span 9; --fit: 22.8;">"...เขาน่าจะยังไม่ว่างอัพเดทรูปแมทใหม่ล่าสุดน่ะ"</p>
+  <div class="tick" data-tick="B60" style="grid-area: 60 / 2 / span 1 / span 1;"></div>
+  <div class="pic" data-cell="L60" style="grid-area: 60 / 12 / span 1 / span 3; --bw: 146; --bh: 97; --x: 0; --y: 0; --w: 97; --h: 97;">
+    <img src="img/l60.png" alt="">
+  </div>
+
+  <!-- Row 62: picture C62 (50, 6300, 147 x 184), fit, centre / middle, framed; fitted inside its borders -->
+  <div class="pic" data-cell="C62" style="grid-area: 62 / 3 / span 1 / span 3; --bw: 146; --bh: 183; --x: 4; --y: 1.5; --w: 138; --h: 180;">
+    <img src="img/c62.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C62" style="grid-area: 62 / 3 / span 1 / span 3;"></div>
+
+  <!-- Row 64: tip C64 (50, 6498, 441 x 42), Google Sans 16pt -->
+  <p class="cell left t21 in2 bl" data-cell="C64" style="grid-area: 64 / 3 / span 1 / span 9; --fit: 28.17;">"ชิ้นสุดท้ายยยย คลิก Calculate โล๊ด!"</p>
+  <div class="tick" data-tick="B64" style="grid-area: 64 / 2 / span 1 / span 1;"></div>
+
+  <!-- Row 66: picture C66 (50, 6561, 735 x 471), crop, framed -->
+  <div class="pic" data-cell="C66" style="grid-area: 66 / 3 / span 1 / span 15; --bw: 734; --bh: 470; --x: 0; --y: 2; --w: 733; --h: 466;">
+    <img src="img/c66.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C66" style="grid-area: 66 / 3 / span 1 / span 15;"></div>
+
+  <!-- Row 68: tip C68 (50, 7046, 735 x 42) -->
+  <p class="cell left t21 in2 bl" data-cell="C68" style="grid-area: 68 / 3 / span 1 / span 15; --fit: 24.16;">"ง่ายๆใช่มั้ยล่า ไหนๆก็ไหนๆแล้วมาลองคิดแบบปลดทุกด่านยกเว้นอีเวนต์ดูนะ"</p>
+  <div class="tick" data-tick="B68" style="grid-area: 68 / 2 / span 1 / span 1;"></div>
+
+  <!-- Row 70: picture C70 (50, 7109, 735 x 471), crop, framed -->
+  <div class="pic" data-cell="C70" style="grid-area: 70 / 3 / span 1 / span 15; --bw: 734; --bh: 470; --x: 1; --y: 2; --w: 731; --h: 466;">
+    <img src="img/c70.webp" alt="">
+  </div>
+  <div class="frame" data-frame="C70" style="grid-area: 70 / 3 / span 1 / span 15;"></div>
+
+  <!-- Rows 72-73: tips C72 (50, 7594, 735 x 42), C73 (50, 7636, 735 x 42) -->
+  <p class="cell left t21 in2 bl" data-cell="C72" style="grid-area: 72 / 3 / span 1 / span 15; --fit: 28.66;">"ลีดเดอร์สังเกตไหม ค่าประมาณ Sanity ที่ต้องใช้ต่างกันแค่ 582"</p>
+  <div class="tick" data-tick="B72" style="grid-area: 72 / 2 / span 1 / span 1;"></div>
+  <p class="cell left t21 in2 bl" data-cell="C73" style="grid-area: 73 / 3 / span 1 / span 15; --fit: 23.63;">"AKA. ถ้าลีดเดอร์ปลดแค่ด่าน Elite 1 ลีดเดอร์จะฟาร์มช้ากว่าแค่ 2 วันเศษๆเอง"</p>
+  <div class="tick" data-tick="B73" style="grid-area: 73 / 2 / span 1 / span 1;"></div>
+
+  <!-- Rows 74-78: closing. Picture N74 (589, 7678, 217 x 261), fit, left / middle; lines C75-C77 (50, 7739 / 7780 /
+       7821, 539 x 41), 16pt, right (their leading spaces moved nothing, so they are dropped); C77 is Sarabun -->
+  <div class="pic" data-cell="N74" style="grid-area: 74 / 14 / span 5 / span 5; --bw: 216; --bh: 260; --x: 0; --y: 22; --w: 216; --h: 216;">
+    <img src="img/n74.png" alt="">
+  </div>
+  <p class="cell right t21" data-cell="C75" style="grid-area: 75 / 3 / span 1 / span 11; --fit: 27.38;">"ถึงได้บอกไงว่าอย่าเน้นฟาร์มความคุ้มค่าจนเกินไป"</p>
+  <p class="cell right t21" data-cell="C76" style="grid-area: 76 / 3 / span 1 / span 11; --fit: 42.62;">"ถ้าความคุ้มค่าสำคัญขนาดนั้น..."</p>
+  <p class="cell right t21 sarabun" data-cell="C77" style="grid-area: 77 / 3 / span 1 / span 11; --fit: 28.68;">"ลีดเดอร์คงมาเล่นตั้งแต่ day 1 แล้วล่ะ ฮะฮ่า~"</p>
+
+  <!-- Arknights layer (P6 A + B): decoration, not in the sheet -->
+  <div class="deco deco-idx" aria-hidden="true" style="grid-area: 3 / 4 / span 1 / span 14;"><b>01 // 02</b><i>// BY ITEM</i></div>
+  <div class="deco deco-idx" aria-hidden="true" style="grid-area: 30 / 4 / span 1 / span 14;"><b>02 // 02</b><i>// PLANNER</i></div>
+  <div class="deco deco-spine" aria-hidden="true" style="grid-area: 5 / 1 / span 20 / span 1;">REDALURK'S HANDBOOK &nbsp;//&nbsp; PENGUIN STATISTICS &nbsp;//&nbsp; 2026 // 10 / 10</div>
+  <div class="deco deco-spine" aria-hidden="true" style="grid-area: 31 / 1 / span 20 / span 1;">RHODES ISLAND :// LOGISTICS DATA &nbsp;//&nbsp; 02 / 02</div>
+
+</div>
+</main>
+</body>
+</html>

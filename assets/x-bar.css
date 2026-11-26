@@ -1,0 +1,11 @@
+/* The X pages' progress bar (author, 2026-10-31: "try progress-like scroll bar"; live 2026-11-01): one bar, kept in this one file.
+   The browser's own bar is gone, so the page's width never changes when the cards arrive (the nudge on changing role).
+   The fill follows the scroll with no script and without touching the page.
+   One layer, ::after: the index's family wash is html.fam::before */
+html{scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+html::after{content:"";position:fixed;top:0;right:0;bottom:0;width:8px;z-index:31;
+  background:linear-gradient(#18d1ff,#18d1ff) no-repeat top/100% 0 #202124}
+/* a browser that cannot tie this to the scroll shows the empty bar, not a full one */
+@supports (animation-timeline:scroll()){html::after{animation:x-bar linear both;animation-timeline:scroll(root)}}
+@keyframes x-bar{to{background-size:100% 100%}}

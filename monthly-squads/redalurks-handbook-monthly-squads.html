@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MONTHLY SQUADS · REDALURK'S HANDBOOK</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<style>
+/* Every number below is from design/grid/MONTHLY_SQUADS.json (sheet px at 100% zoom).
+   --u = one sheet pixel. The page is capped at the sheet's 806 px and centred (author, M2): --u is 1px at 806 and
+   wider, and below that the whole sheet scales with the window (100cqw = body width, so no sideways scroll). */
+:root{
+  --u:min(1px, 100cqw / 806);
+  /* palette, by role */
+  --bg:#121212;        /* sheet fill, 92% */
+  --panel:#515461;     /* table and totals panels */
+  --accent:#cfe062;    /* title bar, closing line */
+  --accent-dark:#877f20; /* title icon cell */
+  --ink:#e6e8f0;       /* body text */
+  --ink-on-accent:#3a3c40;
+  --highlight:#58e3ed; /* numbers called out in the totals */
+  --highlight-gold:#d3dd00; /* one run in C33 */
+  --mark:#000000;      /* A5, the one black cell */
+  --white:#ffffff;     /* C33's default colour (s31) */
+  /* Arknights layer (docs/THEME.md section 3, "Add"; M6). Decoration only, never over a measured block */
+  --label:#b7b7b7;
+  --hairline:rgba(255,255,255,.15);
+  --texture:rgba(255,255,255,.05);
+  --font-label:'Bebas Neue',Arial,sans-serif;
+  /* type, by role */
+  --font-title:'Google Sans',Arial,sans-serif;
+  --font-body:'Bai Jamjuree',Arial,sans-serif;
+  --font-alt:'Sarabun',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;}
+html,body{background:var(--bg);color:var(--ink);}
+body{container-type:inline-size;
+  /* texture: a faint dot grid, seen only outside the sheet (the sheet has its own plain fill) */
+  background-image:radial-gradient(var(--texture) 1px, transparent 1.5px);background-size:16px 16px;}
+
+/* The sheet: 18 columns (15 35 49x15 21 = 806) and 73 rows (10069), cells placed by sheet row/column */
+.sheet{
+  position:relative;
+  background:var(--bg);
+  display:grid;
+  width:calc(806*var(--u));
+  margin:0 auto;
+  grid-template-columns:calc(15*var(--u)) calc(35*var(--u)) repeat(15,calc(49*var(--u))) calc(21*var(--u));
+  grid-template-rows:
+    /* 1-6 header */
+    calc(56*var(--u)) calc(229*var(--u)) calc(54*var(--u)) calc(79*var(--u)) calc(26*var(--u)) calc(110*var(--u))
+    /* 7-14 choosing a season */
+    calc(423*var(--u)) repeat(5,calc(157*var(--u))) calc(61*var(--u)) calc(66*var(--u))
+    /* 15-27 unlocking */
+    calc(423*var(--u)) calc(87*var(--u)) calc(44*var(--u)) calc(534*var(--u)) calc(74*var(--u)) calc(455*var(--u))
+    calc(66*var(--u)) calc(514*var(--u)) calc(69*var(--u)) calc(514*var(--u)) repeat(2,calc(42*var(--u))) calc(39*var(--u))
+    /* 28-47 doing a mission, closing line */
+    calc(440*var(--u)) calc(42*var(--u)) calc(514*var(--u)) calc(458*var(--u)) repeat(2,calc(42*var(--u)))
+    calc(550*var(--u)) calc(42*var(--u)) calc(577*var(--u)) calc(42*var(--u)) calc(446*var(--u)) calc(42*var(--u))
+    calc(45*var(--u)) calc(29*var(--u)) calc(494*var(--u)) calc(394*var(--u)) calc(161*var(--u)) calc(27*var(--u))
+    calc(59*var(--u)) calc(26*var(--u))
+    /* 48-53 value table */
+    calc(41*var(--u)) calc(47*var(--u)) calc(62*var(--u)) repeat(3,calc(58*var(--u)))
+    /* 54-73 totals */
+    calc(23*var(--u)) repeat(3,calc(30*var(--u))) repeat(2,calc(14*var(--u))) repeat(3,calc(30*var(--u)))
+    repeat(2,calc(14*var(--u))) repeat(3,calc(30*var(--u))) repeat(2,calc(14*var(--u))) repeat(3,calc(30*var(--u)))
+    calc(14*var(--u));
+}
+
+/* Every sheet cell gives its last 1px (right and bottom) to the gridline; content sits in the rest.
+   A text cell: the sheet's padding (2px 3px) inside that, vertical alignment by flex (no valign in the sheet
+   = bottom), horizontal by text-align */
+.c{display:flex;flex-direction:column;justify-content:center;overflow:hidden;
+  padding:calc(2*var(--u)) calc(4*var(--u)) calc(3*var(--u)) calc(3*var(--u));}
+.c.left{text-align:left;} .c.center{text-align:center;} .c.right{text-align:right;}
+.c.top{justify-content:flex-start;} .c.bottom{justify-content:flex-end;}
+.nowrap{white-space:nowrap;}
+.t16{font:400 calc(16*var(--u)) var(--font-body);}       /* 12pt */
+.t1733{font:400 calc(17.33*var(--u)) var(--font-body);}  /* 13pt */
+.t1867{font:400 calc(18.67*var(--u)) var(--font-body);}  /* 14pt */
+.t20{font:400 calc(20*var(--u)) var(--font-body);}       /* 15pt */
+.t24{font:400 calc(24*var(--u)) var(--font-body);}       /* 18pt */
+.white{color:var(--white);} .ink{color:var(--ink);}
+.xref{color:var(--highlight-gold);text-decoration:underline;text-decoration-skip-ink:none;}
+
+/* An image cell: no padding; the picture is shown at the size the sheet sets (IMAGE mode 4), scaled down to fit
+   the cell and centred (object-fit:scale-down in the sheet). Sizes are on each <img>. */
+.img{display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0 calc(1*var(--u)) calc(1*var(--u)) 0;}
+.img img{display:block;max-width:100%;max-height:100%;}
+/* Until the images are saved (Phase 2, M1): a marked box at the cell's exact size */
+.ph{position:relative;}
+.ph::after{content:attr(data-cell);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  border:1px dashed var(--ink);opacity:.35;font:calc(13.33*var(--u)) var(--font-body);}
+
+/* Empty cells with a fill (read from the sheet's HTML: the grid JSON keeps only text, image and merged cells) */
+.fill{display:block;}
+.f-accent{background:var(--accent);} .f-mark{background:var(--mark);}
+.edge-a{grid-area:6/1/74/2;}   /* column A, rows 6-73: the accent stripe (row 46 has its own accent cell over it) */
+
+/* The one picture floating over the grid: anchored at J2 + (49, 1) in the sheet = x 442, y 57, 296 x 356 */
+.float{position:absolute;left:calc(442*var(--u));top:calc(57*var(--u));width:calc(296*var(--u));height:calc(356*var(--u));z-index:1;padding:0;}
+.float img{width:100%;height:100%;}
+
+/* ---- Arknights layer (M6): absolutely placed, so nothing from the grid moves ----
+   Hairlines sit in the 1px gridline at the bottom of the row before each section (nothing is drawn there);
+   section counters in the empty column B (x 15-50); the margin text in the empty column R (x 785-806), rows 7-45. */
+.ak-line{position:absolute;left:calc(50*var(--u));width:calc(735*var(--u));height:calc(1*var(--u));background:var(--hairline);pointer-events:none;}
+.ak-index{position:absolute;left:calc(15*var(--u));width:calc(35*var(--u));text-align:center;pointer-events:none;
+  font:400 calc(13*var(--u))/1 var(--font-label);letter-spacing:calc(1*var(--u));color:var(--accent);}
+.ak-index small{display:block;margin-top:calc(2*var(--u));font-size:calc(10*var(--u));color:var(--label);}
+.ak-margin{position:absolute;left:calc(785*var(--u));width:calc(21*var(--u));top:calc(562*var(--u));pointer-events:none;
+  writing-mode:vertical-rl;display:flex;align-items:center;justify-content:center;
+  font:400 calc(11*var(--u))/1 var(--font-label);letter-spacing:calc(2*var(--u));color:var(--label);white-space:nowrap;}
+
+/* ---- Header, rows 1-6 ---- */
+.h-banner{grid-area:1/1/3/19;}                                   /* A1: 806 x 285 */
+.h-greet{grid-area:3/2/4/14;font:400 calc(32*var(--u)) var(--font-body);}   /* B3: s2 */
+.h-icon{grid-area:4/2/5/4;background:var(--accent-dark);}        /* B4: s5 */
+.h-title{grid-area:4/4/5/18;background:var(--accent);color:var(--ink-on-accent);
+  font:700 calc(36*var(--u)) var(--font-title);                  /* D4: s6 */
+  padding-left:calc(3*var(--u) + 0.234em);}  /* the sheet's leading space, kept as an indent (AUTHOR-DECISIONS #1) */
+.h-intro{grid-area:6/3/7/15;font:400 calc(24*var(--u)) var(--font-body);}   /* C6: s12 */
+.h-portrait{grid-area:6/15/7/18;}                                /* O6: s13 */
+
+/* ---- Doing a mission: the closing line, row 46 (s40) ---- */
+.closing{background:var(--accent);color:var(--ink-on-accent);font-weight:700;
+  padding-left:calc(3*var(--u) + 0.288em);}  /* B46's leading space (Bai Jamjuree 700 space = 0.288em, measured), AUTHOR-DECISIONS #1 */
+
+/* ---- Value table, rows 49-53: panel cells, 3px right line in the page colour except the last column ---- */
+.tb{background:var(--panel);color:var(--ink);border-right:calc(3*var(--u)) solid var(--bg);}
+.tb.last{border-right:0;}
+
+/* ---- Totals, rows 54-73 ---- */
+.f-panel{background:var(--panel);}
+.tot{font:400 calc(18.67*var(--u)) var(--font-body);white-space:nowrap;}   /* 14pt, all but H55 */
+.tot.big{font-size:calc(48*var(--u));}                           /* H55: s56, 36pt */
+.tot.wrap{white-space:normal;}                                   /* C56: s60 */
+.hl{color:var(--highlight);}                                     /* s61-63, s70, s72, s73 */
+</style>
+</head>
+<body>
+<main class="sheet">
+
+  <i class="fill f-accent edge-a"></i>
+
+  <!-- Header, rows 1-6 -->
+  <div class="img h-banner" data-cell="A1"><img src="img/a1.webp" alt="" style="width:calc(805*var(--u));height:calc(281.92*var(--u))"></div>
+  <p class="c center h-greet">"ฮัลโลลล~~~~"</p>
+  <i class="fill f-accent" style="grid-area:4/1/5/2"></i>      <!-- A4 -->
+  <div class="img h-icon" data-cell="B4"><img src="img/b4.png" alt="" style="width:calc(60*var(--u));height:calc(78*var(--u))"></div>  <!-- site doc/ms/Integrated_Strategies.png, 50 x 65 fitted -->
+  <h1 class="c left nowrap h-title">MONTHLY SQUADS</h1>
+  <i class="fill f-accent" style="grid-area:4/18/5/19"></i>    <!-- R4 -->
+  <i class="fill f-mark" style="grid-area:5/1/6/2"></i>        <!-- A5 -->
+  <p class="c right h-intro">"กำลังมองหาทรัพยากรมาอัพ 6★ ใช่มั้ยล่ะด็อกเตอร์<br>ฉันจะบอกวิธีแฮคให้"</p>
+  <div class="img h-portrait" data-cell="O6"><img src="img/o6.png" alt="" style="width:calc(109*var(--u));height:calc(109*var(--u))"></div>
+
+  <!-- Choosing a season, rows 7-14 -->
+  <div class="img" data-cell="C7" style="grid-area:7/3/8/18"><img src="img/c7.webp" alt="" style="width:calc(734*var(--u));height:calc(418.29*var(--u))"></div>
+  <div class="img" data-cell="C8" style="grid-area:8/3/9/18"><img src="img/c8.webp" alt="" style="width:calc(487.5*var(--u));height:calc(156*var(--u))"></div>
+  <div class="img" data-cell="C9" style="grid-area:9/3/10/18"><img src="img/c9.webp" alt="" style="width:calc(487.5*var(--u));height:calc(156*var(--u))"></div>
+  <div class="img" data-cell="C10" style="grid-area:10/3/11/18"><img src="img/c10.webp" alt="" style="width:calc(487.5*var(--u));height:calc(156*var(--u))"></div>
+  <div class="img" data-cell="C11" style="grid-area:11/3/12/18"><img src="img/c11.webp" alt="" style="width:calc(487.5*var(--u));height:calc(156*var(--u))"></div>
+  <div class="img" data-cell="C12" style="grid-area:12/3/13/18"><img src="img/c12.webp" alt="" style="width:calc(487.5*var(--u));height:calc(156*var(--u))"></div>
+  <p class="c center bottom t20" data-cell="C13" style="grid-area:13/3/14/18">"เลือกซักภาคค่ะด็อกเตอร์ ส่วนภาค 1 ของเคย์จังเป็นกิจทดลองในปีแรก ๆ จึงไม่มีแล้วจ้า"</p>
+  <p class="c center t1867" data-cell="C14" style="grid-area:14/3/15/18">"เป้าหมายเรา: Monthly Squad (แต่ละภาคเรียกไม่เหมือนกัน ของ IS5 เรียก Storyteller List)"</p>
+
+  <!-- Unlocking, rows 15-27 -->
+  <div class="img" data-cell="C15" style="grid-area:15/3/16/18"><img src="img/c15.webp" alt="" style="width:calc(734*var(--u));height:calc(418.29*var(--u))"></div>
+  <p class="c center t20" data-cell="C16" style="grid-area:16/3/17/18">"หากยังไม่ปลด Monthly Squad ให้เลือกระดับความยาก (Facing Souls)<br>แล้วกด Explore"</p>
+  <div class="img" data-cell="C18" style="grid-area:18/3/19/18"><img src="img/c18.webp" alt="" style="width:calc(733*var(--u));height:calc(530*var(--u))"></div>
+  <p class="c center t20" data-cell="C19" style="grid-area:19/3/20/18">"พอเข้ามาแล้วกดออกวงแดงได้เลยค่า วงเขียวไว้สำหรับอ่านเมคานิคของภาคนั้น ๆ"</p>
+  <div class="img" data-cell="C20" style="grid-area:20/3/21/18"><img src="img/c20.webp" alt="" style="width:calc(690.46*var(--u));height:calc(454*var(--u))"></div>
+  <p class="c center t20" data-cell="C21" style="grid-area:21/3/22/18">"กด ABANDON ระบบจะนับว่าเราเล่น(ไม่ผ่าน) ไป 1 ตา จึงปลด Monthly Squad ให้เรา"</p>
+  <div class="img" data-cell="C22" style="grid-area:22/3/23/18"><img src="img/c22.webp" alt="" style="width:calc(734*var(--u));height:calc(475*var(--u))"></div>
+  <p class="c center t20" data-cell="C23" style="grid-area:23/3/24/18">"IS ภาคที่จบไปแล้วจะมี Monthly Squad 8 ภารกิจให้เลือก<br>สังเกตว่าแต่ละภารกิจจะให้ Chip ไม่ซ้ำคลาสกันค่ะ 8 ภารกิจก็ครบ 8 คลาสพอดี"</p>
+  <div class="img" data-cell="C24" style="grid-area:24/3/25/18"><img src="img/c24.webp" alt="" style="width:calc(732*var(--u));height:calc(476*var(--u))"></div>
+  <p class="c center t20" data-cell="C25" style="grid-area:25/3/26/18">"ภารกิจทำได้ง่าย ของภาค 2-3 เล่นให้ถึงชั้น 3 ซึ่งเลเวลศัตรูจะประมาณบท 3 เท่านั้นค่ะ"</p>
+  <p class="c center bottom t20" data-cell="C26" style="grid-area:26/3/27/18">"แต่ภาค 4 เป็นต้นไปจะยิ่งง่ายขึ้นไปอีกเพราะให้เราทำแค่ลงตัวละครหรือใช้สกิลที่กำหนด</p>
+  <p class="c center top t20" data-cell="C27" style="grid-area:27/3/28/18">แม้เราจะแพ้ระหว่างทางก็จะนับจำนวนครั้งต่อในตาถัด ๆ ไป"</p>
+
+  <!-- Doing a mission, rows 28-46 -->
+  <div class="img" data-cell="C28" style="grid-area:28/3/29/18"><img src="img/c28.webp" alt="" style="width:calc(734*var(--u));height:calc(415.47*var(--u))"></div>
+  <p class="c center bottom t20" data-cell="C29" style="grid-area:29/3/30/18">"กดเริ่ม Monthly Squad ค่ะด็อกเตอร์ เราสามารถยืมตัวเพื่อนได้นะคะ มุมขวาบนส้ม ๆ"</p>
+  <div class="img" data-cell="C30" style="grid-area:30/3/31/18"><img src="img/c30.webp" alt="" style="width:calc(733*var(--u));height:calc(460*var(--u))"></div>
+  <div class="img" data-cell="C31" style="grid-area:31/3/32/18"><img src="img/c31.webp" alt="" style="width:calc(734*var(--u));height:calc(442.59*var(--u))"></div>
+  <p class="c center top t20" data-cell="C32" style="grid-area:32/3/33/18">"ตัวละครที่ทุกคนก็รู้ว่าใคร โฮ๊ะ ๆ ๆ ๆ"</p>
+  <!-- C33: two runs; the second links to the BASIC tab, A41:C41 (#gid=145419734). Link it once the BASIC page exists. -->
+  <p class="c center top t20 white" data-cell="C33" style="grid-area:33/3/34/18"><span><span class="ink">"หากอยากเลือกเดอะแบกจากคลาสอื่น</span> <a class="xref">ดูตัวอย่างได้ที่แท็บอามิยะค่ะด็อกเตอร์</a>"</span></p>
+  <div class="img" data-cell="C34" style="grid-area:34/3/35/18"><img src="img/c34.webp" alt="" style="width:calc(734*var(--u));height:calc(526.41*var(--u))"></div>
+  <p class="c center top t20" data-cell="C35" style="grid-area:35/3/36/18">"ภารกิจคือให้ลง Mudrock 10 ครั้ง เราสามารถถอนนางออกจากสนามบ่อย ๆ ได้เลย~"</p>
+  <div class="img" data-cell="C36" style="grid-area:36/3/37/18"><img src="img/c36.webp" alt="" style="width:calc(734*var(--u));height:calc(553.49*var(--u))"></div>
+  <p class="c center top t20" data-cell="C37" style="grid-area:37/3/38/18">"ของ IS5 ก็จะดีตรงที่แพ้ได้แบบนี้ล่ะค่ะ..."</p>
+  <div class="img" data-cell="C38" style="grid-area:38/3/39/18"><img src="img/c38.webp" alt="" style="width:calc(731*var(--u));height:calc(420*var(--u))"></div>
+  <p class="c right bottom t20" data-cell="C39" style="grid-area:39/3/40/15">"ถ้ามั่นใจว่าภารกิจสำเร็จแล้วสามารถกดออกได้ตั้งแต่ในด่านเลยค่ะ"</p>
+  <div class="img" data-cell="O39" style="grid-area:39/15/42/18"><img src="img/o39.png" alt="" style="width:calc(115*var(--u));height:calc(115*var(--u))"></div>
+  <p class="c right t20" data-cell="C40" style="grid-area:40/3/41/15">"รอช้าอยู่ไย ชั้น 3 จะเริ่มวัดตัวละครระดับ Elite 2 นะคะด็อกเตอร์!"</p>
+  <div class="img" data-cell="C42" style="grid-area:42/3/43/18"><img src="img/c42.webp" alt="" style="width:calc(733*var(--u));height:calc(449*var(--u))"></div>
+  <div class="img" data-cell="C43" style="grid-area:43/3/44/18"><img src="img/c43.webp" alt="" style="width:calc(732*var(--u));height:calc(370*var(--u))"></div>
+  <p class="c right nowrap t24" data-cell="C44" style="grid-area:44/3/45/15">"หวานเจี๊ยบ!"</p>
+  <div class="img" data-cell="O44" style="grid-area:44/15/45/18"><img src="img/o44.png" alt="" style="width:calc(146*var(--u));height:calc(146*var(--u))"></div>
+  <i class="fill f-accent" style="grid-area:46/18/47/19"></i>    <!-- R46 -->
+  <p class="c center nowrap t24 closing" data-cell="B46" style="grid-area:46/2/47/18">"ทำ Monthly Squad วันละ 1 ภารกิจก็ได้ค่ะ ไม่จำเป็นต้องรีบน้าาา"</p>
+
+  <!-- Value table, rows 48-53 -->
+  <!-- C48: the sheet says "CS-6"; CE-6 per the author (M8, 2026-10-10) -->
+  <p class="c center nowrap t20" data-cell="C48" style="grid-area:48/3/49/18">"มูลค่ารางวัลจาก Monthly Squad เมื่อเทียบกับ LS-6 / CE-6 ในหมวด Supplies ค่ะ"</p>
+  <p class="c center nowrap t1733 tb" data-cell="B49" style="grid-area:49/2/50/4">ไอเทม</p>
+  <p class="c center nowrap t1733 tb" data-cell="D49" style="grid-area:49/4/50/6">ด่าน</p>
+  <p class="c center nowrap t1733 tb" data-cell="F49" style="grid-area:49/6/50/8">รางวัล/รอบ</p>
+  <p class="c center nowrap t1733 tb" data-cell="H49" style="grid-area:49/8/50/10">สติ/รอบ</p>
+  <p class="c center nowrap t1733 tb" data-cell="J49" style="grid-area:49/10/50/12">ไอเทม/สติ</p>
+  <p class="c center nowrap t1733 tb" data-cell="L49" style="grid-area:49/12/50/14">ราคาในร้าน</p>
+  <p class="c center nowrap t1733 tb" data-cell="N49" style="grid-area:49/14/50/16">ค่าสติมูลค่า</p>
+  <p class="c center t1733 tb last" data-cell="P49" style="grid-area:49/16/50/19">Monthly Squad</p>
+  <div class="img tb" data-cell="B50" style="grid-area:50/2/51/4"><img src="img/b50.png" alt="" style="width:calc(48.42*var(--u));height:calc(61*var(--u))"></div>  <!-- MISC = site doc/misc/Chip_Catalyst.png -->
+  <p class="c center nowrap t16 tb" data-cell="D50" style="grid-area:50/4/51/6">AP-5</p>
+  <p class="c center nowrap t16 tb" data-cell="F50" style="grid-area:50/6/51/8">20</p>
+  <p class="c center nowrap t16 tb" data-cell="H50" style="grid-area:50/8/51/10">30</p>
+  <p class="c center nowrap t16 tb" data-cell="J50" style="grid-area:50/10/51/12">0.667</p>
+  <p class="c center nowrap t16 tb" data-cell="L50" style="grid-area:50/12/51/14">90</p>
+  <p class="c center nowrap t16 tb" data-cell="N50" style="grid-area:50/14/51/16">135</p>
+  <p class="c center nowrap t16 tb last" data-cell="P50" style="grid-area:50/16/51/19">x1</p>
+  <div class="img tb" data-cell="B51" style="grid-area:51/2/52/4"><img src="img/b51.png" alt="" style="width:calc(63.85*var(--u));height:calc(57*var(--u))"></div>  <!-- MISC = site doc/misc/Caster_Chip_Pack.png -->
+  <p class="c center nowrap t16 tb" data-cell="D51" style="grid-area:51/4/52/6">PR-2</p>
+  <p class="c center nowrap t16 tb" data-cell="F51" style="grid-area:51/6/52/8">1</p>
+  <p class="c center nowrap t16 tb" data-cell="H51" style="grid-area:51/8/52/10">36</p>
+  <p class="c center nowrap t16 tb" data-cell="J51" style="grid-area:51/10/52/12">0.014</p>
+  <p class="c center nowrap t16 tb" data-cell="L51" style="grid-area:51/12/52/14"></p>
+  <p class="c center nowrap t16 tb" data-cell="N51" style="grid-area:51/14/52/16">288</p>
+  <p class="c center nowrap t16 tb last" data-cell="P51" style="grid-area:51/16/52/19">x4</p>
+  <div class="img tb" data-cell="B52" style="grid-area:52/2/53/4"><img src="img/b52.png" alt="" style="width:calc(72.15*var(--u));height:calc(57*var(--u))"></div>  <!-- MISC!B10 = site doc/misc/Strategic_Battle_Record.png -->
+  <p class="c center nowrap t16 tb" data-cell="D52" style="grid-area:52/4/53/6">LS-6</p>
+  <p class="c center nowrap t16 tb" data-cell="F52" style="grid-area:52/6/53/8">10000</p>
+  <p class="c center nowrap t16 tb" data-cell="H52" style="grid-area:52/8/53/10">36</p>
+  <p class="c center nowrap t16 tb" data-cell="J52" style="grid-area:52/10/53/12">277.78</p>
+  <p class="c center nowrap t16 tb" data-cell="L52" style="grid-area:52/12/53/14"></p>
+  <p class="c center nowrap t16 tb" data-cell="N52" style="grid-area:52/14/53/16">108</p>
+  <p class="c center nowrap t16 tb last" data-cell="P52" style="grid-area:52/16/53/19">x30,000</p>
+  <div class="img tb" data-cell="B53" style="grid-area:53/2/54/4"><img src="img/b53.png" alt="" style="width:calc(74.03*var(--u));height:calc(57*var(--u))"></div>  <!-- MISC!B9 = site doc/misc/GOLD.png -->
+  <p class="c center nowrap t16 tb" data-cell="D53" style="grid-area:53/4/54/6">CE-6</p>
+  <p class="c center nowrap t16 tb" data-cell="F53" style="grid-area:53/6/54/8">10000</p>
+  <p class="c center nowrap t16 tb" data-cell="H53" style="grid-area:53/8/54/10">36</p>
+  <p class="c center nowrap t16 tb" data-cell="J53" style="grid-area:53/10/54/12">277.78</p>
+  <p class="c center nowrap t16 tb" data-cell="L53" style="grid-area:53/12/54/14"></p>
+  <p class="c center nowrap t16 tb" data-cell="N53" style="grid-area:53/14/54/16">108</p>
+  <p class="c center nowrap t16 tb last" data-cell="P53" style="grid-area:53/16/54/19">x30,000</p>
+
+  <!-- Totals, rows 54-73. The numbers are the sheet's results, copied as they are. -->
+  <i class="fill f-panel" style="grid-area:59/2/64/19"></i>    <!-- B59:R63 -->
+  <i class="fill f-panel" style="grid-area:69/2/74/19"></i>    <!-- B69:R73 -->
+
+  <p class="c right tot" data-cell="D55" style="grid-area:55/4/56/8">ค่าสติต่อวัน:</p>
+  <p class="c center tot big" data-cell="H55" style="grid-area:55/8/58/10">274</p>
+  <p class="c right tot" data-cell="J55" style="grid-area:55/10/56/15">ค่าสติทั้งหมดต่อ 1 ภารกิจ</p>
+  <p class="c center tot" data-cell="O55" style="grid-area:55/15/56/17">639</p>
+  <p class="c left tot" data-cell="Q55" style="grid-area:55/17/56/18">สติ</p>
+  <p class="c right tot wrap" data-cell="C56" style="grid-area:56/3/58/8">(รวมขวดสติ 120 สองขวดจาก Weekly Missions)</p>
+  <p class="c right tot hl" data-cell="J56" style="grid-area:56/10/57/15">เทียบเท่าสติมูลค่า</p>
+  <p class="c center tot hl" data-cell="O56" style="grid-area:56/15/57/17">2.3</p>
+  <p class="c left tot hl" data-cell="Q56" style="grid-area:56/17/57/18">วัน</p>
+  <p class="c right tot" data-cell="J57" style="grid-area:57/10/58/15">เวลาที่ใช้ไปใน Monthly Squad</p>
+  <p class="c center tot" data-cell="O57" style="grid-area:57/15/58/17">11</p>
+  <p class="c left tot" data-cell="Q57" style="grid-area:57/17/58/18">นาที</p>
+
+  <p class="c right tot" data-cell="H60" style="grid-area:60/8/61/15">ค่าสติทั้งหมด 8 ภารกิจใน IS 1 ภาค</p>
+  <p class="c center tot" data-cell="O60" style="grid-area:60/15/61/17">5,112</p>
+  <p class="c left tot" data-cell="Q60" style="grid-area:60/17/61/18">สติ</p>
+  <p class="c right tot" data-cell="I61" style="grid-area:61/9/62/15">เทียบเท่าสติมูลค่า</p>
+  <p class="c center tot" data-cell="O61" style="grid-area:61/15/62/17">19</p>
+  <p class="c left tot" data-cell="Q61" style="grid-area:61/17/62/18">วัน</p>
+  <p class="c right tot" data-cell="I62" style="grid-area:62/9/63/15">เวลาที่ใช้ไปใน Monthly Squad</p>
+  <p class="c center tot" data-cell="O62" style="grid-area:62/15/63/17">88</p>
+  <p class="c left tot" data-cell="Q62" style="grid-area:62/17/63/18">นาที</p>
+
+  <p class="c right tot" data-cell="C65" style="grid-area:65/3/66/15">ค่าสติทั้งหมด 8 ภารกิจใน IS 4 ภาค (IS2-IS5)</p>
+  <p class="c center tot" data-cell="O65" style="grid-area:65/15/66/17">20,448</p>
+  <p class="c left tot" data-cell="Q65" style="grid-area:65/17/66/18">สติ</p>
+  <p class="c right tot hl" data-cell="C66" style="grid-area:66/3/67/15">เทียบเท่าสติมูลค่า</p>
+  <p class="c center tot hl" data-cell="O66" style="grid-area:66/15/67/17">75</p>
+  <p class="c left tot hl" data-cell="Q66" style="grid-area:66/17/67/18">วัน</p>
+  <p class="c right tot" data-cell="C67" style="grid-area:67/3/68/15">เวลาที่ใช้ไปใน Monthly Squad</p>
+  <p class="c center tot" data-cell="O67" style="grid-area:67/15/68/17">352</p>
+  <p class="c left tot" data-cell="Q67" style="grid-area:67/17/68/18">นาที</p>
+
+  <!-- C70: the sheet says "IS 4 ภาค (IS2-IS5)"; five themes per the author (M4, 2026-10-10). Numbers are already 5 x 5,112. -->
+  <p class="c right tot" data-cell="C70" style="grid-area:70/3/71/15">ค่าสติทั้งหมด 8 ภารกิจใน IS 5 ภาค (IS2-IS6)</p>
+  <p class="c center tot" data-cell="O70" style="grid-area:70/15/71/17">25,560</p>
+  <p class="c left tot" data-cell="Q70" style="grid-area:70/17/71/18">สติ</p>
+  <p class="c right tot hl" data-cell="C71" style="grid-area:71/3/72/15">เทียบเท่าสติมูลค่า</p>
+  <p class="c center tot hl" data-cell="O71" style="grid-area:71/15/72/17">93</p>
+  <p class="c left tot hl" data-cell="Q71" style="grid-area:71/17/72/18">วัน</p>
+  <p class="c right tot" data-cell="C72" style="grid-area:72/3/73/15">เวลาที่ใช้ไปใน Monthly Squad</p>
+  <p class="c center tot" data-cell="O72" style="grid-area:72/15/73/17">440</p>
+  <p class="c left tot" data-cell="Q72" style="grid-area:72/17/73/18">นาที</p>
+
+  <!-- Arknights layer (M6). y = the section's first row top (grid rowY) - 1 for the lines, + 8 for the counters -->
+  <div aria-hidden="true" style="display:contents">
+    <i class="ak-line" style="top:calc(553*var(--u))"></i>    <!-- before row 7 -->
+    <i class="ak-line" style="top:calc(1888*var(--u))"></i>   <!-- before row 15 -->
+    <i class="ak-line" style="top:calc(4791*var(--u))"></i>   <!-- before row 28 -->
+    <i class="ak-line" style="top:calc(9263*var(--u))"></i>   <!-- before row 48 -->
+    <i class="ak-line" style="top:calc(9610*var(--u))"></i>   <!-- before row 55 -->
+    <span class="ak-index" style="top:calc(562*var(--u))">01<small>// 05</small></span>
+    <span class="ak-index" style="top:calc(1897*var(--u))">02<small>// 05</small></span>
+    <span class="ak-index" style="top:calc(4800*var(--u))">03<small>// 05</small></span>
+    <span class="ak-index" style="top:calc(9272*var(--u))">04<small>// 05</small></span>
+    <span class="ak-index" style="top:calc(9619*var(--u))">05<small>// 05</small></span>
+    <span class="ak-margin">REDALURK'S HANDBOOK // MONTHLY SQUADS // 2026 // 10 / 10</span>
+  </div>
+
+  <!-- The floating picture: Muelsyse, site doc/ms/0.webp (300 x 362; also NEWBIE/!MS/webp/0.webp), shown in the sheet's 296 x 356 box -->
+  <div class="img float" data-cell="floating"><img src="img/floating.webp" alt=""></div>
+
+</main>
+</body>
+</html>

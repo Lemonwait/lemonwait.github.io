@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credits</title>
+<!--
+  CREDITS: every outside source the handbook uses, with its official link. A shared file (CLAUDE.md
+  "Shared files"): any session that starts using a new source adds its row here, in a small change of its own.
+  Rows are plain HTML; keep each group in the order it is in. Layout: the hairline rows of
+  docs/REFERENCE.md "Patterns rebuilt in the handbook's palette", Q2 C. Handbook palette and fonts (docs/THEME.md section 3).
+  Thai lines marked DRAFT were written by Claude and wait for the author.
+-->
+<link rel="preload" href="assets/fonts/bebas-neue-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<style>
+:root {
+  --bg: #202124; --line: #3c3d42; --line-hi: #5e5e5e; --text: #e6e8f0; --grey: #8a8a8a; --gold: #b5a642;
+  --thai: 'Sarabun', sans-serif; --disp: 'Bebas Neue', sans-serif; --cond: 'Oswald', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--text); font: 16px/1.7 var(--thai); }
+a { color: inherit; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 56px 16px 0; }
+
+/* title: Q1 A (official article) */
+.cat { font: 400 18px/1 var(--disp); letter-spacing: .1em; color: var(--gold); }
+h1 { font: 400 64px/1 var(--disp); letter-spacing: .02em; margin-top: 6px; }
+.date { font: 400 15px/1 var(--disp); letter-spacing: .08em; color: var(--grey); margin: 10px 0 14px; }
+.rule { height: 1px; background: rgba(255,255,255,.3); position: relative; margin-bottom: 18px; }
+.rule::before { content: ""; position: absolute; left: 0; width: 28px; height: 1px; background: #fff; }
+.intro { max-width: 40em; color: #c9cbd3; }
+
+/* groups: Q2 C (hairline rows) */
+section { margin-top: 44px; }
+h2 { display: flex; align-items: baseline; gap: 12px; }
+h2 .no { font: 400 15px/1 var(--disp); color: #111; background: var(--gold); padding: 3px 7px 1px; letter-spacing: .06em; }
+h2 .en { font: 400 30px/1 var(--disp); letter-spacing: .04em; }
+h2 .th { font: 700 15px/1 var(--thai); color: var(--grey); }
+.list { border-top: 3px solid #46474c; margin-top: 10px; }
+.r { display: grid; grid-template-columns: 230px 1fr auto; gap: 4px 18px; align-items: baseline;
+  padding: 12px 0; border-bottom: 1px solid var(--line-hi); }
+.r .name { font-weight: 700; }
+.r .what { color: #c9cbd3; }
+.r .go { font: 400 15px/1 var(--disp); letter-spacing: .08em; color: var(--gold); text-decoration: none;
+  border-left: 1px solid var(--grey); padding-left: 12px; white-space: nowrap; transition: color .3s ease; }
+.r .go::after { content: " »"; }
+.r .go:hover { color: var(--text); }
+.r.todo .what { color: #c0392b; }
+.note { font-size: 14px; color: var(--grey); margin-top: 10px; }
+
+footer { margin-top: 64px; border-top: 1px solid var(--line); padding: 14px 16px 18px; font-size: 13px; color: var(--grey);
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 24px; max-width: 980px; margin-left: auto; margin-right: auto; }
+footer i { font-style: italic; }
+
+@media (max-width: 700px) {
+  h1 { font-size: 48px; }
+  .r { grid-template-columns: 1fr auto; }
+  .r .what { grid-column: 1 / -1; grid-row: 2; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cat">Redalurk's Handbook</div>
+  <h1>Credits</h1>
+  <div class="date">2026 // 10 / 11</div>
+  <div class="rule"></div>
+  <p class="intro">หน้านี้รวมแหล่งที่มาทั้งหมดที่คู่มือนี้ใช้ พร้อมลิงก์ไปยังเจ้าของตัวจริง คู่มือนี้เป็นงานแฟนเมด ไม่มีส่วนเกี่ยวข้องกับ Hypergryph หรือ Yostar <!-- DRAFT --></p>
+
+  <section>
+    <h2><span class="no">01</span><span class="en">Game</span><span class="th">ตัวเกม</span></h2>
+    <div class="list">
+      <div class="r"><span class="name">Arknights (CN)</span><span class="what">ผู้พัฒนาเกม · Hypergryph</span><a class="go" href="https://ak.hypergryph.com/" target="_blank" rel="noopener">ak.hypergryph.com</a></div>
+      <div class="r"><span class="name">Arknights (Global)</span><span class="what">ผู้ให้บริการเซิร์ฟเวอร์ Global · Yostar</span><a class="go" href="https://www.arknights.global/" target="_blank" rel="noopener">arknights.global</a></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="no">02</span><span class="en">Music</span><span class="th">เพลง</span></h2>
+    <div class="list">
+      <div class="r"><span class="name">Monster Siren Records</span><span class="what">ค่ายเพลงของ Arknights ฟังเพลงเต็ม เครดิต และเนื้อเพลงได้ที่นี่</span><a class="go" href="https://monster-siren.hypergryph.com/" target="_blank" rel="noopener">monster-siren.hypergryph.com</a></div>
+      <div class="r"><span class="name">Battleplan Extinguished Sins</span><span class="what">塞壬唱片-MSR · 危机合约净罪作战OST · เนื้อเพลงในหน้า OVERVIEW</span><a class="go" href="https://monster-siren.hypergryph.com/music/232249" target="_blank" rel="noopener">Listen</a></div>
+      <div class="r"><span class="name">Lifeflow (生命流)</span><span class="what">Windbell_Project, 塞壬唱片-MSR · 明日方舟OST1 · เพลงพื้นหลังหน้า BASIC</span><a class="go" href="https://monster-siren.hypergryph.com/music/232202" target="_blank" rel="noopener">Listen</a></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="no">03</span><span class="en">Images</span><span class="th">รูปภาพ</span></h2>
+    <div class="list">
+      <div class="r"><span class="name">Aceship / Arknight-Images</span><span class="what">ไอคอนคลาสและสาขา (branch) ของโอเปอเรเตอร์</span><a class="go" href="https://github.com/Aceship/Arknight-Images" target="_blank" rel="noopener">GitHub</a></div>
+      <div class="r"><span class="name">PuppiizSunniiz / Arknight-Images</span><span class="what">ภาพโอเปอเรเตอร์ ไอคอนสกิล และไอคอนสาขาที่ Aceship ไม่มี</span><a class="go" href="https://github.com/PuppiizSunniiz/Arknight-Images" target="_blank" rel="noopener">GitHub</a></div>
+      <div class="r"><span class="name">ArknightsAssets / ArknightsAssets2</span><span class="what">เสียงพากย์ Leizi2 (JP) และเคอร์เซอร์มือ ในมินิเกม pause หน้า COMBAT</span><a class="go" href="https://github.com/ArknightsAssets/ArknightsAssets2" target="_blank" rel="noopener">GitHub</a></div>
+      <div class="r"><span class="name">明日方舟 (Bilibili ทางการ)</span><span class="what">วิดีโอปกหน้า COMBAT (ตัดจากคลิป Talulah หลายคลิป) · Hypergryph</span><a class="go" href="https://space.bilibili.com/161775300" target="_blank" rel="noopener">bilibili.com</a></div>
+      <div class="r"><span class="name">Arknights Special PV - A Gift of Time</span><span class="what">วิดีโอบนแบนเนอร์หน้า BASIC (ตัดมาบางช่วง) · Yostar</span><a class="go" href="https://youtu.be/Je4B9d29UxM" target="_blank" rel="noopener">YouTube</a></div>
+      <div class="r todo"><span class="name">OVERVIEW closing art</span><span class="what">ภาพแฟนอาร์ตในตอนจบของหน้า OVERVIEW · ต้องการชื่อศิลปินและลิงก์</span><span class="go" style="color:var(--grey)">TO ADD</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="no">04</span><span class="en">Data and tools</span><span class="th">ข้อมูลและเครื่องมือ</span></h2>
+    <div class="list">
+      <div class="r"><span class="name">PRTS wiki</span><span class="what">วิกิภาษาจีน ใช้ตรวจกลไกที่ไม่ชัดเจน</span><a class="go" href="https://prts.wiki/" target="_blank" rel="noopener">prts.wiki</a></div>
+      <div class="r"><span class="name">Arknights Terra Wiki</span><span class="what">วิกิภาษาอังกฤษ</span><a class="go" href="https://arknights.wiki.gg/" target="_blank" rel="noopener">arknights.wiki.gg</a></div>
+      <div class="r"><span class="name">Closure wiki</span><span class="what">ข้อมูลโอเปอเรเตอร์</span><a class="go" href="https://closure.wiki/" target="_blank" rel="noopener">closure.wiki</a></div>
+      <div class="r"><span class="name">Penguin Statistics</span><span class="what">สถิติการดรอปไอเทม</span><a class="go" href="https://penguin-stats.io/" target="_blank" rel="noopener">penguin-stats.io</a></div>
+      <div class="r"><span class="name">ArknightsAssets / ArknightsGamedata</span><span class="what">ข้อมูลเกม (EN) ที่ใช้สร้างหน้า X</span><a class="go" href="https://github.com/ArknightsAssets/ArknightsGamedata" target="_blank" rel="noopener">GitHub</a></div>
+      <div class="r"><span class="name">Kengxxiao / ArknightsGameData</span><span class="what">ข้อมูลเกม (CN) ที่ใช้สร้างหน้า X</span><a class="go" href="https://github.com/Kengxxiao/ArknightsGameData" target="_blank" rel="noopener">GitHub</a></div>
+      <div class="r"><span class="name">Krooster</span><span class="what">วางแผนการอัปเกรด</span><a class="go" href="https://www.krooster.com/" target="_blank" rel="noopener">krooster.com</a></div>
+      <div class="r"><span class="name">AN-EN-Tags</span><span class="what">ตัวช่วยคำนวณแท็ก Recruitment</span><a class="go" href="https://puppiizsunniiz.github.io/AN-EN-Tags/akhr.html" target="_blank" rel="noopener">puppiizsunniiz.github.io</a></div>
+      <div class="r"><span class="name">MAA</span><span class="what">MaaAssistantArknights</span><a class="go" href="https://docs.maa.plus/en-us/" target="_blank" rel="noopener">maa.plus</a></div>
+      <div class="r"><span class="name">arkprts</span><span class="what">ดูข้อมูลบัญชีผู้เล่น</span><a class="go" href="https://arkprts.zklol.lol/" target="_blank" rel="noopener">arkprts.zklol.lol</a></div>
+      <div class="r"><span class="name">Oldwell.info</span><span class="what">ลิงก์ในหน้าแรก</span><a class="go" href="https://oldwell.info/" target="_blank" rel="noopener">oldwell.info</a></div>
+      <div class="r"><span class="name">Lungmen Dragons</span><span class="what">ลิงก์ในหน้าแรก</span><a class="go" href="https://lungmendragons.com/" target="_blank" rel="noopener">lungmendragons.com</a></div>
+      <div class="r"><span class="name">Imivi.github.io</span><span class="what">คำนวณจำนวนการสุ่ม</span><a class="go" href="https://imivi.github.io/arknights-pulls-calculator/" target="_blank" rel="noopener">imivi.github.io</a></div>
+      <div class="r"><span class="name">Tomimi.dev</span><span class="what">ลิงก์ในหน้าแรก</span><a class="go" href="https://tomimi.dev/en" target="_blank" rel="noopener">tomimi.dev</a></div>
+      <div class="r"><span class="name">努力睡觉的斌子 (bilibili)</span><span class="what">วิดีโอที่ใช้ในหน้า DUELIST</span><a class="go" href="https://www.bilibili.com/video/BV1A5p26fEj3" target="_blank" rel="noopener">bilibili.com</a></div>
+      <div class="r"><span class="name">努力睡觉的斌子 (bilibili)</span><span class="what">วิดีโอที่ใช้ในหน้า DUELIST</span><a class="go" href="https://www.bilibili.com/video/BV1RJbp6fE7T" target="_blank" rel="noopener">bilibili.com</a></div>
+      <div class="r"><span class="name">arkrec (明日方舟少人WIKI)</span><span class="what">บันทึกเคลียร์แบบ AFK (解手流) ที่ใช้นับด่านในหน้า AFK</span><a class="go" href="https://en.arkrec.com/" target="_blank" rel="noopener">arkrec.com</a></div>
+      <div class="r"><span class="name">Hermitz Planner</span><span class="what">รวมสกินโอเปอเรเตอร์</span><a class="go" href="https://hermitzplanner.github.io/skins/" target="_blank" rel="noopener">hermitzplanner.github.io</a></div>
+      <div class="r"><span class="name">Bilibili</span><span class="what">คลิปในป๊อปอัปของการ์ด X: หน้าค้นหาและ player ของ Bilibili เอง ชื่อคนอัปอยู่ใต้ทุกคลิป</span><a class="go" href="https://www.bilibili.com/" target="_blank" rel="noopener">bilibili.com</a></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="no">05</span><span class="en">Fonts</span><span class="th">ฟอนต์</span></h2>
+    <div class="list">
+      <div class="r"><span class="name">Google Sans, Sarabun, Bebas Neue, Oswald, Fjalla One, Bai Jamjuree, Barlow, BenchNine, Cinzel, Allura, Bad Script, K2D, Montserrat, Mr Dafoe, Roboto, Bodoni Moda, Jost, Playfair Display, Anton, Alumni Sans, Inter Tight, Urbanist, Poiret One</span><span class="what">SIL Open Font License · ไฟล์สัญญาอนุญาตอยู่ใน assets/fonts</span><a class="go" href="https://openfontlicense.org/" target="_blank" rel="noopener">OFL</a></div>
+      <div class="r"><span class="name">PT Serif, Fira Sans Extra Condensed</span><span class="what">SIL Open Font License · โหลดจาก Google Fonts (หน้า TALULAH)</span><a class="go" href="https://fonts.google.com/" target="_blank" rel="noopener">Google Fonts</a></div>
+      <div class="r"><span class="name">Satisfy, Yellowtail</span><span class="what">Apache License 2.0 · ไฟล์สัญญาอนุญาตอยู่ใน assets/fonts</span><a class="go" href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache 2.0</a></div>
+    </div>
+  </section>
+  <p class="note">พบแหล่งที่มาที่ขาดหายไป? แจ้งได้เลย <!-- DRAFT --></p>
+</div>
+
+<footer>
+  <span><i>Arknights</i>-images displayed here are owned by Hypergryph and Yostar. Fan-made guide, not affiliated.</span>
+  <span>Redalurk's Handbook © 2026 Lemonwait</span>
+</footer>
+</body>
+</html>
