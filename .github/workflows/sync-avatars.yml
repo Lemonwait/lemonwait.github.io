@@ -87,6 +87,13 @@ jobs:
           echo "TOTAL downloaded $total_new new file(s). Failed: $total_fail."
           echo "NEW_COUNT=$total_new" >> "$GITHUB_ENV"
 
+      # Smaller WebP copies of every portrait (operator/avatars/w96, w48) for pages that show portraits small:
+      # only the missing ones are made. See tools/portrait_copies.py.
+      - name: Make the small portrait copies
+        run: |
+          pip install --quiet pillow
+          python tools/portrait_copies.py
+
       - name: Commit and push if anything changed
         run: |
           git config user.name  "github-actions[bot]"
